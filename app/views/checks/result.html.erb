@@ -1,0 +1,355 @@
+<div class="vscode-container">
+  <!-- Title Bar -->
+  <div class="titlebar">
+    <div class="window-controls">
+      <div class="window-dot red"></div>
+      <div class="window-dot yellow"></div>
+      <div class="window-dot green"></div>
+    </div>
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="チェック結果" readonly>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Activity Bar -->
+    <div class="activity-bar">
+      <div class="activity-icon active">
+        <span>📁</span>
+      </div>
+      <div class="activity-icon">
+        <span>🔍</span>
+      </div>
+      <div class="activity-icon">
+        <span style="font-size: 18px;">⎇</span>
+      </div>
+      <div class="activity-icon">
+        <span>▶</span>
+      </div>
+      <div class="activity-icon">
+        <span>⚙</span>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        エクスプローラー
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">
+          <span class="chevron">▼</span>
+          <span>RESULTS</span>
+        </div>
+        <div class="sidebar-item selected">
+          <span class="file-icon">📄</span>
+          <span>check_results.json</span>
+        </div>
+        <div class="sidebar-item">
+          <span class="file-icon">📄</span>
+          <span>summary.md</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Editor Area -->
+    <div class="editor-container">
+      <div class="tab-bar">
+        <div class="tab active">
+          <span>📄</span>
+          <span>check_results.json</span>
+        </div>
+      </div>
+      <div class="editor-content">
+        <% if @status == 'running' %>
+          <h1>チェック実行中...</h1>
+          <div class="subtitle">下のターミナルで進捗を確認できます</div>
+        <% elsif @results && @results.any? %>
+          <h1>チェック結果</h1>
+
+          <% pass_count = @results.count { |r| r[:status] == 'PASS' } %>
+          <% fail_count = @results.count { |r| r[:status] == 'FAIL' } %>
+          <% error_count = @results.count { |r| r[:status] == 'ERROR' } %>
+
+          <div class="summary-box">
+            <strong>サマリー:</strong>
+            合格: <%= pass_count %> /
+            不合格: <%= fail_count %> /
+            エラー: <%= error_count %> /
+            合計: <%= @results.count %>
+          </div>
+
+          <% @results.each do |result| %>
+            <% status_class = result[:status] == 'PASS' ? 'pass' : (result[:status] == 'FAIL' ? 'fail' : 'error') %>
+            <div class="result-item <%= status_class %>">
+              <div class="result-header">
+                <div class="result-title">
+                  <% if result[:status] == 'PASS' %>
+                    <span class="text-success">✓</span>
+                  <% elsif result[:status] == 'FAIL' %>
+                    <span class="text-danger">✗</span>
+                  <% else %>
+                    <span class="text-warning">!</span>
+                  <% end %>
+                  <span><%= result[:check_number] %>: <%= result[:description] %></span>
+                </div>
+                <span class="badge badge-<%= result[:status] == 'PASS' ? 'success' : (result[:status] == 'FAIL' ? 'danger' : 'warning') %>">
+                  <%= result[:status] %>
+                </span>
+              </div>
+              <% if result[:note].present? %>
+                <div class="text-muted"><strong>補足:</strong> <%= result[:note] %></div>
+              <% end %>
+            </div>
+          <% end %>
+
+          <% if @registered_users && @registered_users.any? %>
+            <div data-registered-users style="margin-top: 30px; padding: 20px; background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px;">
+              <h2 style="color: #4ec9b0; font-size: 18px; margin-bottom: 15px;">登録済みユーザー情報</h2>
+              <% @registered_users.each_with_index do |user, index| %>
+                <div style="margin-bottom: 15px; padding: 12px; background-color: #252526; border-left: 3px solid #007acc; border-radius: 2px;">
+                  <div style="color: #9cdcfe; font-weight: bold; margin-bottom: 5px;">ユーザー <%= index + 1 %></div>
+                  <div style="color: #ce9178; margin-bottom: 3px;">Email: <%= user[:email] %></div>
+                  <div style="color: #ce9178;">Password: <%= user[:password] %></div>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+
+          <div class="button-group">
+            <%= link_to "新しいチェックを実行", new_check_path, class: "btn-primary" %>
+            <%= link_to "トップに戻る", checks_path, class: "btn-secondary" %>
+          </div>
+        <% else %>
+          <h1>チェック結果</h1>
+          <div class="text-muted">チェック結果がありません</div>
+
+          <div class="button-group">
+            <%= link_to "新しいチェックを実行", new_check_path, class: "btn-primary" %>
+            <%= link_to "トップに戻る", checks_path, class: "btn-secondary" %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Bottom Panel (Terminal) -->
+      <div class="panel">
+        <div class="panel-resize-handle"></div>
+        <div class="panel-header">
+          <div class="panel-tab">問題</div>
+          <div class="panel-tab active">出力</div>
+          <div class="panel-tab">デバッグ コンソール</div>
+          <div class="panel-tab">ターミナル</div>
+          <div class="panel-tab">ポート</div>
+          <div class="panel-controls">
+            <span class="panel-control">+</span>
+            <span class="panel-control">⌄</span>
+            <span class="panel-control">×</span>
+          </div>
+        </div>
+        <div class="panel-content" id="terminal-logs">
+          <% if @logs && @logs.any? %>
+            <% @logs.each do |log| %>
+              <% message = log.is_a?(Hash) ? log[:message] : log %>
+              <% log_type = log.is_a?(Hash) ? log[:type] : :info %>
+              <div class="terminal-line" data-type="<%= log_type %>">
+                <% if log_type == :success %>
+                  <span style="color: #89d185;"><%= message %></span>
+                <% elsif log_type == :fail %>
+                  <span style="color: #f48771;"><%= message %></span>
+                <% elsif log_type == :error %>
+                  <span style="color: #dcdcaa;"><%= message %></span>
+                <% elsif log_type == :progress %>
+                  <span style="color: #858585;"><%= message %></span>
+                <% else %>
+                  <span style="color: #cccccc;"><%= message %></span>
+                <% end %>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="terminal-line">
+              <span style="color: #858585;">チェック実行中...</span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="status-item">⎇ main</div>
+    <div class="status-item" id="status-pass">✓ <%= @results ? @results.count { |r| r[:status] == 'PASS' } : 0 %></div>
+    <div class="status-item" id="status-fail">⚠ <%= @results ? @results.count { |r| r[:status] != 'PASS' } : 0 %></div>
+    <div class="status-bar-right">
+      <div class="status-item">JSON</div>
+      <div class="status-item">UTF-8</div>
+      <div class="status-item">LF</div>
+    </div>
+  </div>
+</div>
+
+<% if @status == 'running' %>
+<script>
+  (function() {
+    const sessionId = '<%= @session_id %>';
+    const terminalLogs = document.getElementById('terminal-logs');
+    const editorContent = document.querySelector('.editor-content');
+    let lastLogCount = 0;
+
+    function formatLog(logEntry) {
+      const message = logEntry.message || logEntry;
+      const type = logEntry.type || 'info';
+      let color = '#cccccc';
+
+      switch(type) {
+        case 'success':
+          color = '#89d185';
+          break;
+        case 'fail':
+          color = '#f48771';
+          break;
+        case 'error':
+          color = '#dcdcaa';
+          break;
+        case 'progress':
+          color = '#858585';
+          break;
+        default:
+          color = '#cccccc';
+      }
+
+      return `<div class="terminal-line" data-type="${type}"><span style="color: ${color};">${message}</span></div>`;
+    }
+
+    function updateResults(results) {
+      if (!results || results.length === 0) return;
+
+      const passCount = results.filter(r => r.status === 'PASS').length;
+      const failCount = results.filter(r => r.status !== 'PASS').length;
+
+      document.getElementById('status-pass').textContent = '✓ ' + passCount;
+      document.getElementById('status-fail').textContent = '⚠ ' + failCount;
+
+      // 結果をエディター部分に表示
+      let summaryHtml = `
+        <h1>チェック結果</h1>
+        <div class="summary-box">
+          <strong>サマリー:</strong>
+          合格: ${passCount} /
+          不合格: ${failCount} /
+          合計: ${results.length}
+        </div>
+      `;
+
+      results.forEach(result => {
+        const statusClass = result.status === 'PASS' ? 'pass' : (result.status === 'FAIL' ? 'fail' : 'error');
+        const icon = result.status === 'PASS' ? '✓' : (result.status === 'FAIL' ? '✗' : '!');
+        const iconColor = result.status === 'PASS' ? 'text-success' : (result.status === 'FAIL' ? 'text-danger' : 'text-warning');
+        const badgeClass = result.status === 'PASS' ? 'badge-success' : (result.status === 'FAIL' ? 'badge-danger' : 'badge-warning');
+
+        summaryHtml += `
+          <div class="result-item ${statusClass}">
+            <div class="result-header">
+              <div class="result-title">
+                <span class="${iconColor}">${icon}</span>
+                <span>${result.check_number}: ${result.description}</span>
+              </div>
+              <span class="badge ${badgeClass}">${result.status}</span>
+            </div>
+            ${result.note ? `<div class="text-muted"><strong>補足:</strong> ${result.note}</div>` : ''}
+          </div>
+        `;
+      });
+
+      summaryHtml += `
+        <div class="button-group">
+          <a href="/checks/new" class="btn-primary">新しいチェックを実行</a>
+          <a href="/checks" class="btn-secondary">トップに戻る</a>
+        </div>
+      `;
+
+      editorContent.innerHTML = summaryHtml;
+    }
+
+    function updateRegisteredUsers(registeredUsers) {
+      if (!registeredUsers || registeredUsers.length === 0) return;
+
+      // 既存のユーザー情報セクションを削除
+      const existingUsersSection = editorContent.querySelector('[data-registered-users]');
+      if (existingUsersSection) {
+        existingUsersSection.remove();
+      }
+
+      let usersHtml = `
+        <div data-registered-users style="margin-top: 30px; padding: 20px; background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px;">
+          <h2 style="color: #4ec9b0; font-size: 18px; margin-bottom: 15px;">登録済みユーザー情報</h2>
+      `;
+
+      registeredUsers.forEach((user, index) => {
+        usersHtml += `
+          <div style="margin-bottom: 15px; padding: 12px; background-color: #252526; border-left: 3px solid #007acc; border-radius: 2px;">
+            <div style="color: #9cdcfe; font-weight: bold; margin-bottom: 5px;">ユーザー ${index + 1}</div>
+            <div style="color: #ce9178; margin-bottom: 3px;">Email: ${user.email}</div>
+            <div style="color: #ce9178;">Password: ${user.password}</div>
+          </div>
+        `;
+      });
+
+      usersHtml += `</div>`;
+
+      // ボタングループの前に挿入
+      const buttonGroup = editorContent.querySelector('.button-group');
+      if (buttonGroup) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = usersHtml;
+        buttonGroup.parentNode.insertBefore(tempDiv.firstElementChild, buttonGroup);
+      }
+    }
+
+    function poll() {
+      fetch(`/checks/${sessionId}/poll`)
+        .then(response => response.json())
+        .then(data => {
+          // ログを更新
+          if (data.logs && data.logs.length > 0) {
+            // 全ログを再描画（progressログの上書きを反映するため）
+            terminalLogs.innerHTML = '';
+            data.logs.forEach(log => {
+              terminalLogs.innerHTML += formatLog(log);
+            });
+            lastLogCount = data.logs.length;
+
+            // ターミナルを最下部にスクロール
+            terminalLogs.scrollTop = terminalLogs.scrollHeight;
+          }
+
+          // 結果を更新
+          if (data.results && data.results.length > 0) {
+            updateResults(data.results);
+          }
+
+          // 登録済みユーザーを更新
+          if (data.registered_users && data.registered_users.length > 0) {
+            updateRegisteredUsers(data.registered_users);
+          }
+
+          // 完了したらポーリングを停止
+          if (data.status === 'completed' || data.status === 'error') {
+            console.log('Check completed');
+          } else {
+            setTimeout(poll, 500); // 0.5秒ごとにポーリング
+          }
+        })
+        .catch(error => {
+          console.error('Polling error:', error);
+          setTimeout(poll, 1000); // エラーの場合は1秒後にリトライ
+        });
+    }
+
+    // 初回ポーリング開始
+    poll();
+  })();
+</script>
+<% end %>

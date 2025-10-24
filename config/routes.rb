@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  resources :checks, only: [:index, :new, :create, :show]
+  resources :checks, only: [:index, :new, :create]
+  get 'checks/:id/status', to: 'checks#status', as: 'check_status'
+  get 'checks/:id/poll', to: 'checks#poll', as: 'check_poll'
   root "checks#index"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

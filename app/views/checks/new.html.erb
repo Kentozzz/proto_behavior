@@ -1,34 +1,109 @@
-<div class="container mt-5">
-  <h1>プロトスペース模倣アプリ チェッカー</h1>
-  <p>チェック対象のアプリURLを入力してください</p>
+<div class="vscode-container">
+  <!-- Title Bar -->
+  <div class="titlebar">
+    <div class="window-controls">
+      <div class="window-dot red"></div>
+      <div class="window-dot yellow"></div>
+      <div class="window-dot green"></div>
+    </div>
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="プロトスペース チェッカー" readonly>
+    </div>
+  </div>
 
-  <%= form_with url: checks_path, method: :post, local: true do |f| %>
-    <div class="mb-3">
-      <%= label_tag :target_url, "対象URL", class: "form-label" %>
-      <%= text_field_tag :target_url, "", class: "form-control", placeholder: "https://example.onrender.com", required: true %>
-      <div class="form-text">例: https://student-app.onrender.com</div>
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Activity Bar -->
+    <div class="activity-bar">
+      <div class="activity-icon active">
+        <span>📁</span>
+      </div>
+      <div class="activity-icon">
+        <span>🔍</span>
+      </div>
+      <div class="activity-icon">
+        <span style="font-size: 18px;">⎇</span>
+      </div>
+      <div class="activity-icon">
+        <span>▶</span>
+      </div>
+      <div class="activity-icon">
+        <span>⚙</span>
+      </div>
     </div>
 
-    <%= submit_tag "チェック開始", class: "btn btn-primary" %>
-  <% end %>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        エクスプローラー
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">
+          <span class="chevron">▼</span>
+          <span>CHECKER</span>
+        </div>
+        <div class="sidebar-item">
+          <span class="file-icon">📄</span>
+          <span>check_config.rb</span>
+        </div>
+        <div class="sidebar-item">
+          <span class="file-icon">📄</span>
+          <span>results.json</span>
+        </div>
+      </div>
+    </div>
 
-  <hr class="my-5">
+    <!-- Editor Area -->
+    <div class="editor-container">
+      <div class="tab-bar">
+        <div class="tab active">
+          <span>📄</span>
+          <span>checker.rb</span>
+        </div>
+      </div>
+      <div class="editor-content">
+        <h1>プロトスペース模倣アプリ チェッカー</h1>
+        <div class="subtitle">チェック対象のアプリURLを下のターミナルに入力してください</div>
+      </div>
 
-  <h2>過去のチェック履歴</h2>
-  <% if @check_sessions && @check_sessions.any? %>
-    <ul class="list-group">
-      <% @check_sessions.each do |session| %>
-        <li class="list-group-item">
-          <%= link_to session.target_url, check_path(session) %>
-          <span class="badge bg-<%= session.status == 'completed' ? 'success' : 'warning' %> float-end">
-            <%= session.status %>
-          </span>
-          <br>
-          <small class="text-muted"><%= session.created_at.strftime('%Y-%m-%d %H:%M:%S') %></small>
-        </li>
-      <% end %>
-    </ul>
-  <% else %>
-    <p class="text-muted">まだチェック履歴がありません</p>
-  <% end %>
+      <!-- Bottom Panel (Terminal) -->
+      <div class="panel">
+        <div class="panel-resize-handle"></div>
+        <div class="panel-header">
+          <div class="panel-tab">問題</div>
+          <div class="panel-tab">出力</div>
+          <div class="panel-tab">デバッグ コンソール</div>
+          <div class="panel-tab active">ターミナル</div>
+          <div class="panel-tab">ポート</div>
+          <div class="panel-controls">
+            <span class="panel-control">+</span>
+            <span class="panel-control">⌄</span>
+            <span class="panel-control">×</span>
+          </div>
+        </div>
+        <div class="panel-content">
+          <%= form_with url: checks_path, method: :post, local: true, data: { turbo: false } do |f| %>
+            <div class="terminal-input-line">
+              <span class="terminal-prompt">$</span>
+              <%= text_field_tag :target_url, "", class: "terminal-input", placeholder: "", required: true, autofocus: true %>
+            </div>
+            <%= submit_tag "送信", style: "display: none;" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="status-item">⎇ main</div>
+    <div class="status-item">✓ 0</div>
+    <div class="status-item">⚠ 0</div>
+    <div class="status-bar-right">
+      <div class="status-item">Ruby</div>
+      <div class="status-item">UTF-8</div>
+      <div class="status-item">LF</div>
+    </div>
+  </div>
 </div>
