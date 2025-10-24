@@ -1,0 +1,25 @@
+<div class="container mt-5">
+  <h1>プロトスペース模倣アプリ チェッカー</h1>
+  <p>チェック対象のアプリURLを入力してください</p>
+
+  <%= link_to "新しいチェックを実行", new_check_path, class: "btn btn-primary mb-4" %>
+
+  <h2>過去のチェック履歴</h2>
+  <% if @check_sessions.any? %>
+    <div class="list-group">
+      <% @check_sessions.each do |session| %>
+        <%= link_to check_path(session), class: "list-group-item list-group-item-action" do %>
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1"><%= session.target_url %></h5>
+            <span class="badge bg-<%= session.status == 'completed' ? 'success' : 'warning' %>">
+              <%= session.status %>
+            </span>
+          </div>
+          <small class="text-muted"><%= session.started_at.strftime('%Y-%m-%d %H:%M:%S') %></small>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-muted">まだチェック履歴がありません</p>
+  <% end %>
+</div>

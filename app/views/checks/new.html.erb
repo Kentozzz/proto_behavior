@@ -1,0 +1,34 @@
+<div class="container mt-5">
+  <h1>プロトスペース模倣アプリ チェッカー</h1>
+  <p>チェック対象のアプリURLを入力してください</p>
+
+  <%= form_with url: checks_path, method: :post, local: true do |f| %>
+    <div class="mb-3">
+      <%= label_tag :target_url, "対象URL", class: "form-label" %>
+      <%= text_field_tag :target_url, "", class: "form-control", placeholder: "https://example.onrender.com", required: true %>
+      <div class="form-text">例: https://student-app.onrender.com</div>
+    </div>
+
+    <%= submit_tag "チェック開始", class: "btn btn-primary" %>
+  <% end %>
+
+  <hr class="my-5">
+
+  <h2>過去のチェック履歴</h2>
+  <% if @check_sessions && @check_sessions.any? %>
+    <ul class="list-group">
+      <% @check_sessions.each do |session| %>
+        <li class="list-group-item">
+          <%= link_to session.target_url, check_path(session) %>
+          <span class="badge bg-<%= session.status == 'completed' ? 'success' : 'warning' %> float-end">
+            <%= session.status %>
+          </span>
+          <br>
+          <small class="text-muted"><%= session.created_at.strftime('%Y-%m-%d %H:%M:%S') %></small>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="text-muted">まだチェック履歴がありません</p>
+  <% end %>
+</div>
