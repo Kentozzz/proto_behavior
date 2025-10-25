@@ -74,6 +74,10 @@ class ProtospaceCheckerService
     check_cancelled
     run_check_5_001_to_5_005(cleanup_logs: false)
 
+    # 6-001〜6-002: プロトタイプ削除機能（同じセッション）
+    check_cancelled
+    run_check_6_001_6_002(cleanup_logs: false)
+
     # 最後にクリーンアップとログ整理
     cleanup
     add_log("全チェック完了", :info)
@@ -302,6 +306,14 @@ class ProtospaceCheckerService
   end
 
   def fill_signup_form(data)
+    # 要素が読み込まれるまで待機
+    begin
+      driver.find_element(:id, 'user_email')
+    rescue
+      sleep 1
+      driver.find_element(:id, 'user_email')
+    end
+
     driver.execute_script("document.getElementById('user_email').value = '#{data[:email]}';")
     driver.execute_script("document.getElementById('user_password').value = '#{data[:password]}';")
     driver.execute_script("document.getElementById('user_password_confirmation').value = '#{data[:password_confirmation]}';")
@@ -1287,7 +1299,7 @@ class ProtospaceCheckerService
 
       # ===== 4-001: 編集・削除リンクの確認 =====
       add_log("　 4-001: ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること", :check_start)
-      add_log("編集・削除リンクを確認中...", :progress)
+      add_log("ログアウト状態での編集・削除リンクを確認中...", :progress)
 
       # パート1: ログアウト状態での確認
       # ログアウト
@@ -1327,6 +1339,8 @@ class ProtospaceCheckerService
       end
 
       # ===== パート2: 投稿者でログイン状態での確認 =====
+      add_log("投稿者でログイン状態での編集・削除リンクを確認中...", :progress)
+
       login_with_registered_user
       driver.get(detail_url)
 
@@ -1352,6 +1366,7 @@ class ProtospaceCheckerService
       end
 
       # ===== パート3: 別のユーザーでログイン状態での確認 =====
+      add_log("別のユーザーでログイン状態での編集・削除リンクを確認中...", :progress)
 
       # ログアウト
       driver.get(base_url)
@@ -1492,6 +1507,10 @@ class ProtospaceCheckerService
 
       detail_url = @posted_prototype[:detail_url] || driver.current_url
 
+      # ===== 5-001: 正常な編集ができること =====
+      add_log("　 5-001: 投稿に必要な情報を入力すると、プロトタイプが編集できること", :check_start)
+      add_log("投稿者で再ログイン中...", :progress)
+
       # 投稿者で再ログイン
       # 確実にログアウト
       driver.get(base_url)
@@ -1519,8 +1538,6 @@ class ProtospaceCheckerService
         raise "ログインに失敗しました。現在のURL: #{current_url}"
       end
 
-      # ===== 5-001: 正常な編集ができること =====
-      add_log("　 5-001: 投稿に必要な情報を入力すると、プロトタイプが編集できること", :check_start)
       add_log("編集ページへ移動中...", :progress)
 
       # 編集ページに移動
@@ -1769,7 +1786,205 @@ class ProtospaceCheckerService
     { results: results, logs: logs }
   end
 
+  def run_check_6_001_6_002(cleanup_logs: true)
+    begin
+      # ===== 6-001: 削除機能のテスト =====
+      add_log("　 6-001: ログイン状態のユーザーに限り、自身の投稿したプロトタイプの詳細ページから削除ボタンをクリックすると、プロトタイプを削除できること", :check_start)
+      add_log("削除テスト用プロトタイプを投稿中...", :progress)
+
+      # 削除テスト用のプロトタイプを新規投稿
+      driver.get("#{base_url}/prototypes/new")
+      sleep 2
+
+      @delete_test_prototype = {
+        title: "【削除テスト用】プロトタイプ#{Time.now.to_i}",
+        catch_copy: "削除テスト用キャッチコピー",
+        concept: "削除テスト用コンセプト",
+        image: ensure_test_image
+      }
+
+      fill_prototype_form(@delete_test_prototype)
+      driver.find_element(:name, 'commit').click
+      sleep 3
+
+      # 投稿後はトップページにリダイレクトされるべき
+      current_url = driver.current_url
+
+      # 詳細ページに遷移した場合はNG（間違った実装）
+      if current_url.match?(/\/prototypes\/\d+/)
+        raise "投稿後に詳細ページに遷移しました（トップページにリダイレクトされるべきです）: #{current_url}"
+      end
+
+      # トップページから一覧で削除テスト用プロトタイプをクリックして詳細ページへ
+      driver.get(base_url)
+      sleep 2
+
+      begin
+        prototype_link = driver.find_element(:link_text, @delete_test_prototype[:title])
+        prototype_link.click
+        sleep 2
+        delete_test_detail_url = driver.current_url
+      rescue => e
+        raise "削除テスト用プロトタイプの詳細ページへの遷移に失敗しました: #{e.message}"
+      end
+
+      @delete_test_prototype[:detail_url] = delete_test_detail_url
+
+      # ===== 削除ボタンの表示確認 =====
+      add_log("ログアウト状態での削除ボタンを確認中...", :progress)
+
+      # パート1: ログアウト状態での確認
+      driver.get(base_url)
+      begin
+        logout_link = driver.find_element(:link_text, 'ログアウト')
+        logout_link.click
+        sleep 2
+      rescue
+        # 既にログアウト状態
+      end
+
+      driver.get(delete_test_detail_url)
+      sleep 1
+      page_text = driver.find_element(:tag_name, 'body').text
+      page_source = driver.page_source
+
+      logout_has_delete = page_text.include?('削除する') && (page_source.include?('delete') || page_source.include?('destroy'))
+
+      # パート2: 別のユーザーでログイン状態での確認
+      add_log("別のユーザーでログイン状態での削除ボタンを確認中...", :progress)
+
+      if @registered_users.length >= 2
+        other_user = @registered_users[1]
+      else
+        raise "別のユーザーが登録されていません"
+      end
+
+      driver.get("#{base_url}/users/sign_in")
+      sleep 2
+
+      driver.execute_script("document.getElementById('user_email').value = '#{other_user[:email]}';")
+      driver.execute_script("document.getElementById('user_password').value = '#{other_user[:password]}';")
+      driver.find_element(:name, 'commit').click
+      sleep 2
+
+      driver.get(delete_test_detail_url)
+      sleep 1
+      page_text = driver.find_element(:tag_name, 'body').text
+      page_source = driver.page_source
+
+      other_user_has_delete = page_text.include?('削除する') && (page_source.include?('delete') || page_source.include?('destroy'))
+
+      # パート3: 投稿者でログイン状態での確認
+      add_log("投稿者でログイン状態での削除ボタンを確認中...", :progress)
+
+      driver.get(base_url)
+      begin
+        logout_link = driver.find_element(:link_text, 'ログアウト')
+        logout_link.click
+        sleep 2
+      rescue
+      end
+
+      test_user = @registered_users.first
+      driver.get("#{base_url}/users/sign_in")
+      sleep 2
+
+      driver.execute_script("document.getElementById('user_email').value = '#{test_user[:email]}';")
+      driver.execute_script("document.getElementById('user_password').value = '#{test_user[:password]}';")
+      driver.find_element(:name, 'commit').click
+      sleep 2
+
+      driver.get(delete_test_detail_url)
+      sleep 1
+      page_text = driver.find_element(:tag_name, 'body').text
+      page_source = driver.page_source
+
+      owner_has_delete = page_text.include?('削除する') && (page_source.include?('delete') || page_source.include?('destroy'))
+
+      # ===== 削除実行 =====
+      add_log("削除を実行中...", :progress)
+
+      begin
+        delete_link = driver.find_element(:link_text, '削除する')
+        delete_link.click
+        sleep 1
+
+        # アラートを受け入れる（削除確認ダイアログ）
+        begin
+          alert = driver.switch_to.alert
+          alert.accept
+          sleep 3
+        rescue
+          # アラートが無い場合はスキップ
+        end
+      rescue => e
+        raise "削除ボタンのクリックに失敗しました: #{e.message}"
+      end
+
+      # 削除後のURLを記録（6-002で使用）
+      @redirect_url_after_delete = driver.current_url
+
+      # ===== 削除されたか確認 =====
+      add_log("削除されたか確認中...", :progress)
+
+      # 一覧ページで削除したプロトタイプが無いことを確認
+      driver.get(base_url)
+      sleep 2
+      page_text = driver.find_element(:tag_name, 'body').text
+
+      deleted_prototype_not_found = !page_text.include?(@delete_test_prototype[:title])
+      original_prototype_exists = page_text.include?(@posted_prototype[:title])
+
+      # ===== 6-001の結果判定 =====
+      if !logout_has_delete && !other_user_has_delete && owner_has_delete && deleted_prototype_not_found && original_prototype_exists
+        add_log("✓ 6-001: ログイン状態のユーザーに限り、自身の投稿したプロトタイプの詳細ページから削除ボタンをクリックすると、プロトタイプを削除できること", :success)
+        add_result("6-001", "ログイン状態のユーザーに限り、自身の投稿したプロトタイプの詳細ページから削除ボタンをクリックすると、プロトタイプを削除できること", "PASS", "")
+      else
+        issues = []
+        issues << "ログアウト状態で削除ボタンが表示されています" if logout_has_delete
+        issues << "別のユーザーでログイン時に削除ボタンが表示されています" if other_user_has_delete
+        issues << "投稿者でログイン時に削除ボタンが表示されていません" if !owner_has_delete
+        issues << "削除したプロトタイプがまだ一覧に表示されています" if !deleted_prototype_not_found
+        issues << "既存のプロトタイプが削除されてしまいました" if !original_prototype_exists
+
+        add_log("✗ 6-001: ログイン状態のユーザーに限り、自身の投稿したプロトタイプの詳細ページから削除ボタンをクリックすると、プロトタイプを削除できること (失敗)", :fail)
+        add_result("6-001", "ログイン状態のユーザーに限り、自身の投稿したプロトタイプの詳細ページから削除ボタンをクリックすると、プロトタイプを削除できること", "FAIL", issues.join('; '))
+      end
+
+      # ===== 6-002: トップページ遷移確認 =====
+      add_log("　 6-002: 削除が完了すると、トップページへ遷移すること", :check_start)
+
+      # 削除後のURLがトップページか確認
+      is_top_page = (@redirect_url_after_delete == base_url || @redirect_url_after_delete == "#{base_url}/")
+
+      if is_top_page
+        add_log("✓ 6-002: 削除が完了すると、トップページへ遷移すること", :success)
+        add_result("6-002", "削除が完了すると、トップページへ遷移すること", "PASS", "")
+      else
+        add_log("✗ 6-002: 削除が完了すると、トップページへ遷移すること (失敗)", :fail)
+        add_result("6-002", "削除が完了すると、トップページへ遷移すること", "FAIL", "削除後のURL: #{@redirect_url_after_delete}")
+      end
+
+    rescue => e
+      add_log("! エラー発生: #{e.message}", :error)
+      add_result("6-001/6-002", "プロトタイプ削除機能テスト", "ERROR", e.message)
+    ensure
+      cleanup if cleanup_logs
+      @logs.reject! { |log| log[:type] == :progress } if cleanup_logs
+    end
+
+    { results: results, logs: logs }
+  end
+
   def fill_prototype_form(data)
+    # 要素が読み込まれるまで待機
+    begin
+      driver.find_element(:id, 'prototype_title')
+    rescue
+      sleep 1
+      driver.find_element(:id, 'prototype_title')
+    end
+
     driver.execute_script("document.getElementById('prototype_title').value = '#{data[:title]}';") if data[:title]
     driver.execute_script("document.getElementById('prototype_catch_copy').value = '#{data[:catch_copy]}';") if data[:catch_copy]
     driver.execute_script("document.getElementById('prototype_concept').value = '#{data[:concept]}';") if data[:concept]
