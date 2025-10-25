@@ -24,18 +24,26 @@ class ProtospaceCheckerService
     setup_driver
     run_check_1_012(cleanup_logs: false)
 
-    # 1-013〜1-017、2-001: 同じブラウザセッションで実行
+    # 1-013〜1-017: 同じブラウザセッションで実行
     setup_driver
     run_check_1_013(cleanup_logs: false)
     run_check_1_014(cleanup_logs: false)
     run_check_1_015(cleanup_logs: false)
     run_check_1_016(cleanup_logs: false)
     run_check_1_017(cleanup_logs: false)
-    run_check_2_001(cleanup_logs: false)
 
     # 1-018: パスワード一致チェック
     setup_driver
     run_check_1_018(cleanup_logs: false)
+
+    # 2-001〜2-006: 投稿ページ遷移とバリデーションチェック（同じセッション）
+    setup_driver
+    run_check_2_001(cleanup_logs: false)
+    run_prototype_validation_checks
+
+    # 2-007〜2-009: 正常投稿とトップページ表示確認
+    setup_driver
+    run_check_2_007(cleanup_logs: false)
 
     # 最後にクリーンアップとログ整理
     cleanup
@@ -284,6 +292,9 @@ class ProtospaceCheckerService
   end
 
   def setup_driver
+    ensure_chrome_environment
+    cleanup if @driver
+
     options = Selenium::WebDriver::Chrome::Options.new
     options.add_argument('--headless=new')
     options.add_argument('--no-sandbox')
@@ -292,8 +303,13 @@ class ProtospaceCheckerService
     options.add_argument('--disable-software-rasterizer')
     options.add_argument('--disable-extensions')
     options.add_argument('--disable-web-security')
-    options.add_argument('--single-process')
-    options.add_argument("--user-data-dir=/tmp/chrome-test-#{Time.now.to_i}-#{rand(10000)}")
+    options.add_argument('--disable-setuid-sandbox')  # ← 追加！
+    options.add_argument('--remote-debugging-port=9222') # ← 追加！
+    options.add_argument('--window-size=1280,720')
+    options.add_argument('--user-data-dir=/tmp/user-data') # ← 追加！
+    options.add_argument('--data-path=/tmp/data-path')     # ← 追加！
+    options.add_argument('--disk-cache-dir=/tmp/cache-dir') # ← 追加！
+    options.add_argument('--remote-debugging-address=0.0.0.0') # ← 安定化
     options.binary = '/tmp/chrome-linux64/chrome'
 
     Selenium::WebDriver::Chrome::Service.driver_path = '/tmp/chromedriver-linux64/chromedriver'
@@ -847,6 +863,250 @@ class ProtospaceCheckerService
     { results: results, logs: logs }
   end
 
+  def run_prototype_validation_checks
+    # 2-001でログイン済みなので、そのまま各バリデーションをチェック
+    # 基本データ
+    base_data = {
+      title: "テストプロトタイプ",
+      catch_copy: "テストキャッチコピー",
+      concept: "テストコンセプト",
+      image: ensure_test_image
+    }
+
+    # 2-002: プロトタイプ名称必須
+    check_prototype_required_field("2-002", "プロトタイプの名称が必須であること", base_data, :title, "")
+
+    # 2-003: キャッチコピー必須
+    check_prototype_required_field("2-003", "キャッチコピーが必須であること", base_data, :catch_copy, "")
+
+    # 2-004: コンセプト必須
+    check_prototype_required_field("2-004", "コンセプトの情報が必須であること", base_data, :concept, "")
+
+    # 2-005: 画像必須
+    check_prototype_image_required("2-005", base_data)
+
+    # 2-006: すべて空欄で投稿できないこと
+    check_prototype_all_empty("2-006")
+  end
+
+  def check_prototype_required_field(check_number, description, base_data, field, invalid_value)
+    begin
+      add_log("　 #{check_number}: #{description}", :check_start)
+      add_log("#{field}を空にして投稿を試行中...", :progress)
+
+      test_data = base_data.dup
+      test_data[field] = invalid_value
+
+      driver.get("#{base_url}/prototypes/new")
+      sleep 1
+
+      fill_prototype_form(test_data)
+      driver.find_element(:name, 'commit').click
+      sleep 2
+
+      current_url = driver.current_url
+      is_new_page = current_url.include?('/prototypes/new') || current_url.include?('/prototypes') && !current_url.match?(/\/prototypes\/\d+$/)
+
+      if is_new_page && !current_url.end_with?('/')
+        add_log("✓ #{check_number}: #{description}", :success)
+        add_result(check_number, description, "PASS", "")
+      else
+        add_log("✗ #{check_number}: #{description} (失敗)", :fail)
+        add_result(check_number, description, "FAIL", "#{field}が空でも投稿できてしまいます")
+      end
+    rescue => e
+      add_log("! エラー発生: #{e.message}", :error)
+      add_result(check_number, description, "ERROR", e.message)
+    end
+  end
+
+  def check_prototype_image_required(check_number, base_data)
+    begin
+      description = "画像は1枚必須であること(ActiveStorageを使用)"
+      add_log("　 #{check_number}: #{description}", :check_start)
+      add_log("画像なしで投稿を試行中...", :progress)
+
+      test_data = base_data.dup
+      test_data[:image] = nil
+
+      driver.get("#{base_url}/prototypes/new")
+      sleep 1
+
+      fill_prototype_form(test_data)
+      driver.find_element(:name, 'commit').click
+      sleep 2
+
+      current_url = driver.current_url
+      is_new_page = current_url.include?('/prototypes/new') || current_url.include?('/prototypes') && !current_url.match?(/\/prototypes\/\d+$/)
+
+      if is_new_page && !current_url.end_with?('/')
+        add_log("✓ #{check_number}: #{description}", :success)
+        add_result(check_number, description, "PASS", "")
+      else
+        add_log("✗ #{check_number}: #{description} (失敗)", :fail)
+        add_result(check_number, description, "FAIL", "画像なしでも投稿できてしまいます")
+      end
+    rescue => e
+      add_log("! エラー発生: #{e.message}", :error)
+      add_result(check_number, description, "ERROR", e.message)
+    end
+  end
+
+  def check_prototype_all_empty(check_number)
+    begin
+      description = "投稿に必要な情報が入力されていない場合は、投稿できずにそのページに留まること"
+      add_log("　 #{check_number}: #{description}", :check_start)
+      add_log("すべて空欄で投稿を試行中...", :progress)
+
+      driver.get("#{base_url}/prototypes/new")
+      sleep 1
+
+      # すべて空のまま投稿
+      driver.find_element(:name, 'commit').click
+      sleep 2
+
+      current_url = driver.current_url
+      is_new_page = current_url.include?('/prototypes/new') || current_url.include?('/prototypes') && !current_url.match?(/\/prototypes\/\d+$/)
+
+      if is_new_page && !current_url.end_with?('/')
+        add_log("✓ #{check_number}: #{description}", :success)
+        add_result(check_number, description, "PASS", "")
+      else
+        add_log("✗ #{check_number}: #{description} (失敗)", :fail)
+        add_result(check_number, description, "FAIL", "空欄でも投稿できてしまいます")
+      end
+    rescue => e
+      add_log("! エラー発生: #{e.message}", :error)
+      add_result(check_number, description, "ERROR", e.message)
+    end
+  end
+
+  def run_check_2_007(cleanup_logs: true)
+    begin
+      add_log("　 2-007: 必要な情報を入力すると、投稿ができること", :check_start)
+
+      # ログイン
+      login_with_registered_user
+
+      # テストデータを準備
+      test_title = "テスト投稿プロトタイプ#{Time.now.to_i}"
+      test_catch_copy = "革新的なテストプロダクト"
+      test_concept = "このプロトタイプは、テスト自動化を実現する素晴らしいアイデアです。"
+
+      # 投稿ページに移動
+      add_log("投稿ページへ移動中...", :progress)
+      driver.get("#{base_url}/prototypes/new")
+      sleep 2
+
+      # フォームに入力
+      add_log("必要な情報を入力中...", :progress)
+      fill_prototype_form({
+        title: test_title,
+        catch_copy: test_catch_copy,
+        concept: test_concept,
+        image: ensure_test_image
+      })
+
+      # 投稿ボタンをクリック
+      add_log("投稿実行中...", :progress)
+      driver.find_element(:name, 'commit').click
+      sleep 3
+
+      # 2-008: トップページに遷移したか確認
+      add_log("投稿結果を確認中...", :progress)
+      current_url = driver.current_url
+      is_top_page = (current_url == base_url || current_url == "#{base_url}/")
+
+      if is_top_page
+        add_log("✓ 2-007: 必要な情報を入力すると、投稿ができること", :success)
+        add_result("2-007", "必要な情報を入力すると、投稿ができること", "PASS", "")
+
+        add_log("✓ 2-008: 正しく投稿できた場合は、トップページへ遷移すること", :success)
+        add_result("2-008", "正しく投稿できた場合は、トップページへ遷移すること", "PASS", "")
+
+        # 2-009: 投稿した情報がトップページに表示されているか確認
+        add_log("　 2-009: 投稿した情報は、トップページに表示されること", :check_start)
+        add_log("投稿内容の表示を確認中...", :progress)
+        sleep 1
+
+        page_text = driver.find_element(:tag_name, 'body').text
+        if page_text.include?(test_title)
+          add_log("✓ 2-009: 投稿した情報は、トップページに表示されること", :success)
+          add_result("2-009", "投稿した情報は、トップページに表示されること", "PASS", "")
+        else
+          add_log("✗ 2-009: 投稿した情報は、トップページに表示されること (失敗)", :fail)
+          add_result("2-009", "投稿した情報は、トップページに表示されること", "FAIL", "投稿したプロトタイプがトップページに表示されていません")
+        end
+      else
+        add_log("✗ 2-007: 必要な情報を入力すると、投稿ができること (失敗)", :fail)
+        add_result("2-007", "必要な情報を入力すると、投稿ができること", "FAIL", "投稿後に正しいページに遷移しません。現在のURL: #{current_url}")
+
+        add_log("✗ 2-008: 正しく投稿できた場合は、トップページへ遷移すること (失敗)", :fail)
+        add_result("2-008", "正しく投稿できた場合は、トップページへ遷移すること", "FAIL", "トップページに遷移しません。現在のURL: #{current_url}")
+      end
+
+    rescue => e
+      add_log("! エラー発生: #{e.message}", :error)
+      add_result("2-007", "必要な情報を入力すると、投稿ができること", "ERROR", e.message)
+    ensure
+      cleanup if cleanup_logs
+
+      if cleanup_logs
+        @logs.reject! { |log| log[:type] == :progress }
+      end
+    end
+
+    { results: results, logs: logs }
+  end
+
+  def fill_prototype_form(data)
+    driver.execute_script("document.getElementById('prototype_title').value = '#{data[:title]}';") if data[:title]
+    driver.execute_script("document.getElementById('prototype_catch_copy').value = '#{data[:catch_copy]}';") if data[:catch_copy]
+    driver.execute_script("document.getElementById('prototype_concept').value = '#{data[:concept]}';") if data[:concept]
+
+    # 画像アップロード
+    if data[:image]
+      begin
+        image_input = driver.find_element(:id, 'prototype_image')
+        image_input.send_keys(data[:image])
+      rescue => e
+        Rails.logger.warn "画像アップロードエラー: #{e.message}"
+      end
+    end
+  end
+
+  def login_with_registered_user
+    return if @registered_users.empty?
+
+    test_user = @registered_users.first
+    driver.get("#{base_url}/users/sign_in")
+    sleep 1
+
+    driver.execute_script("document.getElementById('user_email').value = '#{test_user[:email]}';")
+    driver.execute_script("document.getElementById('user_password').value = '#{test_user[:password]}';")
+    driver.find_element(:name, 'commit').click
+    sleep 2
+  end
+
+  def ensure_test_image
+    image_path = '/tmp/test_prototype_image.jpg'
+
+    unless File.exist?(image_path)
+      # 小さなテスト画像を作成（ImageMagick使用）
+      system("convert -size 100x100 xc:blue #{image_path} 2>/dev/null")
+
+      # ImageMagickがない場合は、base64でダミー画像を作成
+      unless File.exist?(image_path)
+        require 'base64'
+        # 1x1の青いJPEG画像（base64）
+        image_data = Base64.decode64('/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwAA8A/9k=')
+        File.binwrite(image_path, image_data)
+      end
+    end
+
+    image_path
+  end
+
   private
 
   def add_result(check_number, description, status, note)
@@ -884,4 +1144,31 @@ class ProtospaceCheckerService
   rescue => e
     Rails.logger.error "Driver cleanup error: #{e.message}"
   end
+
+  def ensure_chrome_environment
+    chrome_path = '/tmp/chrome-linux64/chrome'
+    driver_path = '/tmp/chromedriver-linux64/chromedriver'
+
+    # すでに存在するならスキップ
+    return if File.exist?(chrome_path) && File.exist?(driver_path)
+
+    # /tmpを用意
+    FileUtils.mkdir_p('/tmp/chrome-linux64')
+    FileUtils.mkdir_p('/tmp/chromedriver-linux64')
+
+    # Chrome本体
+    unless File.exist?(chrome_path)
+      system("wget -q https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.108/linux64/chrome-linux64.zip -O /tmp/chrome.zip")
+      system("unzip -q /tmp/chrome.zip -d /tmp/")
+      system("chmod +x #{chrome_path}")
+    end
+
+    # ChromeDriver
+    unless File.exist?(driver_path)
+      system("wget -q https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.108/linux64/chromedriver-linux64.zip -O /tmp/chromedriver.zip")
+      system("unzip -q /tmp/chromedriver.zip -d /tmp/")
+      system("chmod +x #{driver_path}")
+    end
+  end
+
 end
