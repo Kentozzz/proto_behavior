@@ -24,13 +24,14 @@ class ChecksController < ApplicationController
       status: 'running',
       logs: [],
       results: [],
-      target_url: target_url
+      target_url: target_url,
+      cancelled: false
     }
 
     # バックグラウンドでチェックを実行
-    Thread.new do
+    thread = Thread.new do
       begin
-        checker = ProtospaceCheckerService.new(target_url) do |log_entry|
+        checker = ProtospaceCheckerService.new(target_url, session_id: session_id, sessions_store: @@check_sessions) do |log_entry|
           # ログが追加されるたびにセッションに保存
           if @@check_sessions[session_id]
             # progressタイプのログは最後のprogressログを置き換え
@@ -75,6 +76,9 @@ class ChecksController < ApplicationController
       end
     end
 
+    # スレッドをセッションに保存
+    @@check_sessions[session_id][:thread] = thread
+
     # 結果ページにリダイレクト（session_idを渡す）
     redirect_to check_status_path(session_id)
   end
@@ -112,5 +116,28 @@ class ChecksController < ApplicationController
       results: session_data[:results],
       registered_users: session_data[:registered_users] || []
     }
+  end
+
+  def cancel
+    # 現在実行中のセッションを探す
+    running_session = @@check_sessions.find { |_id, data| data[:status] == 'running' }
+
+    if running_session
+      session_id, session_data = running_session
+
+      # キャンセルフラグを立てる
+      session_data[:cancelled] = true
+      session_data[:status] = 'cancelled'
+      session_data[:logs] << { message: "テストが中止されました", type: :error }
+
+      # スレッドが保存されていれば終了させる
+      if session_data[:thread]
+        session_data[:thread].kill
+      end
+
+      redirect_to check_status_path(session_id), notice: 'テストを中止しました'
+    else
+      redirect_to checks_path, alert: '実行中のテストがありません'
+    end
   end
 end

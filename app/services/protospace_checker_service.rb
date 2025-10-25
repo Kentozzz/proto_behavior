@@ -1,13 +1,15 @@
 class ProtospaceCheckerService
   attr_reader :driver, :base_url, :results, :logs, :registered_users, :posted_prototype
 
-  def initialize(target_url, &log_callback)
+  def initialize(target_url, session_id: nil, sessions_store: nil, &log_callback)
     @base_url = target_url.gsub(/\/+$/, '')
     @results = []
     @logs = []
     @registered_users = []
     @posted_prototype = {}
     @log_callback = log_callback
+    @session_id = session_id
+    @sessions_store = sessions_store
     setup_driver
   end
 
@@ -15,17 +17,21 @@ class ProtospaceCheckerService
     add_log("全チェックを開始します", :info)
 
     # バリデーションチェック（1-001 ~ 1-010）
+    check_cancelled
     run_validation_checks
 
     # 1-011: ユーザー新規登録
+    check_cancelled
     setup_driver
     run_check_1_011(cleanup_logs: false)
 
     # 1-012: ログインフォーム空欄チェック
+    check_cancelled
     setup_driver
     run_check_1_012(cleanup_logs: false)
 
     # 1-013〜1-017: 同じブラウザセッションで実行
+    check_cancelled
     setup_driver
     run_check_1_013(cleanup_logs: false)
     run_check_1_014(cleanup_logs: false)
@@ -34,26 +40,32 @@ class ProtospaceCheckerService
     run_check_1_017(cleanup_logs: false)
 
     # 1-018: パスワード一致チェック
+    check_cancelled
     setup_driver
     run_check_1_018(cleanup_logs: false)
 
     # 2-001〜2-006: 投稿ページ遷移とバリデーションチェック（同じセッション）
+    check_cancelled
     setup_driver
     run_check_2_001(cleanup_logs: false)
     run_prototype_validation_checks
 
     # 2-007〜2-009: 正常投稿とトップページ表示確認
+    check_cancelled
     setup_driver
     run_check_2_007(cleanup_logs: false)
 
     # 3-001〜3-003: プロトタイプ一覧表示機能（同じセッション）
+    check_cancelled
     run_check_3_001(cleanup_logs: false)
     run_check_3_002_and_3_003(cleanup_logs: false)
 
     # 4-001〜4-003: プロトタイプ詳細表示機能（同じセッション）
+    check_cancelled
     run_check_4_001_4_002_4_003(cleanup_logs: false)
 
     # 5-001〜5-005: プロトタイプ編集機能（同じセッション）
+    check_cancelled
     run_check_5_001_to_5_005(cleanup_logs: false)
 
     # 最後にクリーンアップとログ整理
@@ -1538,6 +1550,96 @@ class ProtospaceCheckerService
         raise "ログインに失敗しました。現在のURL: #{current_url}"
       end
 
+      # ===== 5-001: 正常な編集ができること =====
+      add_log("　 5-001: 投稿に必要な情報を入力すると、プロトタイプが編集できること", :check_start)
+      add_log("プロトタイプを編集中...", :progress)
+
+      # 編集ページに移動
+      edit_url = detail_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit')
+      driver.get(edit_url)
+      sleep 2
+
+      # 新しい値で編集
+      new_title = "編集後のタイトル#{Time.now.to_i}"
+      new_catch_copy = "編集後のキャッチコピー"
+      new_concept = "編集後のコンセプト"
+
+      driver.execute_script("document.getElementById('prototype_title').value = '#{new_title}';")
+      driver.execute_script("document.getElementById('prototype_catch_copy').value = '#{new_catch_copy}';")
+      driver.execute_script("document.getElementById('prototype_concept').value = '#{new_concept}';")
+
+      # 更新ボタンをクリック
+      driver.find_element(:name, 'commit').click
+      sleep 3
+
+      # 詳細ページに遷移したか確認
+      current_url = driver.current_url
+      is_detail_page = current_url.match?(/\/prototypes\/\d+$/)
+
+      if is_detail_page
+        # 編集内容が反映されているか確認
+        sleep 1
+        page_text = driver.find_element(:tag_name, 'body').text
+
+        has_new_title = page_text.include?(new_title)
+        has_new_catch_copy = page_text.include?(new_catch_copy)
+        has_new_concept = page_text.include?(new_concept)
+
+        if has_new_title && has_new_catch_copy && has_new_concept
+          add_log("✓ 5-001: 投稿に必要な情報を入力すると、プロトタイプが編集できること", :success)
+          add_result("5-001", "投稿に必要な情報を入力すると、プロトタイプが編集できること", "PASS", "")
+
+          # 編集後の情報を保存
+          @posted_prototype[:title] = new_title
+          @posted_prototype[:catch_copy] = new_catch_copy
+          @posted_prototype[:concept] = new_concept
+        else
+          missing = []
+          missing << "プロトタイプ名" unless has_new_title
+          missing << "キャッチコピー" unless has_new_catch_copy
+          missing << "コンセプト" unless has_new_concept
+          add_log("✗ 5-001: 投稿に必要な情報を入力すると、プロトタイプが編集できること (失敗)", :fail)
+          add_result("5-001", "投稿に必要な情報を入力すると、プロトタイプが編集できること", "FAIL", "編集内容が反映されていません: #{missing.join(', ')}")
+        end
+      else
+        add_log("✗ 5-001: 投稿に必要な情報を入力すると、プロトタイプが編集できること (失敗)", :fail)
+        add_result("5-001", "投稿に必要な情報を入力すると、プロトタイプが編集できること", "FAIL", "詳細ページに遷移していません。現在のURL: #{current_url}")
+      end
+
+      # ===== 5-002: 何も編集せずに更新 → 画像が残る確認 =====
+      add_log("　 5-002: 何も編集せずに更新をしても、画像無しのプロトタイプにならないこと", :check_start)
+      add_log("何も編集せずに更新中...", :progress)
+
+      # 編集ページに戻る
+      driver.get(current_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit'))
+      sleep 2
+
+      # 何も変更せずに更新ボタンをクリック
+      driver.find_element(:name, 'commit').click
+      sleep 3
+
+      # 詳細ページに遷移したか確認
+      current_url = driver.current_url
+      is_detail_page = current_url.match?(/\/prototypes\/\d+$/)
+
+      if is_detail_page
+        # 画像が残っているか確認
+        sleep 1
+        images = driver.find_elements(:tag_name, 'img')
+        has_image = images.any? { |img| img.attribute('src') && !img.attribute('src').empty? && !img.attribute('src').include?('data:image') }
+
+        if has_image
+          add_log("✓ 5-002: 何も編集せずに更新をしても、画像無しのプロトタイプにならないこと", :success)
+          add_result("5-002", "何も編集せずに更新をしても、画像無しのプロトタイプにならないこと", "PASS", "")
+        else
+          add_log("✗ 5-002: 何も編集せずに更新をしても、画像無しのプロトタイプにならないこと (失敗)", :fail)
+          add_result("5-002", "何も編集せずに更新をしても、画像無しのプロトタイプにならないこと", "FAIL", "更新後に画像が消えています")
+        end
+      else
+        add_log("✗ 5-002: 何も編集せずに更新をしても、画像無しのプロトタイプにならないこと (失敗)", :fail)
+        add_result("5-002", "何も編集せずに更新をしても、画像無しのプロトタイプにならないこと", "FAIL", "詳細ページに遷移していません。現在のURL: #{current_url}")
+      end
+
       # ===== 5-003: 編集ページへの遷移確認 =====
       add_log("　 5-003: ログイン状態のユーザーに限り、自身の投稿したプロトタイプの詳細ページから編集ボタンをクリックすると、編集ページへ遷移できること", :check_start)
       add_log("編集ページへの遷移を確認中...", :progress)
@@ -1592,43 +1694,9 @@ class ProtospaceCheckerService
         add_result("チェック番号3", "プロトタイプ情報について、すでに登録されている情報は、編集画面を開いた時点で表示されること", "FAIL", "以下の情報が表示されていません: #{missing.join(', ')}")
       end
 
-      # ===== 5-002: 何も編集せずに更新 → 画像が残る確認 =====
-      add_log("　 5-002: 何も編集せずに更新をしても、画像無しのプロトタイプにならないこと", :check_start)
-      add_log("何も編集せずに更新中...", :progress)
-
-      # 何も変更せずに更新ボタンをクリック
-      driver.find_element(:name, 'commit').click
-      sleep 3
-
-      # 詳細ページに遷移したか確認
-      current_url = driver.current_url
-      is_detail_page = current_url.match?(/\/prototypes\/\d+$/)
-
-      if is_detail_page
-        # 画像が残っているか確認
-        sleep 1
-        images = driver.find_elements(:tag_name, 'img')
-        has_image = images.any? { |img| img.attribute('src') && !img.attribute('src').empty? && !img.attribute('src').include?('data:image') }
-
-        if has_image
-          add_log("✓ 5-002: 何も編集せずに更新をしても、画像無しのプロトタイプにならないこと", :success)
-          add_result("5-002", "何も編集せずに更新をしても、画像無しのプロトタイプにならないこと", "PASS", "")
-        else
-          add_log("✗ 5-002: 何も編集せずに更新をしても、画像無しのプロトタイプにならないこと (失敗)", :fail)
-          add_result("5-002", "何も編集せずに更新をしても、画像無しのプロトタイプにならないこと", "FAIL", "更新後に画像が消えています")
-        end
-      else
-        add_log("✗ 5-002: 何も編集せずに更新をしても、画像無しのプロトタイプにならないこと (失敗)", :fail)
-        add_result("5-002", "何も編集せずに更新をしても、画像無しのプロトタイプにならないこと", "FAIL", "詳細ページに遷移していません。現在のURL: #{current_url}")
-      end
-
       # ===== 5-004: 空欄でページに留まる確認 =====
       add_log("　 5-004: 空の入力欄がある場合は、編集できずにそのページに留まること", :check_start)
       add_log("titleを空にして更新を試行中...", :progress)
-
-      # 編集ページに戻る
-      driver.get(current_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit'))
-      sleep 2
 
       # titleを空にする
       driver.execute_script("document.getElementById('prototype_title').value = '';")
@@ -1653,17 +1721,69 @@ class ProtospaceCheckerService
         add_result("5-004", "空の入力欄がある場合は、編集できずにそのページに留まること", "FAIL", "空欄があっても編集できてしまいます")
       end
 
+      # ===== 5-005: 正しく編集できた場合は詳細ページへ遷移すること =====
+      add_log("　 5-005: 正しく編集できた場合は、詳細ページへ遷移すること", :check_start)
+      add_log("正しい値で編集を試行中...", :progress)
+
+      # 編集ページに移動（念のため）
+      edit_url = detail_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit')
+      driver.get(edit_url)
+      sleep 2
+
+      # 新しい値で編集（5-005確認用）
+      new_title_for_5005 = "5-005確認用タイトル#{Time.now.to_i}"
+      new_catch_copy_for_5005 = "5-005確認用キャッチコピー"
+      new_concept_for_5005 = "5-005確認用コンセプト"
+
+      driver.execute_script("document.getElementById('prototype_title').value = '#{new_title_for_5005}';")
+      driver.execute_script("document.getElementById('prototype_catch_copy').value = '#{new_catch_copy_for_5005}';")
+      driver.execute_script("document.getElementById('prototype_concept').value = '#{new_concept_for_5005}';")
+
+      # 更新ボタンをクリック
+      driver.find_element(:name, 'commit').click
+      sleep 3
+
+      # 詳細ページに遷移したか確認
+      current_url = driver.current_url
+      is_detail_page = current_url.match?(/\/prototypes\/\d+$/)
+
+      if is_detail_page
+        add_log("✓ 5-005: 正しく編集できた場合は、詳細ページへ遷移すること", :success)
+        add_result("5-005", "正しく編集できた場合は、詳細ページへ遷移すること", "PASS", "")
+
+        # 編集後の情報を保存
+        @posted_prototype[:title] = new_title_for_5005
+        @posted_prototype[:catch_copy] = new_catch_copy_for_5005
+        @posted_prototype[:concept] = new_concept_for_5005
+      else
+        add_log("✗ 5-005: 正しく編集できた場合は、詳細ページへ遷移すること (失敗)", :fail)
+        add_result("5-005", "正しく編集できた場合は、詳細ページへ遷移すること", "FAIL", "詳細ページに遷移していません。現在のURL: #{current_url}")
+      end
+
       # ===== チェック番号7: バリデーションエラー時に入力保持 =====
       add_log("　 チェック番号7: バリデーションによって投稿ができず、そのページに留まった場合でも、入力済みの項目（画像以外）は消えないこと", :check_start)
       add_log("入力済み項目の保持を確認中...", :progress)
+
+      # 編集ページに戻る
+      driver.get(current_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit'))
+      sleep 2
+
+      # titleを空にして、他の項目に値を入れる
+      driver.execute_script("document.getElementById('prototype_title').value = '';")
+      driver.execute_script("document.getElementById('prototype_catch_copy').value = 'チェック7用キャッチコピー';")
+      driver.execute_script("document.getElementById('prototype_concept').value = 'チェック7用コンセプト';")
+
+      # 更新ボタンをクリック（バリデーションエラーになるはず）
+      driver.find_element(:name, 'commit').click
+      sleep 2
 
       # フォームの値を取得
       catch_copy_after = driver.execute_script("return document.getElementById('prototype_catch_copy').value;")
       concept_after = driver.execute_script("return document.getElementById('prototype_concept').value;")
 
       # 入力した値が残っているか確認
-      catch_copy_kept = catch_copy_after == 'バリデーションテスト用キャッチコピー'
-      concept_kept = concept_after == 'バリデーションテスト用コンセプト'
+      catch_copy_kept = catch_copy_after == 'チェック7用キャッチコピー'
+      concept_kept = concept_after == 'チェック7用コンセプト'
 
       if catch_copy_kept && concept_kept
         add_log("✓ チェック番号7: バリデーションによって投稿ができず、そのページに留まった場合でも、入力済みの項目（画像以外）は消えないこと", :success)
@@ -1674,69 +1794,6 @@ class ProtospaceCheckerService
         missing << "コンセプト" unless concept_kept
         add_log("✗ チェック番号7: バリデーションによって投稿ができず、そのページに留まった場合でも、入力済みの項目（画像以外）は消えないこと (失敗)", :fail)
         add_result("チェック番号7", "バリデーションによって投稿ができず、そのページに留まった場合でも、入力済みの項目（画像以外）は消えないこと", "FAIL", "以下の項目が消えています: #{missing.join(', ')}")
-      end
-
-      # ===== 5-001 & 5-005: 正常な編集と詳細ページ遷移 =====
-      add_log("プロトタイプを編集中...", :progress)
-
-      # 編集ページに移動（念のため）
-      edit_url = detail_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit')
-      driver.get(edit_url)
-      sleep 2
-
-      # 新しい値で編集
-      new_title = "編集後のタイトル#{Time.now.to_i}"
-      new_catch_copy = "編集後のキャッチコピー"
-      new_concept = "編集後のコンセプト"
-
-      driver.execute_script("document.getElementById('prototype_title').value = '#{new_title}';")
-      driver.execute_script("document.getElementById('prototype_catch_copy').value = '#{new_catch_copy}';")
-      driver.execute_script("document.getElementById('prototype_concept').value = '#{new_concept}';")
-
-      # 更新ボタンをクリック
-      driver.find_element(:name, 'commit').click
-      sleep 3
-
-      # 5-005: 詳細ページに遷移したか確認
-      add_log("　 5-005: 正しく編集できた場合は、詳細ページへ遷移すること", :check_start)
-      current_url = driver.current_url
-      is_detail_page = current_url.match?(/\/prototypes\/\d+$/)
-
-      if is_detail_page
-        add_log("✓ 5-005: 正しく編集できた場合は、詳細ページへ遷移すること", :success)
-        add_result("5-005", "正しく編集できた場合は、詳細ページへ遷移すること", "PASS", "")
-
-        # 5-001: 編集内容が反映されているか確認
-        add_log("　 5-001: 投稿に必要な情報を入力すると、プロトタイプが編集できること", :check_start)
-        sleep 1
-        page_text = driver.find_element(:tag_name, 'body').text
-
-        has_new_title = page_text.include?(new_title)
-        has_new_catch_copy = page_text.include?(new_catch_copy)
-        has_new_concept = page_text.include?(new_concept)
-
-        if has_new_title && has_new_catch_copy && has_new_concept
-          add_log("✓ 5-001: 投稿に必要な情報を入力すると、プロトタイプが編集できること", :success)
-          add_result("5-001", "投稿に必要な情報を入力すると、プロトタイプが編集できること", "PASS", "")
-
-          # 編集後の情報を保存
-          @posted_prototype[:title] = new_title
-          @posted_prototype[:catch_copy] = new_catch_copy
-          @posted_prototype[:concept] = new_concept
-        else
-          missing = []
-          missing << "プロトタイプ名" unless has_new_title
-          missing << "キャッチコピー" unless has_new_catch_copy
-          missing << "コンセプト" unless has_new_concept
-          add_log("✗ 5-001: 投稿に必要な情報を入力すると、プロトタイプが編集できること (失敗)", :fail)
-          add_result("5-001", "投稿に必要な情報を入力すると、プロトタイプが編集できること", "FAIL", "編集内容が反映されていません: #{missing.join(', ')}")
-        end
-      else
-        add_log("✗ 5-005: 正しく編集できた場合は、詳細ページへ遷移すること (失敗)", :fail)
-        add_result("5-005", "正しく編集できた場合は、詳細ページへ遷移すること", "FAIL", "詳細ページに遷移していません。現在のURL: #{current_url}")
-
-        add_log("✗ 5-001: 投稿に必要な情報を入力すると、プロトタイプが編集できること (失敗)", :fail)
-        add_result("5-001", "投稿に必要な情報を入力すると、プロトタイプが編集できること", "FAIL", "詳細ページに遷移していないため、編集が完了していません")
       end
 
     rescue => e
@@ -1804,6 +1861,16 @@ class ProtospaceCheckerService
   end
 
   private
+
+  def check_cancelled
+    if @session_id && @sessions_store && @sessions_store[@session_id]
+      if @sessions_store[@session_id][:cancelled]
+        add_log("テストが中止されました", :error)
+        cleanup
+        raise "Test cancelled by user"
+      end
+    end
+  end
 
   def add_result(check_number, description, status, note)
     # 失敗時はスクリーンショットを撮影

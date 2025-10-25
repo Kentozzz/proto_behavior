@@ -64,8 +64,16 @@
       </div>
       <div class="editor-content">
         <% if @status == 'running' %>
-          <h1>チェック実行中...</h1>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="spinner"></div>
+            <h1 style="margin: 0;">チェック実行中...</h1>
+          </div>
           <div class="subtitle">下のターミナルで進捗を確認できます</div>
+          <div class="button-group" style="margin-top: 20px;">
+            <%= button_to "テストを中止", cancel_check_path, method: :post,
+                style: "background: #c93333; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;",
+                data: { confirm: "実行中のテストを中止しますか？" } %>
+          </div>
         <% elsif @results && @results.any? %>
           <h1>チェック結果</h1>
 
@@ -170,6 +178,7 @@
             <% end %>
           <% else %>
             <div class="terminal-line">
+              <div class="spinner"></div>
               <span style="color: #858585;">チェック実行中...</span>
             </div>
           <% end %>
