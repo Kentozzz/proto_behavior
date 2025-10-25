@@ -1285,9 +1285,11 @@ class ProtospaceCheckerService
       # 詳細ページのURLを保存
       @posted_prototype[:detail_url] = detail_url
 
-      # ===== パート1: ログアウト状態での確認 =====
-      add_log("ログアウト状態での詳細ページを確認中...", :progress)
+      # ===== 4-001: 編集・削除リンクの確認 =====
+      add_log("　 4-001: ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること", :check_start)
+      add_log("編集・削除リンクを確認中...", :progress)
 
+      # パート1: ログアウト状態での確認
       # ログアウト
       driver.get(base_url)
       begin
@@ -1350,7 +1352,6 @@ class ProtospaceCheckerService
       end
 
       # ===== パート3: 別のユーザーでログイン状態での確認 =====
-      add_log("別のユーザーでログイン中...", :progress)
 
       # ログアウト
       driver.get(base_url)
@@ -1395,8 +1396,6 @@ class ProtospaceCheckerService
       other_has_delete = page_text.include?('削除する') && (page_source.include?('delete') || page_source.include?('destroy'))
 
       # ===== 4-001の結果判定 =====
-      add_log("　 4-001: ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること", :check_start)
-
       if !logout_has_edit && !logout_has_delete && owner_has_edit && owner_has_delete && !other_has_edit && !other_has_delete
         add_log("✓ 4-001: ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること", :success)
         add_result("4-001", "ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること", "PASS", "")
@@ -1410,8 +1409,9 @@ class ProtospaceCheckerService
         add_result("4-001", "ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること", "FAIL", issues.join('; '))
       end
 
-      # ===== 4-002の結果判定 =====
+      # ===== 4-002: プロダクト情報の確認 =====
       add_log("　 4-002: ログイン・ログアウトの状態に関わらず、プロダクトの情報（プロトタイプ名・投稿者・画像・キャッチコピー・コンセプト）が表示されていること", :check_start)
+      add_log("プロダクト情報を確認中...", :progress)
 
       logout_all_displayed = logout_has_title && logout_has_catch_copy && logout_has_concept && logout_has_user_name && logout_has_image
       owner_all_displayed = owner_has_title && owner_has_catch_copy && owner_has_concept && owner_has_user_name && owner_has_image
