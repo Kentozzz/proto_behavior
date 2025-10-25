@@ -161,6 +161,7 @@
                 <% elsif log_type == :error %>
                   <span style="color: #dcdcaa;"><%= message %></span>
                 <% elsif log_type == :progress %>
+                  <div class="spinner"></div>
                   <span style="color: #858585;"><%= message %></span>
                 <% else %>
                   <span style="color: #cccccc;"><%= message %></span>
@@ -202,6 +203,7 @@
       const message = logEntry.message || logEntry;
       const type = logEntry.type || 'info';
       let color = '#cccccc';
+      let spinner = '';
 
       switch(type) {
         case 'success':
@@ -215,12 +217,13 @@
           break;
         case 'progress':
           color = '#858585';
+          spinner = '<div class="spinner"></div>';
           break;
         default:
           color = '#cccccc';
       }
 
-      return `<div class="terminal-line" data-type="${type}"><span style="color: ${color};">${message}</span></div>`;
+      return `<div class="terminal-line" data-type="${type}">${spinner}<span style="color: ${color};">${message}</span></div>`;
     }
 
     function updateResults(results) {

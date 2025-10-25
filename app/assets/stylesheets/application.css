@@ -8,3 +8,32 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/* モダンなスピナーアニメーション */
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  border: 2px solid rgba(133, 133, 133, 0.3);
+  border-top-color: #858585;
+  border-radius: 50%;
+  animation: spinner 0.6s linear infinite;
+  will-change: transform;
+  transform-origin: center center;
+  backface-visibility: hidden;
+}
+
+.terminal-line[data-type="progress"] {
+  display: flex;
+  align-items: center;
+}

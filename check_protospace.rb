@@ -6,8 +6,7 @@ options.add_argument('--headless=new')  # Codespaces環境では必須
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--disable-gpu')
-# 一意のuser-data-dirを指定（タイムスタンプ+ランダム値）
-options.add_argument("--user-data-dir=/tmp/chrome-test-#{Time.now.to_i}-#{rand(10000)}")
+options.add_argument('--remote-debugging-port=0')  # ランダムポートを使用
 options.binary = '/tmp/chrome-linux64/chrome'
 
 # ChromeDriverのパスを設定

@@ -1,11 +1,12 @@
 class ProtospaceCheckerService
-  attr_reader :driver, :base_url, :results, :logs, :registered_users
+  attr_reader :driver, :base_url, :results, :logs, :registered_users, :posted_prototype
 
   def initialize(target_url, &log_callback)
     @base_url = target_url.gsub(/\/+$/, '')
     @results = []
     @logs = []
     @registered_users = []
+    @posted_prototype = {}
     @log_callback = log_callback
     setup_driver
   end
@@ -44,6 +45,10 @@ class ProtospaceCheckerService
     # 2-007〜2-009: 正常投稿とトップページ表示確認
     setup_driver
     run_check_2_007(cleanup_logs: false)
+
+    # 3-001〜3-003: プロトタイプ一覧表示機能（同じセッション）
+    run_check_3_001(cleanup_logs: false)
+    run_check_3_002_and_3_003(cleanup_logs: false)
 
     # 最後にクリーンアップとログ整理
     cleanup
@@ -993,6 +998,13 @@ class ProtospaceCheckerService
       test_catch_copy = "革新的なテストプロダクト"
       test_concept = "このプロトタイプは、テスト自動化を実現する素晴らしいアイデアです。"
 
+      # 投稿情報を保存（3-001以降のテストで使用）
+      @posted_prototype = {
+        title: test_title,
+        catch_copy: test_catch_copy,
+        concept: test_concept
+      }
+
       # 投稿ページに移動
       add_log("投稿ページへ移動中...", :progress)
       driver.get("#{base_url}/prototypes/new")
@@ -1059,6 +1071,207 @@ class ProtospaceCheckerService
     { results: results, logs: logs }
   end
 
+  def run_check_3_001(cleanup_logs: true)
+    begin
+      add_log("　 3-001: ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること", :check_start)
+
+      # パート1: ログアウト状態で一覧閲覧
+      add_log("ログアウト状態で一覧表示を確認中...", :progress)
+      driver.get(base_url)
+      sleep 1
+
+      # ログアウトリンクがあればログアウト
+      begin
+        logout_link = driver.find_element(:link_text, 'ログアウト')
+        logout_link.click
+        sleep 1
+      rescue
+        # 既にログアウト状態
+      end
+
+      driver.get(base_url)
+      sleep 1
+
+      # 投稿したプロトタイプが表示されているか確認
+      page_text = driver.find_element(:tag_name, 'body').text
+      logout_can_view = page_text.include?(@posted_prototype[:title])
+
+      # パート2: ログイン状態で一覧閲覧
+      add_log("ログイン状態で一覧表示を確認中...", :progress)
+      login_with_registered_user
+      driver.get(base_url)
+      sleep 1
+
+      page_text = driver.find_element(:tag_name, 'body').text
+      login_can_view = page_text.include?(@posted_prototype[:title])
+
+      if logout_can_view && login_can_view
+        add_log("✓ 3-001: ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること", :success)
+        add_result("3-001", "ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること", "PASS", "")
+      elsif !logout_can_view
+        add_log("✗ 3-001: ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること (失敗)", :fail)
+        add_result("3-001", "ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること", "FAIL", "ログアウト状態で一覧が表示されません")
+      elsif !login_can_view
+        add_log("✗ 3-001: ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること (失敗)", :fail)
+        add_result("3-001", "ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること", "FAIL", "ログイン状態で一覧が表示されません")
+      end
+
+    rescue => e
+      add_log("! エラー発生: #{e.message}", :error)
+      add_result("3-001", "ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること", "ERROR", e.message)
+    ensure
+      cleanup if cleanup_logs
+      @logs.reject! { |log| log[:type] == :progress } if cleanup_logs
+    end
+
+    { results: results, logs: logs }
+  end
+
+  def run_check_3_002_and_3_003(cleanup_logs: true)
+    begin
+      # チェック番号1: 4つの情報表示確認
+      add_log("　 チェック番号1: プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること", :check_start)
+      add_log("4つの情報の表示を確認中...", :progress)
+
+      driver.get(base_url)
+      sleep 1
+
+      page_source = driver.page_source
+      page_text = driver.find_element(:tag_name, 'body').text
+
+      # 画像の存在確認
+      has_image = false
+      begin
+        # 投稿したタイトルを含む要素の近くの画像を探す
+        images = driver.find_elements(:tag_name, 'img')
+        has_image = images.any? { |img| img.attribute('src') && !img.attribute('src').empty? }
+      rescue
+        has_image = false
+      end
+
+      # プロトタイプ名の存在確認
+      has_title = page_text.include?(@posted_prototype[:title])
+
+      # キャッチコピーの存在確認
+      has_catch_copy = page_text.include?(@posted_prototype[:catch_copy])
+
+      # 投稿者名の存在確認（登録したユーザー名）
+      has_user_name = false
+      if @registered_users.any?
+        test_user = @registered_users.first
+        has_user_name = page_text.include?(test_user[:name])
+      end
+
+      missing_items = []
+      missing_items << "画像" unless has_image
+      missing_items << "プロトタイプ名" unless has_title
+      missing_items << "キャッチコピー" unless has_catch_copy
+      missing_items << "投稿者名" unless has_user_name
+
+      if missing_items.empty?
+        add_log("✓ チェック番号1: プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること", :success)
+        add_result("チェック番号1", "プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること", "PASS", "")
+      else
+        add_log("✗ チェック番号1: プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること (失敗)", :fail)
+        add_result("チェック番号1", "プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること", "FAIL", "以下の情報が表示されていません: #{missing_items.join(', ')}")
+      end
+
+      # 3-002: 画像表示とリンク切れチェック
+      add_log("　 3-002: 画像が表示されており、画像がリンク切れなどになっていないこと", :check_start)
+      add_log("画像のリンク切れを確認中...", :progress)
+
+      valid_images = 0
+      if has_image
+        images = driver.find_elements(:tag_name, 'img')
+        images.each do |img|
+          src = img.attribute('src')
+          if src && !src.empty? && !src.include?('data:image')
+            valid_images += 1
+          end
+        end
+      end
+
+      if valid_images > 0
+        add_log("✓ 3-002: 画像が表示されており、画像がリンク切れなどになっていないこと", :success)
+        add_result("3-002", "画像が表示されており、画像がリンク切れなどになっていないこと", "PASS", "")
+      else
+        add_log("✗ 3-002: 画像が表示されており、画像がリンク切れなどになっていないこと (失敗)", :fail)
+        add_result("3-002", "画像が表示されており、画像がリンク切れなどになっていないこと", "FAIL", "有効な画像が見つかりません")
+      end
+
+      # 3-003: 詳細ページ遷移確認
+      add_log("　 3-003: ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること", :check_start)
+
+      # パート1: ログアウト状態で詳細ページ遷移確認
+      add_log("ログアウト状態で詳細ページへの遷移を確認中...", :progress)
+
+      # ログアウト
+      driver.get(base_url)
+      sleep 1
+      begin
+        logout_link = driver.find_element(:link_text, 'ログアウト')
+        logout_link.click
+        sleep 1
+      rescue
+        # 既にログアウト状態
+      end
+
+      driver.get(base_url)
+      sleep 1
+
+      logout_can_navigate = false
+      begin
+        prototype_link = driver.find_element(:link_text, @posted_prototype[:title])
+        prototype_link.click
+        sleep 2
+
+        current_url = driver.current_url
+        logout_can_navigate = current_url.match?(/\/prototypes\/\d+/)
+      rescue Selenium::WebDriver::Error::NoSuchElementError
+        logout_can_navigate = false
+      end
+
+      # パート2: ログイン状態で詳細ページ遷移確認
+      add_log("ログイン状態で詳細ページへの遷移を確認中...", :progress)
+
+      login_with_registered_user
+      driver.get(base_url)
+      sleep 1
+
+      login_can_navigate = false
+      begin
+        prototype_link = driver.find_element(:link_text, @posted_prototype[:title])
+        prototype_link.click
+        sleep 2
+
+        current_url = driver.current_url
+        login_can_navigate = current_url.match?(/\/prototypes\/\d+/)
+      rescue Selenium::WebDriver::Error::NoSuchElementError
+        login_can_navigate = false
+      end
+
+      if logout_can_navigate && login_can_navigate
+        add_log("✓ 3-003: ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること", :success)
+        add_result("3-003", "ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること", "PASS", "")
+      elsif !logout_can_navigate
+        add_log("✗ 3-003: ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること (失敗)", :fail)
+        add_result("3-003", "ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること", "FAIL", "ログアウト状態で詳細ページに遷移できません")
+      elsif !login_can_navigate
+        add_log("✗ 3-003: ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること (失敗)", :fail)
+        add_result("3-003", "ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること", "FAIL", "ログイン状態で詳細ページに遷移できません")
+      end
+
+    rescue => e
+      add_log("! エラー発生: #{e.message}", :error)
+      add_result("3-002/3-003", "一覧表示機能テスト", "ERROR", e.message)
+    ensure
+      cleanup if cleanup_logs
+      @logs.reject! { |log| log[:type] == :progress } if cleanup_logs
+    end
+
+    { results: results, logs: logs }
+  end
+
   def fill_prototype_form(data)
     driver.execute_script("document.getElementById('prototype_title').value = '#{data[:title]}';") if data[:title]
     driver.execute_script("document.getElementById('prototype_catch_copy').value = '#{data[:catch_copy]}';") if data[:catch_copy]
@@ -1089,6 +1302,11 @@ class ProtospaceCheckerService
   end
 
   def ensure_test_image
+    # ユーザーが用意したsakura.jpgを優先的に使用
+    sakura_path = '/tmp/sakura.jpg'
+    return sakura_path if File.exist?(sakura_path)
+
+    # sakura.jpgがない場合は既存のロジックを使用
     image_path = '/tmp/test_prototype_image.jpg'
 
     unless File.exist?(image_path)
