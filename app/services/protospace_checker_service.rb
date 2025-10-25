@@ -1324,8 +1324,8 @@ class ProtospaceCheckerService
       page_source = driver.page_source
 
       # 4-001 (ログアウト): 編集・削除リンクが存在しないこと
-      logout_has_edit = page_text.include?('編集') && (page_source.include?('/edit') || page_source.include?('edit'))
-      logout_has_delete = page_text.include?('削除') && (page_source.include?('delete') || page_source.include?('destroy'))
+      logout_has_edit = page_text.include?('編集する') && (page_source.include?('/edit') || page_source.include?('edit'))
+      logout_has_delete = page_text.include?('削除する') && (page_source.include?('delete') || page_source.include?('destroy'))
 
       # 4-002 (ログアウト): 5つの情報が表示されること
       logout_has_title = page_text.include?(@posted_prototype[:title])
@@ -1352,8 +1352,8 @@ class ProtospaceCheckerService
       page_source = driver.page_source
 
       # 4-001 (投稿者): 編集・削除リンクが存在すること
-      owner_has_edit = page_text.include?('編集') && (page_source.include?('/edit') || page_source.include?('edit'))
-      owner_has_delete = page_text.include?('削除') && (page_source.include?('delete') || page_source.include?('destroy'))
+      owner_has_edit = page_text.include?('編集する') && (page_source.include?('/edit') || page_source.include?('edit'))
+      owner_has_delete = page_text.include?('削除する') && (page_source.include?('delete') || page_source.include?('destroy'))
 
       # 4-002 (投稿者): 5つの情報が表示されること
       owner_has_title = page_text.include?(@posted_prototype[:title])
@@ -1407,8 +1407,8 @@ class ProtospaceCheckerService
       page_source = driver.page_source
 
       # 4-001 (別ユーザー): 編集・削除リンクが存在しないこと
-      other_has_edit = page_text.include?('編集') && (page_source.include?('/edit') || page_source.include?('edit'))
-      other_has_delete = page_text.include?('削除') && (page_source.include?('delete') || page_source.include?('destroy'))
+      other_has_edit = page_text.include?('編集する') && (page_source.include?('/edit') || page_source.include?('edit'))
+      other_has_delete = page_text.include?('削除する') && (page_source.include?('delete') || page_source.include?('destroy'))
 
       # ===== 4-001の結果判定 =====
       add_log("　 4-001: ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること", :check_start)
@@ -1547,7 +1547,7 @@ class ProtospaceCheckerService
 
       # 編集ボタンをクリック
       begin
-        edit_link = driver.find_element(:link_text, '編集')
+        edit_link = driver.find_element(:link_text, '編集する')
         edit_link.click
         sleep 2
 
