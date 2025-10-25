@@ -50,6 +50,9 @@ class ProtospaceCheckerService
     run_check_3_001(cleanup_logs: false)
     run_check_3_002_and_3_003(cleanup_logs: false)
 
+    # 4-001〜4-003: プロトタイプ詳細表示機能（同じセッション）
+    run_check_4_001_4_002_4_003(cleanup_logs: false)
+
     # 最後にクリーンアップとログ整理
     cleanup
     add_log("全チェック完了", :info)
@@ -995,8 +998,8 @@ class ProtospaceCheckerService
 
       # テストデータを準備
       test_title = "テスト投稿プロトタイプ#{Time.now.to_i}"
-      test_catch_copy = "革新的なテストプロダクト"
-      test_concept = "このプロトタイプは、テスト自動化を実現する素晴らしいアイデアです。"
+      test_catch_copy = "テストキャッチコピー"
+      test_concept = "テストコンセプト"
 
       # 投稿情報を保存（3-001以降のテストで使用）
       @posted_prototype = {
@@ -1264,6 +1267,229 @@ class ProtospaceCheckerService
     rescue => e
       add_log("! エラー発生: #{e.message}", :error)
       add_result("3-002/3-003", "一覧表示機能テスト", "ERROR", e.message)
+    ensure
+      cleanup if cleanup_logs
+      @logs.reject! { |log| log[:type] == :progress } if cleanup_logs
+    end
+
+    { results: results, logs: logs }
+  end
+
+  def run_check_4_001_4_002_4_003(cleanup_logs: true)
+    begin
+      # 詳細ページのURLを取得（3-003の最後で遷移しているはず）
+      detail_url = driver.current_url
+
+      # URLが詳細ページでない場合は、一覧から遷移する
+      unless detail_url.match?(/\/prototypes\/\d+/)
+        add_log("詳細ページへ遷移中...", :progress)
+        driver.get(base_url)
+        sleep 1
+
+        begin
+          prototype_link = driver.find_element(:link_text, @posted_prototype[:title])
+          prototype_link.click
+          sleep 2
+          detail_url = driver.current_url
+        rescue => e
+          raise "詳細ページへの遷移に失敗しました: #{e.message}"
+        end
+      end
+
+      # 詳細ページのURLを保存
+      @posted_prototype[:detail_url] = detail_url
+
+      # ===== パート1: ログアウト状態での確認 =====
+      add_log("ログアウト状態での詳細ページを確認中...", :progress)
+
+      # ログアウト
+      driver.get(base_url)
+      sleep 1
+      begin
+        logout_link = driver.find_element(:link_text, 'ログアウト')
+        logout_link.click
+        sleep 1
+      rescue
+        # 既にログアウト状態
+      end
+
+      # 詳細ページに遷移
+      driver.get(detail_url)
+      sleep 2
+
+      page_text = driver.find_element(:tag_name, 'body').text
+      page_source = driver.page_source
+
+      # 4-001 (ログアウト): 編集・削除リンクが存在しないこと
+      logout_has_edit = page_text.include?('編集') && (page_source.include?('/edit') || page_source.include?('edit'))
+      logout_has_delete = page_text.include?('削除') && (page_source.include?('delete') || page_source.include?('destroy'))
+
+      # 4-002 (ログアウト): 5つの情報が表示されること
+      logout_has_title = page_text.include?(@posted_prototype[:title])
+      logout_has_catch_copy = page_text.include?(@posted_prototype[:catch_copy])
+      logout_has_concept = page_text.include?(@posted_prototype[:concept])
+      logout_has_user_name = page_text.include?(@registered_users.first[:name]) if @registered_users.any?
+
+      logout_has_image = false
+      begin
+        images = driver.find_elements(:tag_name, 'img')
+        logout_has_image = images.any? { |img| img.attribute('src') && !img.attribute('src').empty? }
+      rescue
+        logout_has_image = false
+      end
+
+      # ===== パート2: 投稿者でログイン状態での確認 =====
+      add_log("投稿者でログイン状態での詳細ページを確認中...", :progress)
+
+      login_with_registered_user
+      driver.get(detail_url)
+      sleep 2
+
+      page_text = driver.find_element(:tag_name, 'body').text
+      page_source = driver.page_source
+
+      # 4-001 (投稿者): 編集・削除リンクが存在すること
+      owner_has_edit = page_text.include?('編集') && (page_source.include?('/edit') || page_source.include?('edit'))
+      owner_has_delete = page_text.include?('削除') && (page_source.include?('delete') || page_source.include?('destroy'))
+
+      # 4-002 (投稿者): 5つの情報が表示されること
+      owner_has_title = page_text.include?(@posted_prototype[:title])
+      owner_has_catch_copy = page_text.include?(@posted_prototype[:catch_copy])
+      owner_has_concept = page_text.include?(@posted_prototype[:concept])
+      owner_has_user_name = page_text.include?(@registered_users.first[:name]) if @registered_users.any?
+
+      owner_has_image = false
+      begin
+        images = driver.find_elements(:tag_name, 'img')
+        owner_has_image = images.any? { |img| img.attribute('src') && !img.attribute('src').empty? }
+      rescue
+        owner_has_image = false
+      end
+
+      # ===== パート3: 別のユーザーでログイン状態での確認 =====
+      add_log("別のユーザーでログイン中...", :progress)
+
+      # ログアウト
+      driver.get(base_url)
+      sleep 1
+      begin
+        logout_link = driver.find_element(:link_text, 'ログアウト')
+        logout_link.click
+        sleep 1
+      rescue
+      end
+
+      # 既存の2人目のユーザーを使用（セクション1で登録済み）
+      if @registered_users.length >= 2
+        other_user = @registered_users[1]
+      else
+        raise "別のユーザーが登録されていません。@registered_usersに2人以上のユーザーが必要です。"
+      end
+
+      # 2人目のユーザーでログイン
+      driver.get("#{base_url}/users/sign_in")
+      sleep 2
+
+      driver.execute_script("document.getElementById('user_email').value = '#{other_user[:email]}';")
+      driver.execute_script("document.getElementById('user_password').value = '#{other_user[:password]}';")
+      driver.find_element(:name, 'commit').click
+      sleep 2
+
+      add_log("別のユーザーでログイン状態での詳細ページを確認中...", :progress)
+
+      driver.get(detail_url)
+      sleep 2
+
+      page_text = driver.find_element(:tag_name, 'body').text
+      page_source = driver.page_source
+
+      # 4-001 (別ユーザー): 編集・削除リンクが存在しないこと
+      other_has_edit = page_text.include?('編集') && (page_source.include?('/edit') || page_source.include?('edit'))
+      other_has_delete = page_text.include?('削除') && (page_source.include?('delete') || page_source.include?('destroy'))
+
+      # ===== 4-001の結果判定 =====
+      add_log("　 4-001: ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること", :check_start)
+
+      if !logout_has_edit && !logout_has_delete && owner_has_edit && owner_has_delete && !other_has_edit && !other_has_delete
+        add_log("✓ 4-001: ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること", :success)
+        add_result("4-001", "ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること", "PASS", "")
+      else
+        issues = []
+        issues << "ログアウト状態で編集・削除リンクが表示されています" if logout_has_edit || logout_has_delete
+        issues << "投稿者でログイン時に編集・削除リンクが表示されていません" if !owner_has_edit || !owner_has_delete
+        issues << "別のユーザーでログイン時に編集・削除リンクが表示されています" if other_has_edit || other_has_delete
+
+        add_log("✗ 4-001: ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること (失敗)", :fail)
+        add_result("4-001", "ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること", "FAIL", issues.join('; '))
+      end
+
+      # ===== 4-002の結果判定 =====
+      add_log("　 4-002: ログイン・ログアウトの状態に関わらず、プロダクトの情報（プロトタイプ名・投稿者・画像・キャッチコピー・コンセプト）が表示されていること", :check_start)
+
+      logout_all_displayed = logout_has_title && logout_has_catch_copy && logout_has_concept && logout_has_user_name && logout_has_image
+      owner_all_displayed = owner_has_title && owner_has_catch_copy && owner_has_concept && owner_has_user_name && owner_has_image
+
+      if logout_all_displayed && owner_all_displayed
+        add_log("✓ 4-002: ログイン・ログアウトの状態に関わらず、プロダクトの情報（プロトタイプ名・投稿者・画像・キャッチコピー・コンセプト）が表示されていること", :success)
+        add_result("4-002", "ログイン・ログアウトの状態に関わらず、プロダクトの情報（プロトタイプ名・投稿者・画像・キャッチコピー・コンセプト）が表示されていること", "PASS", "")
+      else
+        missing_items = []
+
+        if !logout_all_displayed
+          logout_missing = []
+          logout_missing << "プロトタイプ名" unless logout_has_title
+          logout_missing << "キャッチコピー" unless logout_has_catch_copy
+          logout_missing << "コンセプト" unless logout_has_concept
+          logout_missing << "投稿者" unless logout_has_user_name
+          logout_missing << "画像" unless logout_has_image
+          missing_items << "ログアウト状態: #{logout_missing.join(', ')}"
+        end
+
+        if !owner_all_displayed
+          owner_missing = []
+          owner_missing << "プロトタイプ名" unless owner_has_title
+          owner_missing << "キャッチコピー" unless owner_has_catch_copy
+          owner_missing << "コンセプト" unless owner_has_concept
+          owner_missing << "投稿者" unless owner_has_user_name
+          owner_missing << "画像" unless owner_has_image
+          missing_items << "ログイン状態: #{owner_missing.join(', ')}"
+        end
+
+        add_log("✗ 4-002: ログイン・ログアウトの状態に関わらず、プロダクトの情報（プロトタイプ名・投稿者・画像・キャッチコピー・コンセプト）が表示されていること (失敗)", :fail)
+        add_result("4-002", "ログイン・ログアウトの状態に関わらず、プロダクトの情報（プロトタイプ名・投稿者・画像・キャッチコピー・コンセプト）が表示されていること", "FAIL", "以下の情報が表示されていません: #{missing_items.join('; ')}")
+      end
+
+      # ===== 4-003の結果判定 =====
+      add_log("　 4-003: 画像が表示されており、画像がリンク切れなどになっていないこと", :check_start)
+
+      # 詳細ページに再度アクセスして画像を確認
+      driver.get(detail_url)
+      sleep 2
+
+      valid_images = 0
+      begin
+        images = driver.find_elements(:tag_name, 'img')
+        images.each do |img|
+          src = img.attribute('src')
+          if src && !src.empty? && !src.include?('data:image')
+            valid_images += 1
+          end
+        end
+      rescue
+        valid_images = 0
+      end
+
+      if valid_images > 0
+        add_log("✓ 4-003: 画像が表示されており、画像がリンク切れなどになっていないこと", :success)
+        add_result("4-003", "画像が表示されており、画像がリンク切れなどになっていないこと", "PASS", "")
+      else
+        add_log("✗ 4-003: 画像が表示されており、画像がリンク切れなどになっていないこと (失敗)", :fail)
+        add_result("4-003", "画像が表示されており、画像がリンク切れなどになっていないこと", "FAIL", "有効な画像が見つかりません")
+      end
+
+    rescue => e
+      add_log("! エラー発生: #{e.message}", :error)
+      add_result("4-001/4-002/4-003", "プロトタイプ詳細表示機能テスト", "ERROR", e.message)
     ensure
       cleanup if cleanup_logs
       @logs.reject! { |log| log[:type] == :progress } if cleanup_logs
