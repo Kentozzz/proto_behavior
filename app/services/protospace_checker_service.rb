@@ -22,16 +22,19 @@ class ProtospaceCheckerService
 
     # 1-011: ユーザー新規登録
     check_cancelled
+    add_log("ブラウザを起動中...", :progress)
     setup_driver
     run_check_1_011(cleanup_logs: false)
 
     # 1-012: ログインフォーム空欄チェック
     check_cancelled
+    add_log("ブラウザを再起動中...", :progress)
     setup_driver
     run_check_1_012(cleanup_logs: false)
 
     # 1-013〜1-017: 同じブラウザセッションで実行
     check_cancelled
+    add_log("ブラウザを再起動中...", :progress)
     setup_driver
     run_check_1_013(cleanup_logs: false)
     run_check_1_014(cleanup_logs: false)
@@ -41,17 +44,21 @@ class ProtospaceCheckerService
 
     # 1-018: パスワード一致チェック
     check_cancelled
+    add_log("ブラウザを再起動中...", :progress)
     setup_driver
     run_check_1_018(cleanup_logs: false)
 
     # 2-001〜2-006: 投稿ページ遷移とバリデーションチェック（同じセッション）
     check_cancelled
+    add_log("ブラウザを再起動中...", :progress)
     setup_driver
     run_check_2_001(cleanup_logs: false)
     run_prototype_validation_checks
 
     # 2-007〜2-009: 正常投稿とトップページ表示確認
     check_cancelled
+    add_log("ブラウザを再起動中...", :progress)
+    setup_driver
     run_check_2_007(cleanup_logs: false)
 
     # 3-001〜3-003: プロトタイプ一覧表示機能（同じセッション）
@@ -436,6 +443,7 @@ class ProtospaceCheckerService
   def run_check_1_013(cleanup_logs: true)
     begin
       add_log("　 1-013: 必要な情報を入力すると、ログインができること", :check_start)
+      add_log("ログイン準備中...", :progress)
 
       # 既存ユーザーを使用
       if @registered_users.empty?
@@ -981,6 +989,7 @@ class ProtospaceCheckerService
   def run_check_2_007(cleanup_logs: true)
     begin
       add_log("　 2-007: 必要な情報を入力すると、投稿ができること", :check_start)
+      add_log("ログイン中...", :progress)
 
       # ログイン
       login_with_registered_user
@@ -1284,6 +1293,7 @@ class ProtospaceCheckerService
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
         logout_link.click
+        sleep 2
       rescue
         # 既にログアウト状態
       end
@@ -1291,6 +1301,8 @@ class ProtospaceCheckerService
       # 詳細ページに遷移
       driver.get(detail_url)
 
+      # ページが完全に読み込まれるまで待機
+      sleep 1
       page_text = driver.find_element(:tag_name, 'body').text
       page_source = driver.page_source
 
@@ -1313,8 +1325,6 @@ class ProtospaceCheckerService
       end
 
       # ===== パート2: 投稿者でログイン状態での確認 =====
-      add_log("投稿者でログイン状態での詳細ページを確認中...", :progress)
-
       login_with_registered_user
       driver.get(detail_url)
 
@@ -1347,7 +1357,9 @@ class ProtospaceCheckerService
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
         logout_link.click
+        sleep 2
       rescue
+        # 既にログアウト状態
       end
 
       # 既存の2人目のユーザーを使用（セクション1で登録済み）
@@ -1360,12 +1372,18 @@ class ProtospaceCheckerService
       # 2人目のユーザーでログイン
       driver.get("#{base_url}/users/sign_in")
 
+      # 要素が読み込まれるまで待機
+      begin
+        driver.find_element(:id, 'user_email')
+      rescue
+        sleep 1
+        driver.find_element(:id, 'user_email')
+      end
+
       driver.execute_script("document.getElementById('user_email').value = '#{other_user[:email]}';")
       driver.execute_script("document.getElementById('user_password').value = '#{other_user[:password]}';")
       driver.find_element(:name, 'commit').click
       sleep 2
-
-      add_log("別のユーザーでログイン状態での詳細ページを確認中...", :progress)
 
       driver.get(detail_url)
 
@@ -1430,6 +1448,7 @@ class ProtospaceCheckerService
 
       # ===== 4-003の結果判定 =====
       add_log("　 4-003: 画像が表示されており、画像がリンク切れなどになっていないこと", :check_start)
+      add_log("画像を確認中...", :progress)
 
       # 詳細ページに再度アクセスして画像を確認
       driver.get(detail_url)
@@ -1474,8 +1493,6 @@ class ProtospaceCheckerService
       detail_url = @posted_prototype[:detail_url] || driver.current_url
 
       # 投稿者で再ログイン
-      add_log("投稿者で再ログイン中...", :progress)
-
       # 確実にログアウト
       driver.get(base_url)
       begin
@@ -1504,7 +1521,7 @@ class ProtospaceCheckerService
 
       # ===== 5-001: 正常な編集ができること =====
       add_log("　 5-001: 投稿に必要な情報を入力すると、プロトタイプが編集できること", :check_start)
-      add_log("プロトタイプを編集中...", :progress)
+      add_log("編集ページへ移動中...", :progress)
 
       # 編集ページに移動
       edit_url = detail_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit')
@@ -1769,9 +1786,17 @@ class ProtospaceCheckerService
   end
 
   def login_with_registered_user
-    return if @registered_users.empty?
+    if @registered_users.empty?
+      add_log("エラー: 登録済みユーザーが存在しません", :error)
+      raise "登録済みユーザーが存在しません。先にユーザー登録テストを実行してください。"
+    end
 
     test_user = @registered_users.first
+    if test_user.nil? || test_user[:email].nil? || test_user[:password].nil?
+      add_log("エラー: ユーザー情報が不正です", :error)
+      raise "ユーザー情報が不正です: #{test_user.inspect}"
+    end
+
     driver.get("#{base_url}/users/sign_in")
 
     driver.execute_script("document.getElementById('user_email').value = '#{test_user[:email]}';")

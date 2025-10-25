@@ -54,6 +54,13 @@ class ChecksController < ApplicationController
               else
                 @@check_sessions[session_id][:logs] << log_entry
               end
+            # check_startログの前のprogressログを削除
+            elsif log_entry[:type] == :check_start
+              # 最後のログがprogressなら削除
+              if @@check_sessions[session_id][:logs].last && @@check_sessions[session_id][:logs].last[:type] == :progress
+                @@check_sessions[session_id][:logs].pop
+              end
+              @@check_sessions[session_id][:logs] << log_entry
             else
               @@check_sessions[session_id][:logs] << log_entry
             end
