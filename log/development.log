@@ -53786,3 +53786,1515 @@ Processing by ChecksController#poll as */*
 Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
 
 
+Started GET "/checks/7581cf42-b751-4948-995d-2f8313769856/status" for 27.81.106.43 at 2025-10-25 15:01:35 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#status as HTML
+  Parameters: {"id" => "7581cf42-b751-4948-995d-2f8313769856"}
+Redirected to https://dreadful-shadow-jgg7p69wqg2pq6g-3000.app.github.dev/checks
+↳ app/controllers/checks_controller.rb:91:in 'ChecksController#status'
+Completed 302 Found in 2ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks" for 27.81.106.43 at 2025-10-25 15:01:36 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering checks/index.html.erb within layouts/application
+  Rendered checks/index.html.erb within layouts/application (Duration: 2.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.6ms | GC: 0.0ms)
+Completed 200 OK in 10ms (Views: 7.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.4ms)
+
+
+Started POST "/checks" for 27.81.106.43 at 2025-10-25 15:01:39 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#create as HTML
+  Parameters: {"authenticity_token" => "[FILTERED]", "target_url" => "https://protospace2020.herokuapp.com/", "commit" => "送信"}
+Redirected to https://dreadful-shadow-jgg7p69wqg2pq6g-3000.app.github.dev/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/status
+↳ app/controllers/checks_controller.rb:83:in 'ChecksController#create'
+Completed 302 Found in 5ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/status" for 27.81.106.43 at 2025-10-25 15:01:39 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#status as HTML
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+  Rendering layout layouts/application.html.erb
+  Rendering checks/result.html.erb within layouts/application
+  Rendered checks/result.html.erb within layouts/application (Duration: 3.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.3ms | GC: 0.0ms)
+Completed 200 OK in 6ms (Views: 5.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:39 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.4ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:40 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:41 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:42 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.4ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:42 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:43 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 6ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:44 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:44 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:45 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:46 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:46 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:47 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:47 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:48 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:49 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:49 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:50 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:51 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:51 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:52 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:53 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:53 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:54 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:54 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:55 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 2ms (Views: 1.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:56 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 7ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:56 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:57 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:58 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:58 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:59 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 3ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:01:59 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:00 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:01 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:01 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:02 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:02 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:03 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:04 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:04 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:05 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:06 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:06 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:07 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:07 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:08 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:09 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:09 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:10 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:10 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:11 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:12 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:12 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:13 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:14 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:14 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:15 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:15 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:16 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:17 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:17 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:18 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:19 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:19 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:20 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:20 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:21 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:22 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:22 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:23 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:23 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:24 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:25 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:25 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:26 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:27 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:27 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:28 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:28 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:29 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:30 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:30 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:31 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:31 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:32 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:33 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:33 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:34 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:35 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:35 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:36 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:36 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 3ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:37 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:38 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 3ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:38 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 4ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:39 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:39 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:40 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:41 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:41 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:42 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:43 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:43 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:44 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:44 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.6ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:45 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:46 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:46 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:47 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:48 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:48 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:49 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:49 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.4ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:50 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:51 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:51 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:52 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:52 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:53 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:54 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:54 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.4ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:55 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:56 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:56 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:57 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:57 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:58 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:59 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:02:59 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:00 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:01 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:01 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:02 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:02 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:03 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:04 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:04 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:05 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 5ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:05 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:06 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:07 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:07 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:08 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:09 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:09 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:10 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:10 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:11 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:12 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:12 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:13 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:14 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:14 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:15 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:15 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:16 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:17 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:18 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:19 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:20 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.9ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:22 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 2ms (Views: 1.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:24 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 3ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:25 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 3ms (Views: 2.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:26 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:27 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:28 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:29 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:30 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:31 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:32 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:32 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:33 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:34 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 3ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:34 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:35 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:36 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:36 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:37 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:37 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:38 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:39 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:39 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:40 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:41 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:41 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:42 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 7ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:42 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:43 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:44 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:45 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:46 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 17ms (Views: 9.8ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:46 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:47 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:48 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:49 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:53 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:56 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 5ms (Views: 4.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:57 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:58 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 3ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:03:59 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:04:00 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:04:00 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:04:01 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:04:02 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:04:02 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:04:03 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:04:04 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:04:04 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks/378c65df-85f8-469f-96dd-a4ba32fec8d8/poll" for 27.81.106.43 at 2025-10-25 15:04:05 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#poll as */*
+  Parameters: {"id" => "378c65df-85f8-469f-96dd-a4ba32fec8d8"}
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/checks" for 27.81.106.43 at 2025-10-25 15:04:25 +0000
+Cannot render console from 27.81.106.43! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ChecksController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering checks/index.html.erb within layouts/application
+  Rendered checks/index.html.erb within layouts/application (Duration: 1.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.1ms | GC: 0.0ms)
+Completed 200 OK in 6ms (Views: 5.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+

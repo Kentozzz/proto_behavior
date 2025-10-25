@@ -52,7 +52,6 @@ class ProtospaceCheckerService
 
     # 2-007〜2-009: 正常投稿とトップページ表示確認
     check_cancelled
-    setup_driver
     run_check_2_007(cleanup_logs: false)
 
     # 3-001〜3-003: プロトタイプ一覧表示機能（同じセッション）
@@ -128,8 +127,6 @@ class ProtospaceCheckerService
       test_data[field] = invalid_value
 
       driver.get("#{base_url}/users/sign_up")
-      sleep 1
-
       fill_signup_form(test_data)
       driver.find_element(:name, 'commit').click
       sleep 2
@@ -162,7 +159,6 @@ class ProtospaceCheckerService
       test_data[:email] = unique_email
 
       driver.get("#{base_url}/users/sign_up")
-      sleep 1
       fill_signup_form(test_data)
       driver.find_element(:name, 'commit').click
       sleep 2
@@ -177,11 +173,9 @@ class ProtospaceCheckerService
       # ログアウト
       add_log("ログアウト中...", :progress)
       driver.get(base_url)
-      sleep 1
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
         logout_link.click
-        sleep 1
       rescue
         # ログアウトリンクがない場合はスキップ
       end
@@ -189,7 +183,6 @@ class ProtospaceCheckerService
       # 同じメールアドレスで再登録を試行
       add_log("同じメールアドレスで再登録を試行中...", :progress)
       driver.get("#{base_url}/users/sign_up")
-      sleep 1
       fill_signup_form(test_data)
       driver.find_element(:name, 'commit').click
       sleep 2
@@ -220,7 +213,6 @@ class ProtospaceCheckerService
       test_data[:email] = "invalidemail.com"
 
       driver.get("#{base_url}/users/sign_up")
-      sleep 1
       fill_signup_form(test_data)
       driver.find_element(:name, 'commit').click
       sleep 2
@@ -252,7 +244,6 @@ class ProtospaceCheckerService
       test_data[:password_confirmation] = "12345"
 
       driver.get("#{base_url}/users/sign_up")
-      sleep 1
       fill_signup_form(test_data)
       driver.find_element(:name, 'commit').click
       sleep 2
@@ -283,7 +274,6 @@ class ProtospaceCheckerService
       test_data[:password_confirmation] = ""
 
       driver.get("#{base_url}/users/sign_up")
-      sleep 1
       fill_signup_form(test_data)
       driver.find_element(:name, 'commit').click
       sleep 2
@@ -351,7 +341,6 @@ class ProtospaceCheckerService
       # 新規登録ページに移動
       add_log("新規登録ページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_up")
-      sleep 2
 
       # フォームに入力
       add_log("必須項目を入力中...", :progress)
@@ -410,7 +399,6 @@ class ProtospaceCheckerService
       # ログインページに移動
       add_log("ログインページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_in")
-      sleep 2
 
       # フォームに何も入力せずにログインボタンをクリック
       add_log("空欄のままログインを試行中...", :progress)
@@ -463,7 +451,6 @@ class ProtospaceCheckerService
       # ログインページに移動
       add_log("ログインページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_in")
-      sleep 2
 
       # ログイン情報を入力
       add_log("ログイン情報を入力中...", :progress)
@@ -510,7 +497,6 @@ class ProtospaceCheckerService
       # 1-013でログイン済みなので、トップページでログアウトリンクを探してクリック
       add_log("ログアウトリンクを探しています...", :progress)
       driver.get(base_url)
-      sleep 1
 
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
@@ -576,7 +562,6 @@ class ProtospaceCheckerService
       # ログインページに移動
       add_log("ログインページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_in")
-      sleep 2
 
       # ログイン情報を入力
       add_log("ログイン情報を入力中...", :progress)
@@ -591,7 +576,6 @@ class ProtospaceCheckerService
       # トップページでヘッダーリンクを確認
       add_log("ヘッダーリンクを確認中...", :progress)
       driver.get(base_url)
-      sleep 1
 
       logout_exists = false
       new_proto_exists = false
@@ -653,7 +637,6 @@ class ProtospaceCheckerService
       # トップページでユーザー名表示を確認（既にログイン済み）
       add_log("ユーザー名表示を確認中...", :progress)
       driver.get(base_url)
-      sleep 1
 
       page_text = driver.find_element(:tag_name, 'body').text
       greeting_exists = page_text.include?("こんにちは") && page_text.include?(test_name)
@@ -688,7 +671,6 @@ class ProtospaceCheckerService
       # ログアウト処理（1-016でログイン済み）
       add_log("ログアウト処理中...", :progress)
       driver.get(base_url)
-      sleep 1
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
         logout_link.click
@@ -700,7 +682,6 @@ class ProtospaceCheckerService
       # トップページでヘッダーリンクを確認
       add_log("ヘッダーリンクを確認中...", :progress)
       driver.get(base_url)
-      sleep 1
 
       signup_exists = false
       login_exists = false
@@ -755,7 +736,6 @@ class ProtospaceCheckerService
       # 新規登録ページに移動
       add_log("新規登録ページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_up")
-      sleep 2
 
       # フォームに入力（確認用パスワードだけ異なる値）
       add_log("全項目を入力中...", :progress)
@@ -807,7 +787,6 @@ class ProtospaceCheckerService
       # パート1: ログアウト状態で /prototypes/new にアクセスを試みる
       add_log("ログアウト状態で新規投稿ページへのアクセスを試行中...", :progress)
       driver.get("#{base_url}/prototypes/new")
-      sleep 2
 
       # 新規投稿ページに遷移できていないことを確認（ログインページなどにリダイレクトされる）
       current_url_1 = driver.current_url
@@ -833,7 +812,6 @@ class ProtospaceCheckerService
       # ログインページに移動
       add_log("ログインページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_in")
-      sleep 2
 
       # ログイン情報を入力
       add_log("ログイン情報を入力中...", :progress)
@@ -848,7 +826,6 @@ class ProtospaceCheckerService
       # トップページに移動して「New Proto」リンクをクリック
       add_log("「New Proto」リンクをクリック中...", :progress)
       driver.get(base_url)
-      sleep 1
 
       begin
         new_proto_link = driver.find_element(:link_text, 'New Proto')
@@ -921,7 +898,6 @@ class ProtospaceCheckerService
       test_data[field] = invalid_value
 
       driver.get("#{base_url}/prototypes/new")
-      sleep 1
 
       fill_prototype_form(test_data)
       driver.find_element(:name, 'commit').click
@@ -953,7 +929,6 @@ class ProtospaceCheckerService
       test_data[:image] = nil
 
       driver.get("#{base_url}/prototypes/new")
-      sleep 1
 
       fill_prototype_form(test_data)
       driver.find_element(:name, 'commit').click
@@ -982,7 +957,6 @@ class ProtospaceCheckerService
       add_log("すべて空欄で投稿を試行中...", :progress)
 
       driver.get("#{base_url}/prototypes/new")
-      sleep 1
 
       # すべて空のまま投稿
       driver.find_element(:name, 'commit').click
@@ -1026,7 +1000,6 @@ class ProtospaceCheckerService
       # 投稿ページに移動
       add_log("投稿ページへ移動中...", :progress)
       driver.get("#{base_url}/prototypes/new")
-      sleep 2
 
       # フォームに入力
       add_log("必要な情報を入力中...", :progress)
@@ -1057,7 +1030,6 @@ class ProtospaceCheckerService
         # 2-009: 投稿した情報がトップページに表示されているか確認
         add_log("　 2-009: 投稿した情報は、トップページに表示されること", :check_start)
         add_log("投稿内容の表示を確認中...", :progress)
-        sleep 1
 
         page_text = driver.find_element(:tag_name, 'body').text
         if page_text.include?(test_title)
@@ -1096,19 +1068,16 @@ class ProtospaceCheckerService
       # パート1: ログアウト状態で一覧閲覧
       add_log("ログアウト状態で一覧表示を確認中...", :progress)
       driver.get(base_url)
-      sleep 1
 
       # ログアウトリンクがあればログアウト
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
         logout_link.click
-        sleep 1
       rescue
         # 既にログアウト状態
       end
 
       driver.get(base_url)
-      sleep 1
 
       # 投稿したプロトタイプが表示されているか確認
       page_text = driver.find_element(:tag_name, 'body').text
@@ -1118,7 +1087,6 @@ class ProtospaceCheckerService
       add_log("ログイン状態で一覧表示を確認中...", :progress)
       login_with_registered_user
       driver.get(base_url)
-      sleep 1
 
       page_text = driver.find_element(:tag_name, 'body').text
       login_can_view = page_text.include?(@posted_prototype[:title])
@@ -1152,7 +1120,6 @@ class ProtospaceCheckerService
       add_log("4つの情報の表示を確認中...", :progress)
 
       driver.get(base_url)
-      sleep 1
 
       page_source = driver.page_source
       page_text = driver.find_element(:tag_name, 'body').text
@@ -1225,17 +1192,14 @@ class ProtospaceCheckerService
 
       # ログアウト
       driver.get(base_url)
-      sleep 1
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
         logout_link.click
-        sleep 1
       rescue
         # 既にログアウト状態
       end
 
       driver.get(base_url)
-      sleep 1
 
       logout_can_navigate = false
       begin
@@ -1254,7 +1218,6 @@ class ProtospaceCheckerService
 
       login_with_registered_user
       driver.get(base_url)
-      sleep 1
 
       login_can_navigate = false
       begin
@@ -1299,7 +1262,6 @@ class ProtospaceCheckerService
       unless detail_url.match?(/\/prototypes\/\d+/)
         add_log("詳細ページへ遷移中...", :progress)
         driver.get(base_url)
-        sleep 1
 
         begin
           prototype_link = driver.find_element(:link_text, @posted_prototype[:title])
@@ -1319,18 +1281,15 @@ class ProtospaceCheckerService
 
       # ログアウト
       driver.get(base_url)
-      sleep 1
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
         logout_link.click
-        sleep 1
       rescue
         # 既にログアウト状態
       end
 
       # 詳細ページに遷移
       driver.get(detail_url)
-      sleep 2
 
       page_text = driver.find_element(:tag_name, 'body').text
       page_source = driver.page_source
@@ -1358,7 +1317,6 @@ class ProtospaceCheckerService
 
       login_with_registered_user
       driver.get(detail_url)
-      sleep 2
 
       page_text = driver.find_element(:tag_name, 'body').text
       page_source = driver.page_source
@@ -1386,11 +1344,9 @@ class ProtospaceCheckerService
 
       # ログアウト
       driver.get(base_url)
-      sleep 1
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
         logout_link.click
-        sleep 1
       rescue
       end
 
@@ -1403,7 +1359,6 @@ class ProtospaceCheckerService
 
       # 2人目のユーザーでログイン
       driver.get("#{base_url}/users/sign_in")
-      sleep 2
 
       driver.execute_script("document.getElementById('user_email').value = '#{other_user[:email]}';")
       driver.execute_script("document.getElementById('user_password').value = '#{other_user[:password]}';")
@@ -1413,7 +1368,6 @@ class ProtospaceCheckerService
       add_log("別のユーザーでログイン状態での詳細ページを確認中...", :progress)
 
       driver.get(detail_url)
-      sleep 2
 
       page_text = driver.find_element(:tag_name, 'body').text
       page_source = driver.page_source
@@ -1479,7 +1433,6 @@ class ProtospaceCheckerService
 
       # 詳細ページに再度アクセスして画像を確認
       driver.get(detail_url)
-      sleep 2
 
       valid_images = 0
       begin
@@ -1525,7 +1478,6 @@ class ProtospaceCheckerService
 
       # 確実にログアウト
       driver.get(base_url)
-      sleep 2
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
         logout_link.click
@@ -1557,7 +1509,6 @@ class ProtospaceCheckerService
       # 編集ページに移動
       edit_url = detail_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit')
       driver.get(edit_url)
-      sleep 2
 
       # 新しい値で編集
       new_title = "編集後のタイトル#{Time.now.to_i}"
@@ -1578,7 +1529,6 @@ class ProtospaceCheckerService
 
       if is_detail_page
         # 編集内容が反映されているか確認
-        sleep 1
         page_text = driver.find_element(:tag_name, 'body').text
 
         has_new_title = page_text.include?(new_title)
@@ -1612,7 +1562,6 @@ class ProtospaceCheckerService
 
       # 編集ページに戻る
       driver.get(current_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit'))
-      sleep 2
 
       # 何も変更せずに更新ボタンをクリック
       driver.find_element(:name, 'commit').click
@@ -1624,7 +1573,6 @@ class ProtospaceCheckerService
 
       if is_detail_page
         # 画像が残っているか確認
-        sleep 1
         images = driver.find_elements(:tag_name, 'img')
         has_image = images.any? { |img| img.attribute('src') && !img.attribute('src').empty? && !img.attribute('src').include?('data:image') }
 
@@ -1645,7 +1593,6 @@ class ProtospaceCheckerService
       add_log("編集ページへの遷移を確認中...", :progress)
 
       driver.get(detail_url)
-      sleep 3
 
       # 編集ボタンをクリック
       begin
@@ -1728,7 +1675,6 @@ class ProtospaceCheckerService
       # 編集ページに移動（念のため）
       edit_url = detail_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit')
       driver.get(edit_url)
-      sleep 2
 
       # 新しい値で編集（5-005確認用）
       new_title_for_5005 = "5-005確認用タイトル#{Time.now.to_i}"
@@ -1766,7 +1712,6 @@ class ProtospaceCheckerService
 
       # 編集ページに戻る
       driver.get(current_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit'))
-      sleep 2
 
       # titleを空にして、他の項目に値を入れる
       driver.execute_script("document.getElementById('prototype_title').value = '';")
@@ -1828,7 +1773,6 @@ class ProtospaceCheckerService
 
     test_user = @registered_users.first
     driver.get("#{base_url}/users/sign_in")
-    sleep 1
 
     driver.execute_script("document.getElementById('user_email').value = '#{test_user[:email]}';")
     driver.execute_script("document.getElementById('user_password').value = '#{test_user[:password]}';")
