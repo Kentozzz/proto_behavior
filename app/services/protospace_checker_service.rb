@@ -176,7 +176,7 @@ class ProtospaceCheckerService
       add_log("　 #{check_number}: #{description}", :check_start)
 
       # まず1件登録
-      add_log("テストユーザーを登録中...", :progress)
+      add_log("ログアウト状態: テストユーザーを登録中...", :progress)
       unique_email = "unique-test-#{Time.now.to_i}@example.com"
       test_data = base_data.dup
       test_data[:email] = unique_email
@@ -207,7 +207,7 @@ class ProtospaceCheckerService
       end
 
       # 同じメールアドレスで再登録を試行
-      add_log("同じメールアドレスで再登録を試行中...", :progress)
+      add_log("ログアウト状態: 同じメールアドレスで再登録を試行中...", :progress)
       driver.get("#{base_url}/users/sign_up")
       fill_signup_form(test_data)
       driver.find_element(:name, 'commit').click
@@ -233,7 +233,7 @@ class ProtospaceCheckerService
     begin
       description = "メールアドレスは@を含む必要があること"
       add_log("　 #{check_number}: #{description}", :check_start)
-      add_log("@を含まないメールアドレスで登録を試行中...", :progress)
+      add_log("ログアウト状態: @を含まないメールアドレスで登録を試行中...", :progress)
 
       test_data = base_data.dup
       test_data[:email] = "invalidemail.com"
@@ -263,7 +263,7 @@ class ProtospaceCheckerService
     begin
       description = "パスワードは6文字以上であること"
       add_log("　 #{check_number}: #{description}", :check_start)
-      add_log("5文字のパスワードで登録を試行中...", :progress)
+      add_log("ログアウト状態: 5文字のパスワードで登録を試行中...", :progress)
 
       test_data = base_data.dup
       test_data[:password] = "12345"
@@ -294,7 +294,7 @@ class ProtospaceCheckerService
     begin
       description = "パスワードは確認用を含めて2回入力すること"
       add_log("　 #{check_number}: #{description}", :check_start)
-      add_log("パスワード確認を空にして登録を試行中...", :progress)
+      add_log("ログアウト状態: パスワード確認を空にして登録を試行中...", :progress)
 
       test_data = base_data.dup
       test_data[:password_confirmation] = ""
@@ -373,11 +373,11 @@ class ProtospaceCheckerService
       test_password = "aaa111"
 
       # 新規登録ページに移動
-      add_log("新規登録ページへ移動中...", :progress)
+      add_log("ログアウト状態: 新規登録ページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_up")
 
       # フォームに入力
-      add_log("必須項目を入力中...", :progress)
+      add_log("ログアウト状態: 必須項目を入力中...", :progress)
       driver.execute_script("document.getElementById('user_email').value = '#{test_email}';")
       driver.execute_script("document.getElementById('user_password').value = '#{test_password}';")
       driver.execute_script("document.getElementById('user_password_confirmation').value = '#{test_password}';")
@@ -387,12 +387,12 @@ class ProtospaceCheckerService
       driver.execute_script("document.getElementById('user_position').value = 'テスト役職';")
 
       # 登録ボタンをクリック
-      add_log("ユーザー登録を実行中...", :progress)
+      add_log("ログアウト状態: ユーザー登録を実行中...", :progress)
       driver.find_element(:name, 'commit').click
       sleep 3
 
       # トップページに遷移したか確認
-      add_log("登録結果を確認中...", :progress)
+      add_log("ログイン状態: 登録結果を確認中...", :progress)
       current_url = driver.current_url
       is_top_page = (current_url == base_url || current_url == "#{base_url}/")
 
@@ -434,16 +434,16 @@ class ProtospaceCheckerService
       add_log("　 1-012: フォームに適切な値が入力されていない状態では、ログインできず、そのページに留まること", :check_start)
 
       # ログインページに移動
-      add_log("ログインページへ移動中...", :progress)
+      add_log("ログアウト状態: ログインページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_in")
 
       # フォームに何も入力せずにログインボタンをクリック
-      add_log("空欄のままログインを試行中...", :progress)
+      add_log("ログアウト状態: 空欄のままログインを試行中...", :progress)
       driver.find_element(:name, 'commit').click
       sleep 2
 
       # ログインページに留まっているか確認（トップページに遷移していないことを確認）
-      add_log("ログイン結果を確認中...", :progress)
+      add_log("ログアウト状態: ログイン結果を確認中...", :progress)
       current_url = driver.current_url
       is_top_page = (current_url == base_url || current_url == "#{base_url}/")
 
@@ -473,7 +473,7 @@ class ProtospaceCheckerService
   def run_check_1_013(cleanup_logs: true)
     begin
       add_log("　 1-013: 必要な情報を入力すると、ログインができること", :check_start)
-      add_log("ログイン準備中...", :progress)
+      add_log("ログアウト状態: ログイン準備中...", :progress)
 
       # 既存ユーザーを使用
       if @registered_users.empty?
@@ -533,17 +533,17 @@ class ProtospaceCheckerService
       add_log("　 1-014: トップページから、ログアウトができること", :check_start)
 
       # 1-013でログイン済みなので、トップページでログアウトリンクを探してクリック
-      add_log("ログアウトリンクを探しています...", :progress)
+      add_log("ログイン状態: ログアウトリンクを探しています...", :progress)
       driver.get(base_url)
 
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
-        add_log("ログアウト実行中...", :progress)
+        add_log("ログイン状態: ログアウト実行中...", :progress)
         logout_link.click
         sleep 2
 
         # ログアウトできたか確認（ログアウト後はログインページやトップページに遷移）
-        add_log("ログアウト結果を確認中...", :progress)
+        add_log("ログアウト状態: ログアウト結果を確認中...", :progress)
         current_url = driver.current_url
 
         # ログアウトリンクがなくなっていることを確認
@@ -598,21 +598,21 @@ class ProtospaceCheckerService
       test_password = test_user[:password]
 
       # ログインページに移動
-      add_log("ログインページへ移動中...", :progress)
+      add_log("ログアウト状態: ログインページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_in")
 
       # ログイン情報を入力
-      add_log("ログイン情報を入力中...", :progress)
+      add_log("ログアウト状態: ログイン情報を入力中...", :progress)
       driver.execute_script("document.getElementById('user_email').value = '#{test_email}';")
       driver.execute_script("document.getElementById('user_password').value = '#{test_password}';")
 
       # ログインボタンをクリック
-      add_log("ログイン実行中...", :progress)
+      add_log("ログアウト状態: ログイン実行中...", :progress)
       driver.find_element(:name, 'commit').click
       sleep 3
 
       # トップページでヘッダーリンクを確認
-      add_log("ヘッダーリンクを確認中...", :progress)
+      add_log("ログイン状態: ヘッダーリンクを確認中...", :progress)
       driver.get(base_url)
 
       logout_exists = false
@@ -673,7 +673,7 @@ class ProtospaceCheckerService
       test_name = test_user[:name]  # 登録されたユーザーの名前を使用
 
       # トップページでユーザー名表示を確認（既にログイン済み）
-      add_log("ユーザー名表示を確認中...", :progress)
+      add_log("ログイン状態: ユーザー名表示を確認中...", :progress)
       driver.get(base_url)
 
       page_text = driver.find_element(:tag_name, 'body').text
@@ -707,7 +707,7 @@ class ProtospaceCheckerService
       add_log("　 1-017: ログアウト状態では、ヘッダーに「新規登録」「ログイン」のリンクが存在すること", :check_start)
 
       # ログアウト処理（1-016でログイン済み）
-      add_log("ログアウト処理中...", :progress)
+      add_log("ログイン状態: ログアウト処理中...", :progress)
       driver.get(base_url)
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
@@ -718,7 +718,7 @@ class ProtospaceCheckerService
       end
 
       # トップページでヘッダーリンクを確認
-      add_log("ヘッダーリンクを確認中...", :progress)
+      add_log("ログアウト状態: ヘッダーリンクを確認中...", :progress)
       driver.get(base_url)
 
       signup_exists = false
@@ -772,11 +772,11 @@ class ProtospaceCheckerService
       test_email = "password-match-test-#{Time.now.to_i}@example.com"
 
       # 新規登録ページに移動
-      add_log("新規登録ページへ移動中...", :progress)
+      add_log("ログアウト状態: 新規登録ページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_up")
 
       # フォームに入力（確認用パスワードだけ異なる値）
-      add_log("全項目を入力中...", :progress)
+      add_log("ログアウト状態: 全項目を入力中...", :progress)
       driver.execute_script("document.getElementById('user_email').value = '#{test_email}';")
       driver.execute_script("document.getElementById('user_password').value = 'aaa111';")
       driver.execute_script("document.getElementById('user_password_confirmation').value = 'iii222';")
@@ -786,12 +786,12 @@ class ProtospaceCheckerService
       driver.execute_script("document.getElementById('user_position').value = 'テスト役職';")
 
       # 登録ボタンをクリック
-      add_log("登録を試行中...", :progress)
+      add_log("ログアウト状態: 登録を試行中...", :progress)
       driver.find_element(:name, 'commit').click
       sleep 2
 
       # 登録ページに留まっているか確認
-      add_log("登録結果を確認中...", :progress)
+      add_log("ログアウト状態: 登録結果を確認中...", :progress)
       current_url = driver.current_url
       is_signup_page = current_url.include?('/users/sign_up') || current_url.include?('/users')
 
@@ -823,7 +823,7 @@ class ProtospaceCheckerService
       add_log("　 2-001: ログイン状態のユーザーだけが、投稿ページへ遷移できること", :check_start)
 
       # パート1: ログアウト状態で /prototypes/new にアクセスを試みる
-      add_log("ログアウト状態で新規投稿ページへのアクセスを試行中...", :progress)
+      add_log("ログアウト状態: 新規投稿ページへのアクセスを試行中...", :progress)
       driver.get("#{base_url}/prototypes/new")
 
       # 新規投稿ページに遷移できていないことを確認（ログインページなどにリダイレクトされる）
@@ -848,21 +848,21 @@ class ProtospaceCheckerService
       test_password = test_user[:password]
 
       # ログインページに移動
-      add_log("ログインページへ移動中...", :progress)
+      add_log("ログアウト状態: ログインページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_in")
 
       # ログイン情報を入力
-      add_log("ログイン情報を入力中...", :progress)
+      add_log("ログアウト状態: ログイン情報を入力中...", :progress)
       driver.execute_script("document.getElementById('user_email').value = '#{test_email}';")
       driver.execute_script("document.getElementById('user_password').value = '#{test_password}';")
 
       # ログインボタンをクリック
-      add_log("ログイン実行中...", :progress)
+      add_log("ログアウト状態: ログイン実行中...", :progress)
       driver.find_element(:name, 'commit').click
       sleep 3
 
       # トップページに移動して「New Proto」リンクをクリック
-      add_log("「New Proto」リンクをクリック中...", :progress)
+      add_log("ログイン状態: 「New Proto」リンクをクリック中...", :progress)
       driver.get(base_url)
 
       begin
@@ -930,7 +930,7 @@ class ProtospaceCheckerService
   def check_prototype_required_field(check_number, description, base_data, field, invalid_value)
     begin
       add_log("　 #{check_number}: #{description}", :check_start)
-      add_log("#{field}を空にして投稿を試行中...", :progress)
+      add_log("ログイン状態: #{field}を空にして投稿を試行中...", :progress)
 
       test_data = base_data.dup
       test_data[field] = invalid_value
@@ -961,7 +961,7 @@ class ProtospaceCheckerService
     begin
       description = "画像は1枚必須であること(ActiveStorageを使用)"
       add_log("　 #{check_number}: #{description}", :check_start)
-      add_log("画像なしで投稿を試行中...", :progress)
+      add_log("ログイン状態: 画像なしで投稿を試行中...", :progress)
 
       test_data = base_data.dup
       test_data[:image] = nil
@@ -992,7 +992,7 @@ class ProtospaceCheckerService
     begin
       description = "投稿に必要な情報が入力されていない場合は、投稿できずにそのページに留まること"
       add_log("　 #{check_number}: #{description}", :check_start)
-      add_log("すべて空欄で投稿を試行中...", :progress)
+      add_log("ログイン状態: すべて空欄で投稿を試行中...", :progress)
 
       driver.get("#{base_url}/prototypes/new")
 
@@ -1037,11 +1037,11 @@ class ProtospaceCheckerService
       }
 
       # 投稿ページに移動
-      add_log("投稿ページへ移動中...", :progress)
+      add_log("ログイン状態: 投稿ページへ移動中...", :progress)
       driver.get("#{base_url}/prototypes/new")
 
       # フォームに入力
-      add_log("必要な情報を入力中...", :progress)
+      add_log("ログイン状態: 必要な情報を入力中...", :progress)
       fill_prototype_form({
         title: test_title,
         catch_copy: test_catch_copy,
@@ -1050,12 +1050,12 @@ class ProtospaceCheckerService
       })
 
       # 投稿ボタンをクリック
-      add_log("投稿実行中...", :progress)
+      add_log("ログイン状態: 投稿実行中...", :progress)
       driver.find_element(:name, 'commit').click
       sleep 3
 
       # 2-008: トップページに遷移したか確認
-      add_log("投稿結果を確認中...", :progress)
+      add_log("ログイン状態: 投稿結果を確認中...", :progress)
       current_url = driver.current_url
       is_top_page = (current_url == base_url || current_url == "#{base_url}/")
 
@@ -1068,7 +1068,7 @@ class ProtospaceCheckerService
 
         # 2-009: 投稿した情報がトップページに表示されているか確認
         add_log("　 2-009: 投稿した情報は、トップページに表示されること", :check_start)
-        add_log("投稿内容の表示を確認中...", :progress)
+        add_log("ログイン状態: 投稿内容の表示を確認中...", :progress)
 
         page_text = driver.find_element(:tag_name, 'body').text
         if page_text.include?(test_title)
@@ -1105,7 +1105,7 @@ class ProtospaceCheckerService
       add_log("　 3-001: ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること", :check_start)
 
       # パート1: ログアウト状態で一覧閲覧
-      add_log("ログアウト状態で一覧表示を確認中...", :progress)
+      add_log("ログアウト状態: 一覧表示を確認中...", :progress)
       driver.get(base_url)
 
       # ログアウトリンクがあればログアウト
@@ -1123,7 +1123,7 @@ class ProtospaceCheckerService
       logout_can_view = page_text.include?(@posted_prototype[:title])
 
       # パート2: ログイン状態で一覧閲覧
-      add_log("ログイン状態で一覧表示を確認中...", :progress)
+      add_log("ログイン状態: 一覧表示を確認中...", :progress)
       login_with_registered_user
       driver.get(base_url)
 
@@ -1156,7 +1156,7 @@ class ProtospaceCheckerService
     begin
       # チェック番号1: 4つの情報表示確認
       add_log("　 チェック番号1: プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること", :check_start)
-      add_log("4つの情報の表示を確認中...", :progress)
+      add_log("ログイン状態: 4つの情報の表示を確認中...", :progress)
 
       driver.get(base_url)
 
@@ -1202,7 +1202,7 @@ class ProtospaceCheckerService
 
       # 3-002: 画像表示とリンク切れチェック
       add_log("　 3-002: 画像が表示されており、画像がリンク切れなどになっていないこと", :check_start)
-      add_log("画像のリンク切れを確認中...", :progress)
+      add_log("ログイン状態: 画像のリンク切れを確認中...", :progress)
 
       valid_images = 0
       if has_image
@@ -1227,7 +1227,7 @@ class ProtospaceCheckerService
       add_log("　 3-003: ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること", :check_start)
 
       # パート1: ログアウト状態で詳細ページ遷移確認
-      add_log("ログアウト状態で詳細ページへの遷移を確認中...", :progress)
+      add_log("ログアウト状態: 詳細ページへの遷移を確認中...", :progress)
 
       # ログアウト
       driver.get(base_url)
@@ -1253,7 +1253,7 @@ class ProtospaceCheckerService
       end
 
       # パート2: ログイン状態で詳細ページ遷移確認
-      add_log("ログイン状態で詳細ページへの遷移を確認中...", :progress)
+      add_log("ログイン状態: 詳細ページへの遷移を確認中...", :progress)
 
       login_with_registered_user
       driver.get(base_url)
@@ -1299,7 +1299,7 @@ class ProtospaceCheckerService
 
       # URLが詳細ページでない場合は、一覧から遷移する
       unless detail_url.match?(/\/prototypes\/\d+/)
-        add_log("詳細ページへ遷移中...", :progress)
+        add_log("ログイン状態: 詳細ページへ遷移中...", :progress)
         driver.get(base_url)
 
         begin
@@ -1357,7 +1357,7 @@ class ProtospaceCheckerService
       end
 
       # ===== パート2: 投稿者でログイン状態での確認 =====
-      add_log("投稿者でログイン状態での編集・削除リンクを確認中...", :progress)
+      add_log("ログイン状態（投稿者）: 編集・削除リンクを確認中...", :progress)
 
       login_with_registered_user
       driver.get(detail_url)
@@ -1384,7 +1384,7 @@ class ProtospaceCheckerService
       end
 
       # ===== パート3: 別のユーザーでログイン状態での確認 =====
-      add_log("別のユーザーでログイン状態での編集・削除リンクを確認中...", :progress)
+      add_log("ログイン状態（別ユーザー）: 編集・削除リンクを確認中...", :progress)
 
       # ログアウト
       driver.get(base_url)
@@ -1444,7 +1444,7 @@ class ProtospaceCheckerService
 
       # ===== 4-002: プロダクト情報の確認 =====
       add_log("　 4-002: ログイン・ログアウトの状態に関わらず、プロダクトの情報（プロトタイプ名・投稿者・画像・キャッチコピー・コンセプト）が表示されていること", :check_start)
-      add_log("プロダクト情報を確認中...", :progress)
+      add_log("ログイン状態: プロダクト情報を確認中...", :progress)
 
       logout_all_displayed = logout_has_title && logout_has_catch_copy && logout_has_concept && logout_has_user_name && logout_has_image
       owner_all_displayed = owner_has_title && owner_has_catch_copy && owner_has_concept && owner_has_user_name && owner_has_image
@@ -1481,7 +1481,7 @@ class ProtospaceCheckerService
 
       # ===== 4-003の結果判定 =====
       add_log("　 4-003: 画像が表示されており、画像がリンク切れなどになっていないこと", :check_start)
-      add_log("画像を確認中...", :progress)
+      add_log("ログイン状態: 画像を確認中...", :progress)
 
       # 詳細ページに再度アクセスして画像を確認
       driver.get(detail_url)
@@ -1527,7 +1527,7 @@ class ProtospaceCheckerService
 
       # ===== 5-001: 正常な編集ができること =====
       add_log("　 5-001: 投稿に必要な情報を入力すると、プロトタイプが編集できること", :check_start)
-      add_log("投稿者で再ログイン中...", :progress)
+      add_log("ログアウト状態: 投稿者で再ログイン中...", :progress)
 
       # 投稿者で再ログイン
       # 確実にログアウト
@@ -1556,7 +1556,7 @@ class ProtospaceCheckerService
         raise "ログインに失敗しました。現在のURL: #{current_url}"
       end
 
-      add_log("編集ページへ移動中...", :progress)
+      add_log("ログイン状態: 編集ページへ移動中...", :progress)
 
       # 編集ページに移動
       edit_url = detail_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit')
@@ -1614,7 +1614,7 @@ class ProtospaceCheckerService
 
       # ===== 5-002: 何も編集せずに更新 → 画像が残る確認 =====
       add_log("　 5-002: 何も編集せずに更新をしても、画像無しのプロトタイプにならないこと", :check_start)
-      add_log("何も編集せずに更新中...", :progress)
+      add_log("ログイン状態: 何も編集せずに更新中...", :progress)
 
       # 編集ページに戻る
       driver.get(current_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit'))
@@ -1646,7 +1646,7 @@ class ProtospaceCheckerService
 
       # ===== 5-003: 編集ページへの遷移確認 =====
       add_log("　 5-003: ログイン状態のユーザーに限り、自身の投稿したプロトタイプの詳細ページから編集ボタンをクリックすると、編集ページへ遷移できること", :check_start)
-      add_log("編集ページへの遷移を確認中...", :progress)
+      add_log("ログイン状態: 編集ページへの遷移を確認中...", :progress)
 
       driver.get(detail_url)
 
@@ -1674,7 +1674,7 @@ class ProtospaceCheckerService
 
       # ===== チェック番号3: 既存情報の表示確認 =====
       add_log("　 チェック番号3: プロトタイプ情報について、すでに登録されている情報は、編集画面を開いた時点で表示されること", :check_start)
-      add_log("既存情報の表示を確認中...", :progress)
+      add_log("ログイン状態: 既存情報の表示を確認中...", :progress)
 
       # フォームの値を取得
       title_value = driver.execute_script("return document.getElementById('prototype_title').value;")
@@ -1699,7 +1699,7 @@ class ProtospaceCheckerService
 
       # ===== 5-004: 空欄でページに留まる確認 =====
       add_log("　 5-004: 空の入力欄がある場合は、編集できずにそのページに留まること", :check_start)
-      add_log("titleを空にして更新を試行中...", :progress)
+      add_log("ログイン状態: titleを空にして更新を試行中...", :progress)
 
       # titleを空にする
       driver.execute_script("document.getElementById('prototype_title').value = '';")
@@ -1726,7 +1726,7 @@ class ProtospaceCheckerService
 
       # ===== 5-005: 正しく編集できた場合は詳細ページへ遷移すること =====
       add_log("　 5-005: 正しく編集できた場合は、詳細ページへ遷移すること", :check_start)
-      add_log("正しい値で編集を試行中...", :progress)
+      add_log("ログイン状態: 正しい値で編集を試行中...", :progress)
 
       # 編集ページに移動（念のため）
       edit_url = detail_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit')
@@ -1764,7 +1764,7 @@ class ProtospaceCheckerService
 
       # ===== チェック番号7: バリデーションエラー時に入力保持 =====
       add_log("　 チェック番号7: バリデーションによって投稿ができず、そのページに留まった場合でも、入力済みの項目（画像以外）は消えないこと", :check_start)
-      add_log("入力済み項目の保持を確認中...", :progress)
+      add_log("ログイン状態: 入力済み項目の保持を確認中...", :progress)
 
       # 編集ページに戻る
       driver.get(current_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit'))
@@ -1812,7 +1812,7 @@ class ProtospaceCheckerService
     begin
       # ===== 6-001: 削除機能のテスト =====
       add_log("　 6-001: ログイン状態のユーザーに限り、自身の投稿したプロトタイプの詳細ページから削除ボタンをクリックすると、プロトタイプを削除できること", :check_start)
-      add_log("削除テスト用プロトタイプを投稿中...", :progress)
+      add_log("ログイン状態: 削除テスト用プロトタイプを投稿中...", :progress)
 
       # 削除テスト用のプロトタイプを新規投稿
       driver.get("#{base_url}/prototypes/new")
@@ -1873,7 +1873,7 @@ class ProtospaceCheckerService
       logout_has_delete = page_text.include?('削除する') && (page_source.include?('delete') || page_source.include?('destroy'))
 
       # パート2: 別のユーザーでログイン状態での確認
-      add_log("別のユーザーでログイン状態での削除ボタンを確認中...", :progress)
+      add_log("ログイン状態（別ユーザー）: 削除ボタンを確認中...", :progress)
 
       if @registered_users.length >= 2
         other_user = @registered_users[1]
@@ -1897,7 +1897,7 @@ class ProtospaceCheckerService
       other_user_has_delete = page_text.include?('削除する') && (page_source.include?('delete') || page_source.include?('destroy'))
 
       # パート3: 投稿者でログイン状態での確認
-      add_log("投稿者でログイン状態での削除ボタンを確認中...", :progress)
+      add_log("ログイン状態（投稿者）: 削除ボタンを確認中...", :progress)
 
       driver.get(base_url)
       begin
@@ -1924,7 +1924,7 @@ class ProtospaceCheckerService
       owner_has_delete = page_text.include?('削除する') && (page_source.include?('delete') || page_source.include?('destroy'))
 
       # ===== 削除実行 =====
-      add_log("削除を実行中...", :progress)
+      add_log("ログイン状態（投稿者）: 削除を実行中...", :progress)
 
       begin
         delete_link = driver.find_element(:link_text, '削除する')
@@ -1947,7 +1947,7 @@ class ProtospaceCheckerService
       @redirect_url_after_delete = driver.current_url
 
       # ===== 削除されたか確認 =====
-      add_log("削除されたか確認中...", :progress)
+      add_log("ログイン状態（投稿者）: 削除されたか確認中...", :progress)
 
       # 一覧ページで削除したプロトタイプが無いことを確認
       driver.get(base_url)
@@ -2054,7 +2054,7 @@ class ProtospaceCheckerService
 
       # ===== 7-002: コメント投稿と表示確認 =====
       add_log("　 7-002: 正しくフォームを入力すると、コメントが投稿できること", :check_start)
-      add_log("コメントを投稿中...", :progress)
+      add_log("ログイン状態: コメントを投稿中...", :progress)
 
       # コメント入力
       @test_comment = {
@@ -2084,7 +2084,7 @@ class ProtospaceCheckerService
       end
 
       # 投稿したコメントが表示されているか確認
-      add_log("投稿したコメントが表示されているか確認中...", :progress)
+      add_log("ログイン状態: 投稿したコメントが表示されているか確認中...", :progress)
 
       page_text = driver.find_element(:tag_name, 'body').text
       comment_displayed = page_text.include?(@test_comment[:content])
@@ -2117,7 +2117,7 @@ class ProtospaceCheckerService
 
       # ===== チェック番号4: コメントと投稿者名の表示確認 =====
       add_log("　 チェック番号: 4: コメントを投稿すると、投稿したコメントとその投稿者名が、対象プロトタイプの詳細ページにのみ表示されること", :check_start)
-      add_log("コメントと投稿者名の表示を確認中...", :progress)
+      add_log("ログイン状態: コメントと投稿者名の表示を確認中...", :progress)
 
       # 詳細ページでコメント内容と投稿者名を確認
       driver.get(detail_url)
@@ -2128,10 +2128,10 @@ class ProtospaceCheckerService
       user_name_displayed = page_text.include?(@test_comment[:user])
 
       # 別のプロトタイプで表示されないことを確認
-      add_log("他のプロトタイプで表示されないか確認中...", :progress)
+      add_log("ログイン状態: 他のプロトタイプで表示されないか確認中...", :progress)
 
       # 別のプロトタイプを投稿
-      add_log("別のプロトタイプを投稿中...", :progress)
+      add_log("ログイン状態: 別のプロトタイプを投稿中...", :progress)
       driver.get("#{base_url}/prototypes/new")
       sleep 2
 
@@ -2147,7 +2147,7 @@ class ProtospaceCheckerService
       sleep 3
 
       # トップページから別のプロトタイプの詳細ページへ
-      add_log("別のプロトタイプの詳細ページへ遷移中...", :progress)
+      add_log("ログイン状態: 別のプロトタイプの詳細ページへ遷移中...", :progress)
       driver.get(base_url)
       sleep 2
 
@@ -2160,7 +2160,7 @@ class ProtospaceCheckerService
         raise "別のプロトタイプの詳細ページへの遷移に失敗しました: #{e.message}"
       end
 
-      add_log("別のプロトタイプでコメントが表示されていないか確認中...", :progress)
+      add_log("ログイン状態: 別のプロトタイプでコメントが表示されていないか確認中...", :progress)
       page_text = driver.find_element(:tag_name, 'body').text
       comment_not_displayed_on_other = !page_text.include?(@test_comment[:content])
 
@@ -2180,7 +2180,7 @@ class ProtospaceCheckerService
 
       # ===== 7-004: バリデーション =====
       add_log("　 7-004: コメントフォームを空のまま投稿しようとすると、投稿できずにプロトタイプ詳細ページに戻ること", :check_start)
-      add_log("空のコメントで投稿を試行中...", :progress)
+      add_log("ログイン状態: 空のコメントで投稿を試行中...", :progress)
 
       # 元の詳細ページに戻る
       driver.get(detail_url)
@@ -2587,7 +2587,7 @@ class ProtospaceCheckerService
       sleep 2
 
       # 1人目のユーザーの編集ページにアクセス
-      add_log("他のユーザーの編集ページへのアクセスを確認中...", :progress)
+      add_log("ログイン状態（2人目のユーザー）: 他のユーザーの編集ページへのアクセスを確認中...", :progress)
       driver.get(@posted_prototype[:edit_url])
       sleep 2
 
