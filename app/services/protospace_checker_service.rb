@@ -2803,81 +2803,27 @@ class ProtospaceCheckerService
 
   def take_full_page_screenshot(filepath)
     begin
-      # スクロールを最上部に戻す
-      driver.execute_script("window.scrollTo(0, 0);")
-      sleep 0.3
+      # 現在のウィンドウサイズを保存
+      current_width = driver.execute_script("return window.outerWidth")
+      current_height = driver.execute_script("return window.outerHeight")
 
-      # ページ全体のサイズを取得
-      total_width = driver.execute_script(<<-JS)
-        return Math.max(
-          document.body.scrollWidth,
-          document.documentElement.scrollWidth,
-          document.body.offsetWidth,
-          document.documentElement.offsetWidth,
-          document.body.clientWidth,
-          document.documentElement.clientWidth
-        );
-      JS
+      # ページ全体の高さを取得
+      total_height = driver.execute_script("return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)")
+      viewport_width = driver.execute_script("return window.innerWidth") || 1280
 
-      total_height = driver.execute_script(<<-JS)
-        return Math.max(
-          document.body.scrollHeight,
-          document.documentElement.scrollHeight,
-          document.body.offsetHeight,
-          document.documentElement.offsetHeight,
-          document.body.clientHeight,
-          document.documentElement.clientHeight
-        );
-      JS
+      # ウィンドウサイズをページ全体に合わせて調整
+      driver.manage.window.resize_to(viewport_width + 20, total_height + 100)
+      sleep 0.5
 
-      # 最小サイズを保証
-      total_width = [total_width.to_i, 1280].max
-      total_height = [total_height.to_i, 1024].max
+      # スクリーンショットを撮影
+      driver.save_screenshot(filepath)
 
-      # 現在のビューポートサイズを取得
-      viewport_width = driver.execute_script("return window.innerWidth")
-      viewport_height = driver.execute_script("return window.innerHeight")
-
-      # スクロールしながら複数枚撮影して結合
-      screenshots = []
-      y_position = 0
-
-      while y_position < total_height
-        # スクロール
-        driver.execute_script("window.scrollTo(0, #{y_position});")
-        sleep 0.2
-
-        # スクリーンショットを一時ファイルに保存
-        temp_file = "#{filepath}.tmp#{screenshots.length}.png"
-        driver.save_screenshot(temp_file)
-        screenshots << temp_file
-
-        y_position += viewport_height
-      end
-
-      # 複数枚のスクリーンショットを縦に結合（ImageMagick使用）
-      if screenshots.length > 1
-        system("convert #{screenshots.join(' ')} -append #{filepath}")
-        # 一時ファイルを削除
-        screenshots.each { |f| File.delete(f) if File.exist?(f) }
-      else
-        # 1枚だけの場合はリネーム
-        FileUtils.mv(screenshots.first, filepath)
-      end
-
-      # スクロールを最上部に戻す
-      driver.execute_script("window.scrollTo(0, 0);")
+      # 元のサイズに戻す
+      driver.manage.window.resize_to(current_width, current_height)
     rescue => e
-      Rails.logger.error "フルページスクリーンショット失敗: #{e.message}\n#{e.backtrace.join("\n")}"
       # エラー時は通常のスクリーンショットを撮影
-      begin
-        driver.save_screenshot(filepath)
-      rescue => fallback_error
-        Rails.logger.error "フォールバックスクリーンショットも失敗: #{fallback_error.message}"
-      end
-    ensure
-      # 一時ファイルのクリーンアップ
-      Dir.glob("#{filepath}.tmp*.png").each { |f| File.delete(f) if File.exist?(f) }
+      Rails.logger.warn "フルページスクリーンショット失敗、通常撮影に切り替え: #{e.message}"
+      driver.save_screenshot(filepath)
     end
   end
 

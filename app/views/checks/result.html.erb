@@ -388,11 +388,12 @@
             `;
 
             editorContent.innerHTML = `
-              <div style="padding: 20px;">
+              <div style="padding: 20px; height: 100%; overflow: auto;">
                 <h2 style="margin-bottom: 20px; color: #cccccc;">${screenshot.name}</h2>
-                <div style="background: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 10px; overflow: auto;">
-                  <img src="${screenshot.path}" alt="${screenshot.name}" style="max-width: 100%; height: auto; display: block; border-radius: 4px;">
+                <div style="background: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 10px;">
+                  <img src="${screenshot.path}" alt="${screenshot.name}" style="display: block; width: 100%; height: auto; border-radius: 4px; cursor: zoom-in;" onclick="if(this.style.width === '100%') { this.style.width = 'auto'; this.style.cursor = 'zoom-out'; } else { this.style.width = '100%'; this.style.cursor = 'zoom-in'; }">
                 </div>
+                <p style="color: #858585; font-size: 12px; margin-top: 10px;">クリックで実サイズ表示/フィット表示を切り替え</p>
               </div>
             `;
           });
@@ -443,11 +444,12 @@
             `;
 
             editorContent.innerHTML = `
-              <div style="padding: 20px;">
+              <div style="padding: 20px; height: 100%; overflow: auto;">
                 <h2 style="margin-bottom: 20px; color: #f48771;">${screenshot.name}</h2>
-                <div style="background: #1e1e1e; border: 1px solid #d72828; border-radius: 4px; padding: 10px; overflow: auto;">
-                  <img src="${screenshot.path}" alt="${screenshot.name}" style="max-width: 100%; height: auto; display: block; border-radius: 4px;">
+                <div style="background: #1e1e1e; border: 1px solid #d72828; border-radius: 4px; padding: 10px;">
+                  <img src="${screenshot.path}" alt="${screenshot.name}" style="display: block; width: 100%; height: auto; border-radius: 4px; cursor: zoom-in;" onclick="if(this.style.width === '100%') { this.style.width = 'auto'; this.style.cursor = 'zoom-out'; } else { this.style.width = '100%'; this.style.cursor = 'zoom-in'; }">
                 </div>
+                <p style="color: #858585; font-size: 12px; margin-top: 10px;">クリックで実サイズ表示/フィット表示を切り替え</p>
               </div>
             `;
           });
@@ -730,11 +732,12 @@
 
           // スクリーンショットを表示
           editorContent.innerHTML = `
-            <div style="padding: 20px;">
+            <div style="padding: 20px; height: 100%; overflow: auto;">
               <h2 style="margin-bottom: 20px; color: #cccccc;">${screenshotName}</h2>
-              <div style="background: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 10px; overflow: auto;">
-                <img src="${screenshotPath}" alt="${screenshotName}" style="max-width: 100%; height: auto; display: block; border-radius: 4px;">
+              <div style="background: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 10px;">
+                <img src="${screenshotPath}" alt="${screenshotName}" style="display: block; width: 100%; height: auto; border-radius: 4px; cursor: zoom-in;" onclick="if(this.style.width === '100%') { this.style.width = 'auto'; this.style.cursor = 'zoom-out'; } else { this.style.width = '100%'; this.style.cursor = 'zoom-in'; }">
               </div>
+              <p style="color: #858585; font-size: 12px; margin-top: 10px;">クリックで実サイズ表示/フィット表示を切り替え</p>
             </div>
           `;
         } else if (viewType === 'failure-screenshot') {
@@ -751,11 +754,12 @@
 
           // 失敗スクリーンショットを表示（赤いボーダー）
           editorContent.innerHTML = `
-            <div style="padding: 20px;">
+            <div style="padding: 20px; height: 100%; overflow: auto;">
               <h2 style="margin-bottom: 20px; color: #f48771;">${screenshotName}</h2>
-              <div style="background: #1e1e1e; border: 1px solid #d72828; border-radius: 4px; padding: 10px; overflow: auto;">
-                <img src="${screenshotPath}" alt="${screenshotName}" style="max-width: 100%; height: auto; display: block; border-radius: 4px;">
+              <div style="background: #1e1e1e; border: 1px solid #d72828; border-radius: 4px; padding: 10px;">
+                <img src="${screenshotPath}" alt="${screenshotName}" style="display: block; width: 100%; height: auto; border-radius: 4px; cursor: zoom-in;" onclick="if(this.style.width === '100%') { this.style.width = 'auto'; this.style.cursor = 'zoom-out'; } else { this.style.width = '100%'; this.style.cursor = 'zoom-in'; }">
               </div>
+              <p style="color: #858585; font-size: 12px; margin-top: 10px;">クリックで実サイズ表示/フィット表示を切り替え</p>
             </div>
           `;
         } else if (viewType === 'results') {
