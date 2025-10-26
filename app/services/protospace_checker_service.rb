@@ -78,6 +78,10 @@ class ProtospaceCheckerService
     check_cancelled
     run_check_6_001_6_002(cleanup_logs: false)
 
+    # 7-001〜7-004 + チェック番号4: コメント機能（同じセッション）
+    check_cancelled
+    run_check_7_001_to_7_004(cleanup_logs: false)
+
     # 最後にクリーンアップとログ整理
     cleanup
     add_log("全チェック完了", :info)
@@ -1968,6 +1972,235 @@ class ProtospaceCheckerService
     rescue => e
       add_log("! エラー発生: #{e.message}", :error)
       add_result("6-001/6-002", "プロトタイプ削除機能テスト", "ERROR", e.message)
+    ensure
+      cleanup if cleanup_logs
+      @logs.reject! { |log| log[:type] == :progress } if cleanup_logs
+    end
+
+    { results: results, logs: logs }
+  end
+
+  def run_check_7_001_to_7_004(cleanup_logs: true)
+    begin
+      # 既存のプロトタイプ（@posted_prototype）を使用
+      detail_url = @posted_prototype[:detail_url]
+
+      # ===== 7-001: コメント投稿欄の表示確認 =====
+      add_log("　 7-001: コメント投稿欄は、ログイン状態のユーザーへのみ、詳細ページに表示されていること", :check_start)
+      add_log("ログアウト状態でのコメント投稿欄を確認中...", :progress)
+
+      # ログアウト
+      driver.get(base_url)
+      begin
+        logout_link = driver.find_element(:link_text, 'ログアウト')
+        logout_link.click
+        sleep 2
+      rescue
+        # 既にログアウト状態
+      end
+
+      # 詳細ページに遷移
+      driver.get(detail_url)
+      sleep 1
+      page_source = driver.page_source
+
+      # コメント投稿欄があるか確認（フォーム要素の存在）
+      logout_has_comment_form = (page_source.include?('comment') || page_source.include?('コメント')) &&
+                                (page_source.include?('<textarea') || page_source.include?('text_area') ||
+                                 page_source.include?('id="comment_') || page_source.include?("id='comment_"))
+
+      # ログイン状態での確認
+      add_log("ログイン状態でのコメント投稿欄を確認中...", :progress)
+
+      login_with_registered_user
+      driver.get(detail_url)
+      sleep 1
+      page_source = driver.page_source
+
+      login_has_comment_form = (page_source.include?('comment') || page_source.include?('コメント')) &&
+                               (page_source.include?('<textarea') || page_source.include?('text_area') ||
+                                page_source.include?('id="comment_') || page_source.include?("id='comment_"))
+
+      # 7-001の結果判定
+      if !logout_has_comment_form && login_has_comment_form
+        add_log("✓ 7-001: コメント投稿欄は、ログイン状態のユーザーへのみ、詳細ページに表示されていること", :success)
+        add_result("7-001", "コメント投稿欄は、ログイン状態のユーザーへのみ、詳細ページに表示されていること", "PASS", "")
+      else
+        issues = []
+        issues << "ログアウト状態でコメント投稿欄が表示されています" if logout_has_comment_form
+        issues << "ログイン状態でコメント投稿欄が表示されていません" if !login_has_comment_form
+
+        add_log("✗ 7-001: コメント投稿欄は、ログイン状態のユーザーへのみ、詳細ページに表示されていること (失敗)", :fail)
+        add_result("7-001", "コメント投稿欄は、ログイン状態のユーザーへのみ、詳細ページに表示されていること", "FAIL", issues.join('; '))
+      end
+
+      # ===== 7-002: コメント投稿と表示確認 =====
+      add_log("　 7-002: 正しくフォームを入力すると、コメントが投稿できること", :check_start)
+      add_log("コメントを投稿中...", :progress)
+
+      # コメント入力
+      @test_comment = {
+        content: "テストコメント#{Time.now.to_i}",
+        user: @registered_users.first[:name]
+      }
+
+      # コメントフォームを探して入力（複数のID候補を試す）
+      comment_submitted = false
+      redirect_url_after_comment = nil
+
+      ['comment_content', 'comment_text', 'comment_comment'].each do |field_id|
+        begin
+          driver.execute_script("document.getElementById('#{field_id}').value = '#{@test_comment[:content]}';")
+          driver.find_element(:name, 'commit').click
+          sleep 2
+          comment_submitted = true
+          redirect_url_after_comment = driver.current_url
+          break
+        rescue
+          # 次のIDを試す
+        end
+      end
+
+      unless comment_submitted
+        raise "コメントフォームが見つかりません"
+      end
+
+      # 投稿したコメントが表示されているか確認
+      add_log("投稿したコメントが表示されているか確認中...", :progress)
+
+      page_text = driver.find_element(:tag_name, 'body').text
+      comment_displayed = page_text.include?(@test_comment[:content])
+
+      # 7-002の結果判定
+      if comment_submitted && comment_displayed
+        add_log("✓ 7-002: 正しくフォームを入力すると、コメントが投稿できること", :success)
+        add_result("7-002", "正しくフォームを入力すると、コメントが投稿できること", "PASS", "")
+      else
+        issues = []
+        issues << "コメントが投稿できませんでした" if !comment_submitted
+        issues << "投稿したコメントが表示されていません" if !comment_displayed
+
+        add_log("✗ 7-002: 正しくフォームを入力すると、コメントが投稿できること (失敗)", :fail)
+        add_result("7-002", "正しくフォームを入力すると、コメントが投稿できること", "FAIL", issues.join('; '))
+      end
+
+      # ===== 7-003: 投稿後の遷移確認 =====
+      add_log("　 7-003: コメントを投稿すると、詳細ページに戻ってくること", :check_start)
+
+      is_detail_page = redirect_url_after_comment&.match?(/\/prototypes\/\d+/)
+
+      if is_detail_page
+        add_log("✓ 7-003: コメントを投稿すると、詳細ページに戻ってくること", :success)
+        add_result("7-003", "コメントを投稿すると、詳細ページに戻ってくること", "PASS", "")
+      else
+        add_log("✗ 7-003: コメントを投稿すると、詳細ページに戻ってくること (失敗)", :fail)
+        add_result("7-003", "コメントを投稿すると、詳細ページに戻ってくること", "FAIL", "投稿後のURL: #{redirect_url_after_comment}")
+      end
+
+      # ===== チェック番号4: コメントと投稿者名の表示確認 =====
+      add_log("　 チェック番号: 4: コメントを投稿すると、投稿したコメントとその投稿者名が、対象プロトタイプの詳細ページにのみ表示されること", :check_start)
+      add_log("コメントと投稿者名の表示を確認中...", :progress)
+
+      # 詳細ページでコメント内容と投稿者名を確認
+      driver.get(detail_url)
+      sleep 1
+      page_text = driver.find_element(:tag_name, 'body').text
+
+      comment_displayed_on_target = page_text.include?(@test_comment[:content])
+      user_name_displayed = page_text.include?(@test_comment[:user])
+
+      # 別のプロトタイプで表示されないことを確認
+      add_log("他のプロトタイプで表示されないか確認中...", :progress)
+
+      # 別のプロトタイプを投稿
+      add_log("別のプロトタイプを投稿中...", :progress)
+      driver.get("#{base_url}/prototypes/new")
+      sleep 2
+
+      other_prototype = {
+        title: "別のプロトタイプ#{Time.now.to_i}",
+        catch_copy: "別のキャッチコピー",
+        concept: "別のコンセプト",
+        image: ensure_test_image
+      }
+
+      fill_prototype_form(other_prototype)
+      driver.find_element(:name, 'commit').click
+      sleep 3
+
+      # トップページから別のプロトタイプの詳細ページへ
+      add_log("別のプロトタイプの詳細ページへ遷移中...", :progress)
+      driver.get(base_url)
+      sleep 2
+
+      begin
+        prototype_link = driver.find_element(:link_text, other_prototype[:title])
+        prototype_link.click
+        sleep 2
+        other_detail_url = driver.current_url
+      rescue => e
+        raise "別のプロトタイプの詳細ページへの遷移に失敗しました: #{e.message}"
+      end
+
+      add_log("別のプロトタイプでコメントが表示されていないか確認中...", :progress)
+      page_text = driver.find_element(:tag_name, 'body').text
+      comment_not_displayed_on_other = !page_text.include?(@test_comment[:content])
+
+      # チェック番号4の結果判定
+      if comment_displayed_on_target && user_name_displayed && comment_not_displayed_on_other
+        add_log("✓ チェック番号: 4: コメントを投稿すると、投稿したコメントとその投稿者名が、対象プロトタイプの詳細ページにのみ表示されること", :success)
+        add_result("チェック番号: 4", "コメントを投稿すると、投稿したコメントとその投稿者名が、対象プロトタイプの詳細ページにのみ表示されること", "PASS", "")
+      else
+        issues = []
+        issues << "対象プロトタイプの詳細ページでコメントが表示されていません" if !comment_displayed_on_target
+        issues << "投稿者名が表示されていません" if !user_name_displayed
+        issues << "別のプロトタイプの詳細ページでコメントが表示されています" if !comment_not_displayed_on_other
+
+        add_log("✗ チェック番号: 4: コメントを投稿すると、投稿したコメントとその投稿者名が、対象プロトタイプの詳細ページにのみ表示されること (失敗)", :fail)
+        add_result("チェック番号: 4", "コメントを投稿すると、投稿したコメントとその投稿者名が、対象プロトタイプの詳細ページにのみ表示されること", "FAIL", issues.join('; '))
+      end
+
+      # ===== 7-004: バリデーション =====
+      add_log("　 7-004: コメントフォームを空のまま投稿しようとすると、投稿できずにプロトタイプ詳細ページに戻ること", :check_start)
+      add_log("空のコメントで投稿を試行中...", :progress)
+
+      # 元の詳細ページに戻る
+      driver.get(detail_url)
+      sleep 1
+
+      # コメント投稿前のコメント数を記録
+      page_text_before = driver.find_element(:tag_name, 'body').text
+
+      # 空のコメントを投稿
+      ['comment_content', 'comment_text', 'comment_comment'].each do |field_id|
+        begin
+          driver.execute_script("document.getElementById('#{field_id}').value = '';")
+          driver.find_element(:name, 'commit').click
+          sleep 2
+          break
+        rescue
+          # 次のIDを試す
+        end
+      end
+
+      current_url = driver.current_url
+      is_still_detail_page = current_url.match?(/\/prototypes\/\d+/)
+
+      # 空のコメントが投稿されていないことを確認
+      page_text_after = driver.find_element(:tag_name, 'body').text
+
+      # 7-004の結果判定
+      if is_still_detail_page
+        add_log("✓ 7-004: コメントフォームを空のまま投稿しようとすると、投稿できずにプロトタイプ詳細ページに戻ること", :success)
+        add_result("7-004", "コメントフォームを空のまま投稿しようとすると、投稿できずにプロトタイプ詳細ページに戻ること", "PASS", "")
+      else
+        add_log("✗ 7-004: コメントフォームを空のまま投稿しようとすると、投稿できずにプロトタイプ詳細ページに戻ること (失敗)", :fail)
+        add_result("7-004", "コメントフォームを空のまま投稿しようとすると、投稿できずにプロトタイプ詳細ページに戻ること", "FAIL", "現在のURL: #{current_url}")
+      end
+
+    rescue => e
+      add_log("! エラー発生: #{e.message}", :error)
+      add_result("7-001~7-004", "コメント機能テスト", "ERROR", e.message)
     ensure
       cleanup if cleanup_logs
       @logs.reject! { |log| log[:type] == :progress } if cleanup_logs

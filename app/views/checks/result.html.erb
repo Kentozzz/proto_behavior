@@ -89,6 +89,19 @@
             合計: <%= @results.count %>
           </div>
 
+          <% if @registered_users && @registered_users.any? %>
+            <div data-registered-users style="margin-top: 20px; margin-bottom: 30px; padding: 20px; background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px;">
+              <h2 style="color: #4ec9b0; font-size: 18px; margin-bottom: 15px;">登録済みユーザー情報</h2>
+              <% @registered_users.each_with_index do |user, index| %>
+                <div style="margin-bottom: 15px; padding: 12px; background-color: #252526; border-left: 3px solid #007acc; border-radius: 2px;">
+                  <div style="color: #9cdcfe; font-weight: bold; margin-bottom: 5px;">ユーザー <%= index + 1 %></div>
+                  <div style="color: #ce9178; margin-bottom: 3px;">Email: <%= user[:email] %></div>
+                  <div style="color: #ce9178;">Password: <%= user[:password] %></div>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+
           <% @results.each do |result| %>
             <% status_class = result[:status] == 'PASS' ? 'pass' : (result[:status] == 'FAIL' ? 'fail' : 'error') %>
             <div class="result-item <%= status_class %>">
@@ -109,19 +122,6 @@
               </div>
               <% if result[:note].present? %>
                 <div class="text-muted"><strong>補足:</strong> <%= result[:note] %></div>
-              <% end %>
-            </div>
-          <% end %>
-
-          <% if @registered_users && @registered_users.any? %>
-            <div data-registered-users style="margin-top: 30px; padding: 20px; background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px;">
-              <h2 style="color: #4ec9b0; font-size: 18px; margin-bottom: 15px;">登録済みユーザー情報</h2>
-              <% @registered_users.each_with_index do |user, index| %>
-                <div style="margin-bottom: 15px; padding: 12px; background-color: #252526; border-left: 3px solid #007acc; border-radius: 2px;">
-                  <div style="color: #9cdcfe; font-weight: bold; margin-bottom: 5px;">ユーザー <%= index + 1 %></div>
-                  <div style="color: #ce9178; margin-bottom: 3px;">Email: <%= user[:email] %></div>
-                  <div style="color: #ce9178;">Password: <%= user[:password] %></div>
-                </div>
               <% end %>
             </div>
           <% end %>
@@ -207,6 +207,7 @@
     const terminalLogs = document.getElementById('terminal-logs');
     const editorContent = document.querySelector('.editor-content');
     let lastLogCount = 0;
+    let currentRegisteredUsers = [];
 
     function formatLog(logEntry) {
       const message = logEntry.message || logEntry;
@@ -295,7 +296,7 @@
       }
 
       let usersHtml = `
-        <div data-registered-users style="margin-top: 30px; padding: 20px; background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px;">
+        <div data-registered-users style="margin-top: 20px; margin-bottom: 30px; padding: 20px; background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px;">
           <h2 style="color: #4ec9b0; font-size: 18px; margin-bottom: 15px;">登録済みユーザー情報</h2>
       `;
 
@@ -311,12 +312,20 @@
 
       usersHtml += `</div>`;
 
-      // ボタングループの前に挿入
-      const buttonGroup = editorContent.querySelector('.button-group');
-      if (buttonGroup) {
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = usersHtml;
-        buttonGroup.parentNode.insertBefore(tempDiv.firstElementChild, buttonGroup);
+      // サマリーボックスの後に挿入、なければh1タグの後に挿入
+      const summaryBox = editorContent.querySelector('.summary-box');
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = usersHtml;
+
+      if (summaryBox) {
+        summaryBox.parentNode.insertBefore(tempDiv.firstElementChild, summaryBox.nextSibling);
+      } else {
+        const h1 = editorContent.querySelector('h1');
+        if (h1) {
+          h1.parentNode.insertBefore(tempDiv.firstElementChild, h1.nextSibling);
+        } else {
+          editorContent.appendChild(tempDiv.firstElementChild);
+        }
       }
     }
 
@@ -337,14 +346,19 @@
             terminalLogs.scrollTop = terminalLogs.scrollHeight;
           }
 
+          // 登録済みユーザーを更新・保存
+          if (data.registered_users && data.registered_users.length > 0) {
+            currentRegisteredUsers = data.registered_users;
+          }
+
           // 結果を更新
           if (data.results && data.results.length > 0) {
             updateResults(data.results);
           }
 
-          // 登録済みユーザーを更新
-          if (data.registered_users && data.registered_users.length > 0) {
-            updateRegisteredUsers(data.registered_users);
+          // 登録済みユーザーを表示（結果がある場合もない場合も）
+          if (currentRegisteredUsers.length > 0) {
+            updateRegisteredUsers(currentRegisteredUsers);
           }
 
           // 完了したらポーリングを停止
