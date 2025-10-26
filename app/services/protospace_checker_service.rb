@@ -86,6 +86,10 @@ class ProtospaceCheckerService
     check_cancelled
     run_check_8_001_and_check_5(cleanup_logs: false)
 
+    # 9-001, 9-002 + チェック番号6: その他機能（同じセッション）
+    check_cancelled
+    run_check_9_001_9_002_and_check_6(cleanup_logs: false)
+
     # 最後にクリーンアップとログ整理
     cleanup
     add_log("全チェック完了", :info)
@@ -1557,6 +1561,10 @@ class ProtospaceCheckerService
       # 編集ページに移動
       edit_url = detail_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit')
       driver.get(edit_url)
+      sleep 2
+
+      # 編集ページのURLを保存（9-001などで使用）
+      @posted_prototype[:edit_url] = driver.current_url
 
       # 新しい値で編集
       new_title = "編集後のタイトル#{Time.now.to_i}"
@@ -2240,7 +2248,10 @@ class ProtospaceCheckerService
       begin
         driver.find_element(:partial_link_text, user_name).click
         sleep 2
-        unless driver.current_url.match?(/\/users\/\d+/)
+        if driver.current_url.match?(/\/users\/\d+/)
+          # ユーザー詳細ページのURLを保存（9-002などで使用）
+          @user_detail_url = driver.current_url
+        else
           failed_locations << "ログアウト状態: トップページのユーザー名"
         end
       rescue => e
@@ -2466,6 +2477,143 @@ class ProtospaceCheckerService
     { results: results, logs: logs }
   end
 
+  def run_check_9_001_9_002_and_check_6(cleanup_logs: true)
+    begin
+      # ===== 9-001: ログアウト状態での認証必須ページのリダイレクト =====
+      add_log("　 9-001: ログアウト状態のユーザーは、プロトタイプ新規投稿ページ・プロトタイプ編集ページに遷移しようとすると、ログインページにリダイレクトされること", :check_start)
+
+      failed_pages = []
+
+      add_log("ログアウト中...", :progress)
+      logout_if_needed
+
+      # 1. 新規投稿ページへのアクセス
+      add_log("ログアウト状態: 新規投稿ページへのアクセスを確認中...", :progress)
+      driver.get("#{base_url}/prototypes/new")
+      sleep 2
+      unless driver.current_url.include?('/users/sign_in')
+        failed_pages << "新規投稿ページ"
+      end
+
+      # 2. 編集ページへのアクセス
+      add_log("ログアウト状態: 編集ページへのアクセスを確認中...", :progress)
+      driver.get(@posted_prototype[:edit_url])
+      sleep 2
+      unless driver.current_url.include?('/users/sign_in')
+        failed_pages << "編集ページ"
+      end
+
+      # 9-001の結果判定
+      if failed_pages.empty?
+        add_log("✓ 9-001: ログアウト状態のユーザーは、プロトタイプ新規投稿ページ・プロトタイプ編集ページに遷移しようとすると、ログインページにリダイレクトされること", :success)
+        add_result("9-001", "ログアウト状態のユーザーは、プロトタイプ新規投稿ページ・プロトタイプ編集ページに遷移しようとすると、ログインページにリダイレクトされること", "PASS", "")
+      else
+        add_log("✗ 9-001: ログアウト状態のユーザーは、プロトタイプ新規投稿ページ・プロトタイプ編集ページに遷移しようとすると、ログインページにリダイレクトされること (失敗)", :fail)
+        add_result("9-001", "ログアウト状態のユーザーは、プロトタイプ新規投稿ページ・プロトタイプ編集ページに遷移しようとすると、ログインページにリダイレクトされること", "FAIL", "ログインページにリダイレクトされなかった: #{failed_pages.join(', ')}")
+      end
+
+      # ===== 9-002: ログアウト状態でアクセス可能なページ =====
+      add_log("　 9-002: ログアウト状態のユーザーであっても、トップページ・プロトタイプ詳細ページ・ユーザー詳細ページ・ユーザー新規登録ページ・ログインページには遷移できること", :check_start)
+
+      failed_accessible_pages = []
+
+      # 1. トップページ
+      add_log("ログアウト状態: トップページへのアクセスを確認中...", :progress)
+      driver.get(base_url)
+      sleep 2
+      current_url = driver.current_url
+      if !(current_url == base_url || current_url == "#{base_url}/")
+        failed_accessible_pages << "トップページ（リダイレクトされました: #{current_url}）"
+      end
+
+      # 2. プロトタイプ詳細ページ
+      add_log("ログアウト状態: プロトタイプ詳細ページへのアクセスを確認中...", :progress)
+      driver.get(@posted_prototype[:detail_url])
+      sleep 2
+      unless driver.current_url == @posted_prototype[:detail_url]
+        failed_accessible_pages << "プロトタイプ詳細ページ（リダイレクトされました: #{driver.current_url}）"
+      end
+
+      # 3. ユーザー詳細ページ
+      add_log("ログアウト状態: ユーザー詳細ページへのアクセスを確認中...", :progress)
+      driver.get(@user_detail_url)
+      sleep 2
+      unless driver.current_url == @user_detail_url
+        failed_accessible_pages << "ユーザー詳細ページ（リダイレクトされました: #{driver.current_url}）"
+      end
+
+      # 4. ユーザー新規登録ページ
+      add_log("ログアウト状態: ユーザー新規登録ページへのアクセスを確認中...", :progress)
+      driver.get("#{base_url}/users/sign_up")
+      sleep 2
+      unless driver.current_url.include?('/users/sign_up')
+        failed_accessible_pages << "ユーザー新規登録ページ（リダイレクトされました: #{driver.current_url}）"
+      end
+
+      # 5. ログインページ
+      add_log("ログアウト状態: ログインページへのアクセスを確認中...", :progress)
+      driver.get("#{base_url}/users/sign_in")
+      sleep 2
+      unless driver.current_url.include?('/users/sign_in')
+        failed_accessible_pages << "ログインページ（リダイレクトされました: #{driver.current_url}）"
+      end
+
+      # 9-002の結果判定
+      if failed_accessible_pages.empty?
+        add_log("✓ 9-002: ログアウト状態のユーザーであっても、トップページ・プロトタイプ詳細ページ・ユーザー詳細ページ・ユーザー新規登録ページ・ログインページには遷移できること", :success)
+        add_result("9-002", "ログアウト状態のユーザーであっても、トップページ・プロトタイプ詳細ページ・ユーザー詳細ページ・ユーザー新規登録ページ・ログインページには遷移できること", "PASS", "")
+      else
+        add_log("✗ 9-002: ログアウト状態のユーザーであっても、トップページ・プロトタイプ詳細ページ・ユーザー詳細ページ・ユーザー新規登録ページ・ログインページには遷移できること (失敗)", :fail)
+        add_result("9-002", "ログアウト状態のユーザーであっても、トップページ・プロトタイプ詳細ページ・ユーザー詳細ページ・ユーザー新規登録ページ・ログインページには遷移できること", "FAIL", "アクセスできなかったページ: #{failed_accessible_pages.join('; ')}")
+      end
+
+      # ===== チェック番号6: 他ユーザーのプロトタイプ編集の制限 =====
+      add_log("　 チェック番号: 6: ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集ページのURLを直接入力して遷移しようとすると、トップページにリダイレクトされること", :check_start)
+
+      # 2人目のユーザーでログイン（@registered_users[1]が存在する想定）
+      add_log("2人目のユーザーでログイン中...", :progress)
+
+      if @registered_users.size < 2
+        raise "2人目のユーザーが登録されていません。1-002と1-011が正常に実行されている必要があります。"
+      end
+
+      second_user = @registered_users[1]
+      driver.get("#{base_url}/users/sign_in")
+      sleep 2
+
+      driver.execute_script("document.getElementById('user_email').value = '#{second_user[:email]}';")
+      driver.execute_script("document.getElementById('user_password').value = '#{second_user[:password]}';")
+      driver.find_element(:name, 'commit').click
+      sleep 2
+
+      # 1人目のユーザーの編集ページにアクセス
+      add_log("他のユーザーの編集ページへのアクセスを確認中...", :progress)
+      driver.get(@posted_prototype[:edit_url])
+      sleep 2
+
+      current_url = driver.current_url
+      is_top_page = (current_url == base_url || current_url == "#{base_url}/")
+
+      # チェック番号6の結果判定
+      if is_top_page
+        add_log("✓ チェック番号: 6: ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集ページのURLを直接入力して遷移しようとすると、トップページにリダイレクトされること", :success)
+        add_result("チェック番号: 6", "ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集ページのURLを直接入力して遷移しようとすると、トップページにリダイレクトされること", "PASS", "")
+      else
+        add_log("✗ チェック番号: 6: ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集ページのURLを直接入力して遷移しようとすると、トップページにリダイレクトされること (失敗)", :fail)
+        add_result("チェック番号: 6", "ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集ページのURLを直接入力して遷移しようとすると、トップページにリダイレクトされること", "FAIL", "トップページにリダイレクトされませんでした。現在のURL: #{current_url}")
+      end
+
+    rescue => e
+      add_log("! エラー発生: #{e.message}", :error)
+      add_result("9-001~チェック番号6", "その他機能テスト", "ERROR", e.message)
+    ensure
+      cleanup if cleanup_logs
+      @logs.reject! { |log| log[:type] == :progress } if cleanup_logs
+    end
+
+    { results: results, logs: logs }
+  end
+
   def fill_prototype_form(data)
     # 要素が読み込まれるまで待機
     begin
@@ -2558,6 +2706,32 @@ class ProtospaceCheckerService
     end
   end
 
+  def take_full_page_screenshot(filepath)
+    begin
+      # 現在のウィンドウサイズを保存
+      current_width = driver.execute_script("return window.outerWidth")
+      current_height = driver.execute_script("return window.outerHeight")
+
+      # ページ全体の高さを取得
+      total_height = driver.execute_script("return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)")
+      viewport_width = driver.execute_script("return window.innerWidth") || 1280
+
+      # ウィンドウサイズをページ全体に合わせて調整
+      driver.manage.window.resize_to(viewport_width + 20, total_height + 100)
+      sleep 0.5
+
+      # スクリーンショットを撮影
+      driver.save_screenshot(filepath)
+
+      # 元のサイズに戻す
+      driver.manage.window.resize_to(current_width, current_height)
+    rescue => e
+      # エラー時は通常のスクリーンショットを撮影
+      Rails.logger.warn "フルページスクリーンショット失敗、通常撮影に切り替え: #{e.message}"
+      driver.save_screenshot(filepath)
+    end
+  end
+
   def add_result(check_number, description, status, note)
     # 失敗時はスクリーンショットを撮影
     screenshot_path = nil
@@ -2572,8 +2746,8 @@ class ProtospaceCheckerService
         screenshot_filename = "#{check_number.to_s.gsub(/[^a-zA-Z0-9\-]/, '_')}_#{timestamp}.png"
         screenshot_path = screenshot_dir.join(screenshot_filename).to_s
 
-        # スクリーンショットを保存
-        driver.save_screenshot(screenshot_path)
+        # フルページスクリーンショットを保存
+        take_full_page_screenshot(screenshot_path)
 
         # noteにスクリーンショットのパスを追加
         note = "#{note}\nスクリーンショット: #{screenshot_path}" if note.present?
