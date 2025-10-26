@@ -18,7 +18,7 @@
     <% else %>
       <%= form_with url: checks_path, method: :post, local: true, data: { turbo: false }, class: "search-bar search-form-index", style: "display: flex; align-items: center; gap: 8px;" do |f| %>
         <div style="flex: 1; position: relative;" class="search-input-wrapper">
-          <%= text_field_tag :target_url, "", placeholder: "Protospace挙動確認チェッカー - URLを入力してください", class: "search-input-field", style: "width: 100%;" %>
+          <%= text_field_tag :target_url, "", placeholder: "Protospace Checker - URLを入力してください", class: "search-input-field", style: "width: 100%;" %>
         </div>
         <%= button_tag type: 'submit', style: "background: none; border: none; color: #89d185; cursor: pointer; font-size: 18px; padding: 0; line-height: 1; transition: color 0.1s;", onmouseover: "this.style.color='#55ff55'", onmouseout: "this.style.color='#89d185'" do %>
           ▶

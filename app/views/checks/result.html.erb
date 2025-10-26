@@ -18,7 +18,7 @@
     <% else %>
       <%= form_with url: checks_path, method: :post, local: true, data: { turbo: false }, class: "search-bar search-form-result", style: "display: flex; align-items: center; gap: 8px;" do |f| %>
         <div style="flex: 1; position: relative;" class="search-input-wrapper">
-          <%= text_field_tag :target_url, "", placeholder: "Protospace挙動確認チェッカー - チェック完了", class: "search-input-field", style: "width: 100%;" %>
+          <%= text_field_tag :target_url, "", placeholder: "Protospace Checker - チェック完了", class: "search-input-field", style: "width: 100%;" %>
         </div>
         <%= button_tag type: 'submit', style: "background: none; border: none; color: #89d185; cursor: pointer; font-size: 18px; padding: 0; line-height: 1; transition: color 0.1s;", onmouseover: "this.style.color='#55ff55'", onmouseout: "this.style.color='#89d185'" do %>
           ▶
@@ -483,6 +483,16 @@
             currentRegisteredUsers = data.registered_users;
           }
 
+          // スクリーンショットをリアルタイムで更新（実行中も完了後も）
+          if (data.screenshots && data.screenshots.length > 0) {
+            updateScreenshots(data.screenshots);
+          }
+
+          // 失敗スクリーンショットをリアルタイムで更新（実行中も完了後も）
+          if (data.failure_screenshots && data.failure_screenshots.length > 0) {
+            updateFailureScreenshots(data.failure_screenshots);
+          }
+
           // 完了・エラー・中断時のみ結果を更新して表示
           if (data.status === 'completed' || data.status === 'error' || data.status === 'cancelled') {
             // 結果を更新
@@ -495,15 +505,9 @@
               updateRegisteredUsers(currentRegisteredUsers);
             }
 
-            // スクリーンショットを更新
-            if (data.screenshots && data.screenshots.length > 0) {
-              updateScreenshots(data.screenshots);
-            }
-
-            // 失敗スクリーンショットを更新
-            if (data.failure_screenshots && data.failure_screenshots.length > 0) {
-              updateFailureScreenshots(data.failure_screenshots);
-            }
+            // 元のコンテンツとタブを更新（チェック完了後の状態を保存）
+            originalContent = editorContent.innerHTML;
+            originalTab = tabBar.innerHTML;
 
             console.log('Check completed with status:', data.status);
           } else {
@@ -573,8 +577,8 @@
     const tabBar = document.querySelector('.tab-bar');
 
     // 元のコンテンツとタブを保存
-    const originalContent = editorContent.innerHTML;
-    const originalTab = tabBar.innerHTML;
+    let originalContent = editorContent.innerHTML;
+    let originalTab = tabBar.innerHTML;
 
     // READMEコンテンツ
     const readmeContent = `

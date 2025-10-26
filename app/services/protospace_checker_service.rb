@@ -2731,7 +2731,7 @@ class ProtospaceCheckerService
 
   def ensure_test_image
     # ユーザーが用意したsakura.jpgを優先的に使用
-    sakura_path = '/tmp/sakura.jpg'
+    sakura_path = Rails.root.join('public', 'images', 'sakura.jpg').to_s
     return sakura_path if File.exist?(sakura_path)
 
     # sakura.jpgがない場合は既存のロジックを使用
