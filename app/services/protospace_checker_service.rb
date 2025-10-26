@@ -2813,39 +2813,46 @@ class ProtospaceCheckerService
     @log_callback.call(log_entry) if @log_callback
   end
 
+  # 最後のprogressログを削除
+  def remove_last_progress_log
+    progress_index = @logs.rindex { |log| log[:type] == :progress }
+    @logs.delete_at(progress_index) if progress_index
+  end
+
   # セクション1完了時: ユーザー機能関連ページ
   def capture_section_1_screenshots
-    add_log("📸 セクション1: ユーザー機能関連ページのスクリーンショットを撮影中...", :info)
-
     begin
       # 1. 新規登録ページ
-      add_log("ログアウト状態: 新規登録ページのスクリーンショットを撮影中...", :progress)
+      add_log("新規登録ページのスクリーンショットを撮影中...", :progress)
       driver.get("#{base_url}/users/sign_up")
       sleep 2
       capture_screenshot("signup_page", "Signup Page")
+      remove_last_progress_log
 
       # 2. ログインページ
-      add_log("ログアウト状態: ログインページのスクリーンショットを撮影中...", :progress)
+      add_log("ログインページのスクリーンショットを撮影中...", :progress)
       driver.get("#{base_url}/users/sign_in")
       sleep 2
       capture_screenshot("login_page", "Login Page")
+      remove_last_progress_log
 
       # 3. トップページ（ログアウト状態）
-      add_log("ログアウト状態: トップページのスクリーンショットを撮影中...", :progress)
+      add_log("トップページ（ログアウト状態）のスクリーンショットを撮影中...", :progress)
       driver.get(base_url)
       sleep 2
       capture_screenshot("top_page_logout", "Top Page (Logout)")
+      remove_last_progress_log
 
       # ログインして4. トップページ（ログイン状態）
       if @registered_users.any?
         login_with_registered_user
-        add_log("ログイン状態: トップページのスクリーンショットを撮影中...", :progress)
+        add_log("トップページ（ログイン状態）のスクリーンショットを撮影中...", :progress)
         driver.get(base_url)
         sleep 2
         capture_screenshot("top_page_login", "Top Page (Login)")
+        remove_last_progress_log
       end
 
-      add_log("✓ セクション1のスクリーンショット撮影完了", :success)
     rescue => e
       add_log("! スクリーンショット撮影中にエラーが発生しました: #{e.message}", :error)
       Rails.logger.error "Screenshot capture error: #{e.message}\n#{e.backtrace.join("\n")}"
@@ -2854,16 +2861,14 @@ class ProtospaceCheckerService
 
   # セクション2完了時: 投稿機能関連ページ
   def capture_section_2_screenshots
-    add_log("📸 セクション2: 投稿機能関連ページのスクリーンショットを撮影中...", :info)
-
     begin
       # 新規投稿ページ
-      add_log("ログイン状態: 新規投稿ページのスクリーンショットを撮影中...", :progress)
+      add_log("新規投稿ページのスクリーンショットを撮影中...", :progress)
       driver.get("#{base_url}/prototypes/new")
       sleep 2
       capture_screenshot("prototype_new_page", "Prototype New Page")
+      remove_last_progress_log
 
-      add_log("✓ セクション2のスクリーンショット撮影完了", :success)
     rescue => e
       add_log("! スクリーンショット撮影中にエラーが発生しました: #{e.message}", :error)
       Rails.logger.error "Screenshot capture error: #{e.message}\n#{e.backtrace.join("\n")}"
@@ -2872,15 +2877,13 @@ class ProtospaceCheckerService
 
   # セクション4完了時: プロトタイプ詳細ページ
   def capture_section_4_screenshots
-    add_log("📸 セクション4: プロトタイプ詳細ページのスクリーンショットを撮影中...", :info)
-
     begin
       if @posted_prototype && @posted_prototype[:detail_url]
-        add_log("ログイン状態: プロトタイプ詳細ページのスクリーンショットを撮影中...", :progress)
+        add_log("プロトタイプ詳細ページのスクリーンショットを撮影中...", :progress)
         driver.get(@posted_prototype[:detail_url])
         sleep 2
         capture_screenshot("prototype_detail_page", "Prototype Detail Page")
-        add_log("✓ セクション4のスクリーンショット撮影完了", :success)
+        remove_last_progress_log
       else
         add_log("! プロトタイプ詳細URLが見つかりません", :error)
       end
@@ -2892,15 +2895,13 @@ class ProtospaceCheckerService
 
   # セクション5完了時: プロトタイプ編集ページ
   def capture_section_5_screenshots
-    add_log("📸 セクション5: プロトタイプ編集ページのスクリーンショットを撮影中...", :info)
-
     begin
       if @posted_prototype && @posted_prototype[:edit_url]
-        add_log("ログイン状態: プロトタイプ編集ページのスクリーンショットを撮影中...", :progress)
+        add_log("プロトタイプ編集ページのスクリーンショットを撮影中...", :progress)
         driver.get(@posted_prototype[:edit_url])
         sleep 2
         capture_screenshot("prototype_edit_page", "Prototype Edit Page")
-        add_log("✓ セクション5のスクリーンショット撮影完了", :success)
+        remove_last_progress_log
       else
         add_log("! プロトタイプ編集URLが見つかりません", :error)
       end
@@ -2912,15 +2913,13 @@ class ProtospaceCheckerService
 
   # セクション8完了時: ユーザー詳細ページ
   def capture_section_8_screenshots
-    add_log("📸 セクション8: ユーザー詳細ページのスクリーンショットを撮影中...", :info)
-
     begin
       if @user_detail_url
-        add_log("ログイン状態: ユーザー詳細ページのスクリーンショットを撮影中...", :progress)
+        add_log("ユーザー詳細ページのスクリーンショットを撮影中...", :progress)
         driver.get(@user_detail_url)
         sleep 2
         capture_screenshot("user_detail_page", "User Detail Page")
-        add_log("✓ セクション8のスクリーンショット撮影完了", :success)
+        remove_last_progress_log
       else
         add_log("! ユーザー詳細URLが見つかりません", :error)
       end
