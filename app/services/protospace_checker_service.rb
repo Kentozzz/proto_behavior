@@ -205,6 +205,7 @@ class ProtospaceCheckerService
       test_data[:email] = unique_email
 
       driver.get("#{base_url}/users/sign_up")
+      sleep 1
       fill_signup_form(test_data)
       driver.find_element(:name, 'commit').click
       sleep 2
@@ -227,9 +228,11 @@ class ProtospaceCheckerService
       # ログアウト
       add_log("ログアウト中...", :progress)
       driver.get(base_url)
+      sleep 1
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
         logout_link.click
+        sleep 2
       rescue
         # ログアウトリンクがない場合はスキップ
       end
@@ -237,6 +240,7 @@ class ProtospaceCheckerService
       # 同じメールアドレスで再登録を試行
       add_log("ログアウト状態: 同じメールアドレスで再登録を試行中...", :progress)
       driver.get("#{base_url}/users/sign_up")
+      sleep 1
       fill_signup_form(test_data)
       driver.find_element(:name, 'commit').click
       sleep 2
@@ -349,21 +353,14 @@ class ProtospaceCheckerService
   end
 
   def fill_signup_form(data)
-    # 要素が読み込まれるまで待機
-    begin
-      driver.find_element(:id, 'user_email')
-    rescue
-      sleep 1
-      driver.find_element(:id, 'user_email')
-    end
-
-    driver.execute_script("document.getElementById('user_email').value = '#{data[:email]}';")
-    driver.execute_script("document.getElementById('user_password').value = '#{data[:password]}';")
-    driver.execute_script("document.getElementById('user_password_confirmation').value = '#{data[:password_confirmation]}';")
-    driver.execute_script("document.getElementById('user_name').value = '#{data[:name]}';")
-    driver.execute_script("document.getElementById('user_profile').value = '#{data[:profile]}';")
-    driver.execute_script("document.getElementById('user_occupation').value = '#{data[:occupation]}';")
-    driver.execute_script("document.getElementById('user_position').value = '#{data[:position]}';")
+    # リトライ付きで各フィールドに値を設定
+    set_element_value_with_retry('user_email', data[:email])
+    set_element_value_with_retry('user_password', data[:password])
+    set_element_value_with_retry('user_password_confirmation', data[:password_confirmation])
+    set_element_value_with_retry('user_name', data[:name])
+    set_element_value_with_retry('user_profile', data[:profile])
+    set_element_value_with_retry('user_occupation', data[:occupation])
+    set_element_value_with_retry('user_position', data[:position])
   end
 
   def setup_driver
@@ -429,16 +426,17 @@ class ProtospaceCheckerService
       # 新規登録ページに移動
       add_log("ログアウト状態: 新規登録ページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_up")
+      sleep 2
 
       # フォームに入力
       add_log("ログアウト状態: 必須項目を入力中...", :progress)
-      driver.execute_script("document.getElementById('user_email').value = '#{test_email}';")
-      driver.execute_script("document.getElementById('user_password').value = '#{test_password}';")
-      driver.execute_script("document.getElementById('user_password_confirmation').value = '#{test_password}';")
-      driver.execute_script("document.getElementById('user_name').value = 'テストユーザー';")
-      driver.execute_script("document.getElementById('user_profile').value = 'テストプロフィール';")
-      driver.execute_script("document.getElementById('user_occupation').value = 'テスト会社';")
-      driver.execute_script("document.getElementById('user_position').value = 'テスト役職';")
+      set_element_value_with_retry('user_email', test_email)
+      set_element_value_with_retry('user_password', test_password)
+      set_element_value_with_retry('user_password_confirmation', test_password)
+      set_element_value_with_retry('user_name', 'テストユーザー')
+      set_element_value_with_retry('user_profile', 'テストプロフィール')
+      set_element_value_with_retry('user_occupation', 'テスト会社')
+      set_element_value_with_retry('user_position', 'テスト役職')
 
       # 登録ボタンをクリック
       add_log("ログアウト状態: ユーザー登録を実行中...", :progress)
@@ -548,11 +546,12 @@ class ProtospaceCheckerService
       # ログインページに移動
       add_log("ログインページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_in")
+      sleep 2
 
       # ログイン情報を入力
       add_log("ログイン情報を入力中...", :progress)
-      driver.execute_script("document.getElementById('user_email').value = '#{test_email}';")
-      driver.execute_script("document.getElementById('user_password').value = '#{test_password}';")
+      set_element_value_with_retry('user_email', test_email)
+      set_element_value_with_retry('user_password', test_password)
 
       # ログインボタンをクリック
       add_log("ログイン実行中...", :progress)
@@ -659,11 +658,12 @@ class ProtospaceCheckerService
       # ログインページに移動
       add_log("ログアウト状態: ログインページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_in")
+      sleep 2
 
       # ログイン情報を入力
       add_log("ログアウト状態: ログイン情報を入力中...", :progress)
-      driver.execute_script("document.getElementById('user_email').value = '#{test_email}';")
-      driver.execute_script("document.getElementById('user_password').value = '#{test_password}';")
+      set_element_value_with_retry('user_email', test_email)
+      set_element_value_with_retry('user_password', test_password)
 
       # ログインボタンをクリック
       add_log("ログアウト状態: ログイン実行中...", :progress)
@@ -833,16 +833,17 @@ class ProtospaceCheckerService
       # 新規登録ページに移動
       add_log("ログアウト状態: 新規登録ページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_up")
+      sleep 2
 
       # フォームに入力（確認用パスワードだけ異なる値）
       add_log("ログアウト状態: 全項目を入力中...", :progress)
-      driver.execute_script("document.getElementById('user_email').value = '#{test_email}';")
-      driver.execute_script("document.getElementById('user_password').value = 'aaa111';")
-      driver.execute_script("document.getElementById('user_password_confirmation').value = 'iii222';")
-      driver.execute_script("document.getElementById('user_name').value = 'パスワード不一致テスト';")
-      driver.execute_script("document.getElementById('user_profile').value = 'テストプロフィール';")
-      driver.execute_script("document.getElementById('user_occupation').value = 'テスト会社';")
-      driver.execute_script("document.getElementById('user_position').value = 'テスト役職';")
+      set_element_value_with_retry('user_email', test_email)
+      set_element_value_with_retry('user_password', 'aaa111')
+      set_element_value_with_retry('user_password_confirmation', 'iii222')
+      set_element_value_with_retry('user_name', 'パスワード不一致テスト')
+      set_element_value_with_retry('user_profile', 'テストプロフィール')
+      set_element_value_with_retry('user_occupation', 'テスト会社')
+      set_element_value_with_retry('user_position', 'テスト役職')
 
       # 登録ボタンをクリック
       add_log("ログアウト状態: 登録を試行中...", :progress)
@@ -909,11 +910,12 @@ class ProtospaceCheckerService
       # ログインページに移動
       add_log("ログアウト状態: ログインページへ移動中...", :progress)
       driver.get("#{base_url}/users/sign_in")
+      sleep 2
 
       # ログイン情報を入力
       add_log("ログアウト状態: ログイン情報を入力中...", :progress)
-      driver.execute_script("document.getElementById('user_email').value = '#{test_email}';")
-      driver.execute_script("document.getElementById('user_password').value = '#{test_password}';")
+      set_element_value_with_retry('user_email', test_email)
+      set_element_value_with_retry('user_password', test_password)
 
       # ログインボタンをクリック
       add_log("ログアウト状態: ログイン実行中...", :progress)
@@ -1473,8 +1475,8 @@ class ProtospaceCheckerService
         driver.find_element(:id, 'user_email')
       end
 
-      driver.execute_script("document.getElementById('user_email').value = '#{other_user[:email]}';")
-      driver.execute_script("document.getElementById('user_password').value = '#{other_user[:password]}';")
+      set_element_value_with_retry('user_email', other_user[:email])
+      set_element_value_with_retry('user_password', other_user[:password])
       driver.find_element(:name, 'commit').click
       sleep 2
 
@@ -1604,8 +1606,8 @@ class ProtospaceCheckerService
       driver.get("#{base_url}/users/sign_in")
       sleep 2
 
-      driver.execute_script("document.getElementById('user_email').value = '#{test_user[:email]}';")
-      driver.execute_script("document.getElementById('user_password').value = '#{test_user[:password]}';")
+      set_element_value_with_retry('user_email', test_user[:email])
+      set_element_value_with_retry('user_password', test_user[:password])
       driver.find_element(:name, 'commit').click
       sleep 3
 
@@ -1943,8 +1945,8 @@ class ProtospaceCheckerService
       driver.get("#{base_url}/users/sign_in")
       sleep 2
 
-      driver.execute_script("document.getElementById('user_email').value = '#{other_user[:email]}';")
-      driver.execute_script("document.getElementById('user_password').value = '#{other_user[:password]}';")
+      set_element_value_with_retry('user_email', other_user[:email])
+      set_element_value_with_retry('user_password', other_user[:password])
       driver.find_element(:name, 'commit').click
       sleep 2
 
@@ -1970,8 +1972,8 @@ class ProtospaceCheckerService
       driver.get("#{base_url}/users/sign_in")
       sleep 2
 
-      driver.execute_script("document.getElementById('user_email').value = '#{test_user[:email]}';")
-      driver.execute_script("document.getElementById('user_password').value = '#{test_user[:password]}';")
+      set_element_value_with_retry('user_email', test_user[:email])
+      set_element_value_with_retry('user_password', test_user[:password])
       driver.find_element(:name, 'commit').click
       sleep 2
 
@@ -2640,8 +2642,8 @@ class ProtospaceCheckerService
       driver.get("#{base_url}/users/sign_in")
       sleep 2
 
-      driver.execute_script("document.getElementById('user_email').value = '#{second_user[:email]}';")
-      driver.execute_script("document.getElementById('user_password').value = '#{second_user[:password]}';")
+      set_element_value_with_retry('user_email', second_user[:email])
+      set_element_value_with_retry('user_password', second_user[:password])
       driver.find_element(:name, 'commit').click
       sleep 2
 
@@ -2710,9 +2712,11 @@ class ProtospaceCheckerService
     end
 
     driver.get("#{base_url}/users/sign_in")
+    sleep 2
 
-    driver.execute_script("document.getElementById('user_email').value = '#{test_user[:email]}';")
-    driver.execute_script("document.getElementById('user_password').value = '#{test_user[:password]}';")
+    # リトライ付きで要素に値を設定
+    set_element_value_with_retry('user_email', test_user[:email])
+    set_element_value_with_retry('user_password', test_user[:password])
     driver.find_element(:name, 'commit').click
     sleep 2
   end
@@ -2726,6 +2730,38 @@ class ProtospaceCheckerService
       sleep 2
     rescue
       # 既にログアウト状態
+    end
+  end
+
+  # 要素が見つかるまで待機してから値を設定（リトライ付き）
+  def set_element_value_with_retry(element_id, value, max_retries: 3)
+    retries = 0
+    begin
+      driver.execute_script("document.getElementById('#{element_id}').value = '#{value}';")
+    rescue => e
+      if retries < max_retries
+        retries += 1
+        sleep 1
+        retry
+      else
+        raise e
+      end
+    end
+  end
+
+  # 要素が見つかるまで待機（リトライ付き）
+  def wait_for_element(selector_type, selector_value, max_retries: 5)
+    retries = 0
+    begin
+      driver.find_element(selector_type, selector_value)
+    rescue Selenium::WebDriver::Error::NoSuchElementError => e
+      if retries < max_retries
+        retries += 1
+        sleep 1
+        retry
+      else
+        raise e
+      end
     end
   end
 
@@ -2767,27 +2803,81 @@ class ProtospaceCheckerService
 
   def take_full_page_screenshot(filepath)
     begin
-      # 現在のウィンドウサイズを保存
-      current_width = driver.execute_script("return window.outerWidth")
-      current_height = driver.execute_script("return window.outerHeight")
+      # スクロールを最上部に戻す
+      driver.execute_script("window.scrollTo(0, 0);")
+      sleep 0.3
 
-      # ページ全体の高さを取得
-      total_height = driver.execute_script("return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)")
-      viewport_width = driver.execute_script("return window.innerWidth") || 1280
+      # ページ全体のサイズを取得
+      total_width = driver.execute_script(<<-JS)
+        return Math.max(
+          document.body.scrollWidth,
+          document.documentElement.scrollWidth,
+          document.body.offsetWidth,
+          document.documentElement.offsetWidth,
+          document.body.clientWidth,
+          document.documentElement.clientWidth
+        );
+      JS
 
-      # ウィンドウサイズをページ全体に合わせて調整
-      driver.manage.window.resize_to(viewport_width + 20, total_height + 100)
-      sleep 0.5
+      total_height = driver.execute_script(<<-JS)
+        return Math.max(
+          document.body.scrollHeight,
+          document.documentElement.scrollHeight,
+          document.body.offsetHeight,
+          document.documentElement.offsetHeight,
+          document.body.clientHeight,
+          document.documentElement.clientHeight
+        );
+      JS
 
-      # スクリーンショットを撮影
-      driver.save_screenshot(filepath)
+      # 最小サイズを保証
+      total_width = [total_width.to_i, 1280].max
+      total_height = [total_height.to_i, 1024].max
 
-      # 元のサイズに戻す
-      driver.manage.window.resize_to(current_width, current_height)
+      # 現在のビューポートサイズを取得
+      viewport_width = driver.execute_script("return window.innerWidth")
+      viewport_height = driver.execute_script("return window.innerHeight")
+
+      # スクロールしながら複数枚撮影して結合
+      screenshots = []
+      y_position = 0
+
+      while y_position < total_height
+        # スクロール
+        driver.execute_script("window.scrollTo(0, #{y_position});")
+        sleep 0.2
+
+        # スクリーンショットを一時ファイルに保存
+        temp_file = "#{filepath}.tmp#{screenshots.length}.png"
+        driver.save_screenshot(temp_file)
+        screenshots << temp_file
+
+        y_position += viewport_height
+      end
+
+      # 複数枚のスクリーンショットを縦に結合（ImageMagick使用）
+      if screenshots.length > 1
+        system("convert #{screenshots.join(' ')} -append #{filepath}")
+        # 一時ファイルを削除
+        screenshots.each { |f| File.delete(f) if File.exist?(f) }
+      else
+        # 1枚だけの場合はリネーム
+        FileUtils.mv(screenshots.first, filepath)
+      end
+
+      # スクロールを最上部に戻す
+      driver.execute_script("window.scrollTo(0, 0);")
     rescue => e
+      Rails.logger.error "フルページスクリーンショット失敗: #{e.message}\n#{e.backtrace.join("\n")}"
       # エラー時は通常のスクリーンショットを撮影
-      Rails.logger.warn "フルページスクリーンショット失敗、通常撮影に切り替え: #{e.message}"
-      driver.save_screenshot(filepath)
+      begin
+        driver.save_screenshot(filepath)
+      rescue => fallback_error
+        Rails.logger.error "フォールバックスクリーンショットも失敗: #{fallback_error.message}"
+      end
+    ensure
+      # 一時ファイルのクリーンアップ
+      Dir.glob("#{filepath}.tmp*.png").each { |f| File.delete(f) if File.exist?(f) }
     end
   end
 
@@ -2933,11 +3023,42 @@ class ProtospaceCheckerService
   def capture_section_4_screenshots
     begin
       if @posted_prototype && @posted_prototype[:detail_url]
-        add_log("プロトタイプ詳細ページのスクリーンショットを撮影中...", :progress)
+        # 前提: 4-003で別のユーザーでログイン状態で終了している
+
+        # 1. 未ログイン状態（コメントフォームなし）
+        add_log("プロトタイプ詳細ページ（未ログイン）のスクリーンショットを撮影中...", :progress)
+        logout_if_needed
         driver.get(@posted_prototype[:detail_url])
         sleep 2
-        capture_screenshot("prototype_detail_page", "Prototype Detail Page")
+        capture_screenshot("prototype_detail_page_logout", "Prototype Detail Page (Logged Out)")
         remove_last_progress_log
+
+        # 2. 投稿者本人でログイン（編集・削除ボタンあり、コメントフォームあり）
+        add_log("プロトタイプ詳細ページ（投稿者）のスクリーンショットを撮影中...", :progress)
+        login_with_registered_user
+        driver.get(@posted_prototype[:detail_url])
+        sleep 2
+        capture_screenshot("prototype_detail_page_owner", "Prototype Detail Page (Owner)")
+        remove_last_progress_log
+
+        # 3. 別のユーザーでログイン（編集・削除ボタンなし、コメントフォームあり）
+        if @registered_users.size >= 2
+          add_log("プロトタイプ詳細ページ（他ユーザー）のスクリーンショットを撮影中...", :progress)
+          logout_if_needed
+
+          second_user = @registered_users[1]
+          driver.get("#{base_url}/users/sign_in")
+          sleep 2
+          set_element_value_with_retry('user_email', second_user[:email])
+          set_element_value_with_retry('user_password', second_user[:password])
+          driver.find_element(:name, 'commit').click
+          sleep 2
+
+          driver.get(@posted_prototype[:detail_url])
+          sleep 2
+          capture_screenshot("prototype_detail_page_other_user", "Prototype Detail Page (Other User)")
+          remove_last_progress_log
+        end
       else
         add_log("! プロトタイプ詳細URLが見つかりません", :error)
       end

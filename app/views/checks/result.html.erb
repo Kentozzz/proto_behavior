@@ -236,6 +236,7 @@
     const editorContent = document.querySelector('.editor-content');
     let lastLogCount = 0;
     let currentRegisteredUsers = [];
+    let isPollingActive = true; // ポーリング制御フラグ
 
     function formatLog(logEntry) {
       const message = logEntry.message || logEntry;
@@ -462,6 +463,10 @@
     }
 
     function poll() {
+      if (!isPollingActive) {
+        return; // ポーリングが停止している場合は何もしない
+      }
+
       fetch(`/checks/${sessionId}/poll`)
         .then(response => response.json())
         .then(data => {
@@ -505,10 +510,14 @@
               updateRegisteredUsers(currentRegisteredUsers);
             }
 
-            // 元のコンテンツとタブを更新（チェック完了後の状態を保存）
-            originalContent = editorContent.innerHTML;
-            originalTab = tabBar.innerHTML;
+            // 元のコンテンツとタブを更新（グローバルスコープに保存）
+            if (typeof window.originalContent !== 'undefined') {
+              window.originalContent = editorContent.innerHTML;
+              window.originalTab = document.querySelector('.tab-bar').innerHTML;
+            }
 
+            // ポーリングを完全に停止
+            isPollingActive = false;
             console.log('Check completed with status:', data.status);
           } else {
             // 実行中はポーリングを継続
@@ -517,7 +526,10 @@
         })
         .catch(error => {
           console.error('Polling error:', error);
-          setTimeout(poll, 1000); // エラーの場合は1秒後にリトライ
+          // ポーリングがアクティブな場合のみリトライ
+          if (isPollingActive) {
+            setTimeout(poll, 1000); // エラーの場合は1秒後にリトライ
+          }
         });
     }
 
@@ -576,9 +588,9 @@
     const editorContent = document.querySelector('.editor-content');
     const tabBar = document.querySelector('.tab-bar');
 
-    // 元のコンテンツとタブを保存
-    let originalContent = editorContent.innerHTML;
-    let originalTab = tabBar.innerHTML;
+    // 元のコンテンツとタブを保存（グローバルスコープに保存してポーリングスクリプトと共有）
+    window.originalContent = editorContent.innerHTML;
+    window.originalTab = tabBar.innerHTML;
 
     // READMEコンテンツ
     const readmeContent = `
@@ -748,8 +760,8 @@
           `;
         } else if (viewType === 'results') {
           // 元のコンテンツとタブに戻す
-          tabBar.innerHTML = originalTab;
-          editorContent.innerHTML = originalContent;
+          tabBar.innerHTML = window.originalTab;
+          editorContent.innerHTML = window.originalContent;
         }
       });
     });
