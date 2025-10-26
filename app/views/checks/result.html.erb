@@ -161,12 +161,12 @@
         <div class="panel-resize-handle"></div>
         <div class="panel-header">
           <div class="panel-tab">問題</div>
-          <div class="panel-tab active">出力</div>
+          <div class="panel-tab">出力</div>
           <div class="panel-tab">デバッグ コンソール</div>
-          <div class="panel-tab">ターミナル</div>
+          <div class="panel-tab active">ターミナル</div>
           <div class="panel-tab">ポート</div>
           <div class="panel-controls">
-            <span class="panel-control">⌄</span>
+            <span class="panel-control panel-toggle">⌄</span>
           </div>
         </div>
         <div class="panel-content" id="terminal-logs">
@@ -653,5 +653,29 @@
         }
       });
     });
+
+    // パネルの開閉機能
+    const panelToggle = document.querySelector('.panel-toggle');
+    const panel = document.querySelector('.panel');
+
+    if (panelToggle && panel) {
+      let isCollapsed = false;
+      let originalHeight = panel.offsetHeight;
+
+      panelToggle.addEventListener('click', function() {
+        if (isCollapsed) {
+          // 開く
+          panel.style.height = originalHeight + 'px';
+          panelToggle.textContent = '⌄';
+          isCollapsed = false;
+        } else {
+          // 畳む
+          originalHeight = panel.offsetHeight;
+          panel.style.height = '35px';
+          panelToggle.textContent = '^';
+          isCollapsed = true;
+        }
+      });
+    }
   });
 </script>
