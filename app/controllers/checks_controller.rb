@@ -24,6 +24,7 @@ class ChecksController < ApplicationController
       status: 'running',
       logs: [],
       results: [],
+      screenshots: [],
       target_url: target_url,
       cancelled: false
     }
@@ -73,6 +74,7 @@ class ChecksController < ApplicationController
           @@check_sessions[session_id][:results] = data[:results]
           @@check_sessions[session_id][:logs] = data[:logs]
           @@check_sessions[session_id][:registered_users] = data[:registered_users]
+          @@check_sessions[session_id][:screenshots] = data[:screenshots] || []
           @@check_sessions[session_id][:status] = 'completed'
         end
       rescue => e
@@ -103,6 +105,7 @@ class ChecksController < ApplicationController
     @logs = @session_data[:logs]
     @status = @session_data[:status]
     @registered_users = @session_data[:registered_users] || []
+    @screenshots = @session_data[:screenshots] || []
     @session_id = session_id
 
     render :result
@@ -121,7 +124,8 @@ class ChecksController < ApplicationController
       status: session_data[:status],
       logs: session_data[:logs],
       results: session_data[:results],
-      registered_users: session_data[:registered_users] || []
+      registered_users: session_data[:registered_users] || [],
+      screenshots: session_data[:screenshots] || []
     }
   end
 
@@ -135,6 +139,10 @@ class ChecksController < ApplicationController
       # キャンセルフラグを立てる
       session_data[:cancelled] = true
       session_data[:status] = 'cancelled'
+
+      # プログレスログを削除
+      session_data[:logs].reject! { |log| log[:type] == :progress }
+
       session_data[:logs] << { message: "テストが中止されました", type: :error }
 
       # スレッドが保存されていれば終了させる

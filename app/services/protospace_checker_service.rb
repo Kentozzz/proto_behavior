@@ -1,5 +1,5 @@
 class ProtospaceCheckerService
-  attr_reader :driver, :base_url, :results, :logs, :registered_users, :posted_prototype
+  attr_reader :driver, :base_url, :results, :logs, :registered_users, :posted_prototype, :screenshots
 
   def initialize(target_url, session_id: nil, sessions_store: nil, &log_callback)
     @base_url = target_url.gsub(/\/+$/, '')
@@ -7,9 +7,11 @@ class ProtospaceCheckerService
     @logs = []
     @registered_users = []
     @posted_prototype = {}
+    @screenshots = []
     @log_callback = log_callback
     @session_id = session_id
     @sessions_store = sessions_store
+    @screenshot_timestamp = Time.now.strftime('%Y%m%d_%H%M%S')
     setup_driver
   end
 
@@ -48,6 +50,10 @@ class ProtospaceCheckerService
     setup_driver
     run_check_1_018(cleanup_logs: false)
 
+    # セクション1完了：ユーザー機能関連のスクリーンショット撮影
+    check_cancelled
+    capture_section_1_screenshots
+
     # 2-001〜2-006: 投稿ページ遷移とバリデーションチェック（同じセッション）
     check_cancelled
     add_log("ブラウザを再起動中...", :progress)
@@ -61,6 +67,10 @@ class ProtospaceCheckerService
     setup_driver
     run_check_2_007(cleanup_logs: false)
 
+    # セクション2完了：投稿機能関連のスクリーンショット撮影
+    check_cancelled
+    capture_section_2_screenshots
+
     # 3-001〜3-003: プロトタイプ一覧表示機能（同じセッション）
     check_cancelled
     run_check_3_001(cleanup_logs: false)
@@ -70,9 +80,17 @@ class ProtospaceCheckerService
     check_cancelled
     run_check_4_001_4_002_4_003(cleanup_logs: false)
 
+    # セクション4完了：プロトタイプ詳細ページのスクリーンショット撮影
+    check_cancelled
+    capture_section_4_screenshots
+
     # 5-001〜5-005: プロトタイプ編集機能（同じセッション）
     check_cancelled
     run_check_5_001_to_5_005(cleanup_logs: false)
+
+    # セクション5完了：プロトタイプ編集ページのスクリーンショット撮影
+    check_cancelled
+    capture_section_5_screenshots
 
     # 6-001〜6-002: プロトタイプ削除機能（同じセッション）
     check_cancelled
@@ -86,6 +104,10 @@ class ProtospaceCheckerService
     check_cancelled
     run_check_8_001_and_check_5(cleanup_logs: false)
 
+    # セクション8完了：ユーザー詳細ページのスクリーンショット撮影
+    check_cancelled
+    capture_section_8_screenshots
+
     # 9-001, 9-002 + チェック番号6: その他機能（同じセッション）
     check_cancelled
     run_check_9_001_9_002_and_check_6(cleanup_logs: false)
@@ -95,7 +117,7 @@ class ProtospaceCheckerService
     add_log("全チェック完了", :info)
     @logs.reject! { |log| log[:type] == :progress }
 
-    { results: results, logs: logs, registered_users: registered_users }
+    { results: results, logs: logs, registered_users: registered_users, screenshots: screenshots }
   end
 
   def run_validation_checks
@@ -342,6 +364,10 @@ class ProtospaceCheckerService
     ensure_chrome_environment
     cleanup if @driver
 
+    # セッションごとに独立したuser-data-dirを使用（Cookieが引き継がれないように）
+    timestamp = Time.now.to_i
+    user_data_dir = "/tmp/user-data-#{timestamp}-#{rand(10000)}"
+
     options = Selenium::WebDriver::Chrome::Options.new
     options.add_argument('--headless=new')
     options.add_argument('--no-sandbox')
@@ -350,13 +376,13 @@ class ProtospaceCheckerService
     options.add_argument('--disable-software-rasterizer')
     options.add_argument('--disable-extensions')
     options.add_argument('--disable-web-security')
-    options.add_argument('--disable-setuid-sandbox')  # ← 追加！
-    options.add_argument('--remote-debugging-port=9222') # ← 追加！
+    options.add_argument('--disable-setuid-sandbox')
+    options.add_argument('--remote-debugging-port=9222')
     options.add_argument('--window-size=1280,720')
-    options.add_argument('--user-data-dir=/tmp/user-data') # ← 追加！
-    options.add_argument('--data-path=/tmp/data-path')     # ← 追加！
-    options.add_argument('--disk-cache-dir=/tmp/cache-dir') # ← 追加！
-    options.add_argument('--remote-debugging-address=0.0.0.0') # ← 安定化
+    options.add_argument("--user-data-dir=#{user_data_dir}")
+    options.add_argument("--data-path=/tmp/data-path-#{timestamp}")
+    options.add_argument("--disk-cache-dir=/tmp/cache-dir-#{timestamp}")
+    options.add_argument('--remote-debugging-address=0.0.0.0')
     options.binary = '/tmp/chrome-linux64/chrome'
 
     Selenium::WebDriver::Chrome::Service.driver_path = '/tmp/chromedriver-linux64/chromedriver'
@@ -2785,6 +2811,147 @@ class ProtospaceCheckerService
     end
 
     @log_callback.call(log_entry) if @log_callback
+  end
+
+  # セクション1完了時: ユーザー機能関連ページ
+  def capture_section_1_screenshots
+    add_log("📸 セクション1: ユーザー機能関連ページのスクリーンショットを撮影中...", :info)
+
+    begin
+      # 1. 新規登録ページ
+      add_log("ログアウト状態: 新規登録ページのスクリーンショットを撮影中...", :progress)
+      driver.get("#{base_url}/users/sign_up")
+      sleep 2
+      capture_screenshot("signup_page", "Signup Page")
+
+      # 2. ログインページ
+      add_log("ログアウト状態: ログインページのスクリーンショットを撮影中...", :progress)
+      driver.get("#{base_url}/users/sign_in")
+      sleep 2
+      capture_screenshot("login_page", "Login Page")
+
+      # 3. トップページ（ログアウト状態）
+      add_log("ログアウト状態: トップページのスクリーンショットを撮影中...", :progress)
+      driver.get(base_url)
+      sleep 2
+      capture_screenshot("top_page_logout", "Top Page (Logout)")
+
+      # ログインして4. トップページ（ログイン状態）
+      if @registered_users.any?
+        login_with_registered_user
+        add_log("ログイン状態: トップページのスクリーンショットを撮影中...", :progress)
+        driver.get(base_url)
+        sleep 2
+        capture_screenshot("top_page_login", "Top Page (Login)")
+      end
+
+      add_log("✓ セクション1のスクリーンショット撮影完了", :success)
+    rescue => e
+      add_log("! スクリーンショット撮影中にエラーが発生しました: #{e.message}", :error)
+      Rails.logger.error "Screenshot capture error: #{e.message}\n#{e.backtrace.join("\n")}"
+    end
+  end
+
+  # セクション2完了時: 投稿機能関連ページ
+  def capture_section_2_screenshots
+    add_log("📸 セクション2: 投稿機能関連ページのスクリーンショットを撮影中...", :info)
+
+    begin
+      # 新規投稿ページ
+      add_log("ログイン状態: 新規投稿ページのスクリーンショットを撮影中...", :progress)
+      driver.get("#{base_url}/prototypes/new")
+      sleep 2
+      capture_screenshot("prototype_new_page", "Prototype New Page")
+
+      add_log("✓ セクション2のスクリーンショット撮影完了", :success)
+    rescue => e
+      add_log("! スクリーンショット撮影中にエラーが発生しました: #{e.message}", :error)
+      Rails.logger.error "Screenshot capture error: #{e.message}\n#{e.backtrace.join("\n")}"
+    end
+  end
+
+  # セクション4完了時: プロトタイプ詳細ページ
+  def capture_section_4_screenshots
+    add_log("📸 セクション4: プロトタイプ詳細ページのスクリーンショットを撮影中...", :info)
+
+    begin
+      if @posted_prototype && @posted_prototype[:detail_url]
+        add_log("ログイン状態: プロトタイプ詳細ページのスクリーンショットを撮影中...", :progress)
+        driver.get(@posted_prototype[:detail_url])
+        sleep 2
+        capture_screenshot("prototype_detail_page", "Prototype Detail Page")
+        add_log("✓ セクション4のスクリーンショット撮影完了", :success)
+      else
+        add_log("! プロトタイプ詳細URLが見つかりません", :error)
+      end
+    rescue => e
+      add_log("! スクリーンショット撮影中にエラーが発生しました: #{e.message}", :error)
+      Rails.logger.error "Screenshot capture error: #{e.message}\n#{e.backtrace.join("\n")}"
+    end
+  end
+
+  # セクション5完了時: プロトタイプ編集ページ
+  def capture_section_5_screenshots
+    add_log("📸 セクション5: プロトタイプ編集ページのスクリーンショットを撮影中...", :info)
+
+    begin
+      if @posted_prototype && @posted_prototype[:edit_url]
+        add_log("ログイン状態: プロトタイプ編集ページのスクリーンショットを撮影中...", :progress)
+        driver.get(@posted_prototype[:edit_url])
+        sleep 2
+        capture_screenshot("prototype_edit_page", "Prototype Edit Page")
+        add_log("✓ セクション5のスクリーンショット撮影完了", :success)
+      else
+        add_log("! プロトタイプ編集URLが見つかりません", :error)
+      end
+    rescue => e
+      add_log("! スクリーンショット撮影中にエラーが発生しました: #{e.message}", :error)
+      Rails.logger.error "Screenshot capture error: #{e.message}\n#{e.backtrace.join("\n")}"
+    end
+  end
+
+  # セクション8完了時: ユーザー詳細ページ
+  def capture_section_8_screenshots
+    add_log("📸 セクション8: ユーザー詳細ページのスクリーンショットを撮影中...", :info)
+
+    begin
+      if @user_detail_url
+        add_log("ログイン状態: ユーザー詳細ページのスクリーンショットを撮影中...", :progress)
+        driver.get(@user_detail_url)
+        sleep 2
+        capture_screenshot("user_detail_page", "User Detail Page")
+        add_log("✓ セクション8のスクリーンショット撮影完了", :success)
+      else
+        add_log("! ユーザー詳細URLが見つかりません", :error)
+      end
+    rescue => e
+      add_log("! スクリーンショット撮影中にエラーが発生しました: #{e.message}", :error)
+      Rails.logger.error "Screenshot capture error: #{e.message}\n#{e.backtrace.join("\n")}"
+    end
+  end
+
+  # スクリーンショット撮影とセッションへの保存
+  def capture_screenshot(filename_base, display_name)
+    screenshots_dir = Rails.root.join('public', 'screenshots', 'pages')
+    FileUtils.mkdir_p(screenshots_dir)
+
+    filename = "#{filename_base}_#{@screenshot_timestamp}.png"
+    filepath = screenshots_dir.join(filename).to_s
+    take_full_page_screenshot(filepath)
+
+    screenshot_info = {
+      name: display_name,
+      filename: filename,
+      path: "/screenshots/pages/#{filename}"
+    }
+
+    @screenshots << screenshot_info
+
+    # セッションに即座にスクリーンショット情報を追加
+    if @sessions_store && @session_id && @sessions_store[@session_id]
+      @sessions_store[@session_id][:screenshots] ||= []
+      @sessions_store[@session_id][:screenshots] << screenshot_info
+    end
   end
 
   def cleanup

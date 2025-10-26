@@ -43,14 +43,28 @@
           <span class="chevron">▼</span>
           <span>RESULTS</span>
         </div>
-        <div class="sidebar-item selected">
+        <div class="sidebar-item selected" data-view="results">
           <span class="file-icon">📄</span>
           <span>check_results.json</span>
         </div>
-        <div class="sidebar-item">
+        <div class="sidebar-item" data-view="summary">
           <span class="file-icon">📄</span>
           <span>summary.md</span>
         </div>
+      </div>
+      <div class="sidebar-section" data-screenshot-section="true">
+        <div class="sidebar-section-title">
+          <span class="chevron">▼</span>
+          <span>SCREENSHOTS</span>
+        </div>
+        <% if @screenshots && @screenshots.any? %>
+          <% @screenshots.each do |screenshot| %>
+            <div class="sidebar-item" data-view="screenshot" data-screenshot-path="<%= screenshot[:path] %>" data-screenshot-name="<%= screenshot[:name] %>">
+              <span class="file-icon">🖼️</span>
+              <span><%= screenshot[:name] %></span>
+            </div>
+          <% end %>
+        <% end %>
       </div>
     </div>
 
@@ -128,7 +142,6 @@
 
           <div class="button-group">
             <%= link_to "新しいチェックを実行", new_check_path, class: "btn-primary" %>
-            <%= link_to "トップに戻る", checks_path, class: "btn-secondary" %>
           </div>
         <% else %>
           <h1>チェック結果</h1>
@@ -136,7 +149,6 @@
 
           <div class="button-group">
             <%= link_to "新しいチェックを実行", new_check_path, class: "btn-primary" %>
-            <%= link_to "トップに戻る", checks_path, class: "btn-secondary" %>
           </div>
         <% end %>
       </div>
@@ -279,7 +291,6 @@
       summaryHtml += `
         <div class="button-group">
           <a href="/checks/new" class="btn-primary">新しいチェックを実行</a>
-          <a href="/checks" class="btn-secondary">トップに戻る</a>
         </div>
       `;
 
@@ -329,6 +340,61 @@
       }
     }
 
+    function updateScreenshots(screenshots) {
+      if (!screenshots || screenshots.length === 0) return;
+
+      // 既存のスクリーンショットセクションを探す
+      const screenshotSection = document.querySelector('[data-screenshot-section]');
+      if (!screenshotSection) return;
+
+      // スクリーンショットアイテムを追加
+      screenshots.forEach(screenshot => {
+        // 既に存在するか確認
+        const existingItem = screenshotSection.querySelector(`[data-screenshot-path="${screenshot.path}"]`);
+        if (!existingItem) {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'sidebar-item';
+          itemDiv.setAttribute('data-view', 'screenshot');
+          itemDiv.setAttribute('data-screenshot-path', screenshot.path);
+          itemDiv.setAttribute('data-screenshot-name', screenshot.name);
+          itemDiv.innerHTML = `
+            <span class="file-icon">🖼️</span>
+            <span>${screenshot.name}</span>
+          `;
+
+          // クリックイベントを追加
+          itemDiv.addEventListener('click', function() {
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('selected'));
+            this.classList.add('selected');
+
+            const tabBar = document.querySelector('.tab-bar');
+            tabBar.innerHTML = `
+              <div class="tab active">
+                <span>🖼️</span>
+                <span>${screenshot.name}</span>
+              </div>
+            `;
+
+            editorContent.innerHTML = `
+              <div style="padding: 20px;">
+                <h2 style="margin-bottom: 20px; color: #cccccc;">${screenshot.name}</h2>
+                <div style="background: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 10px; overflow: auto;">
+                  <img src="${screenshot.path}" alt="${screenshot.name}" style="max-width: 100%; height: auto; display: block; border-radius: 4px;">
+                </div>
+              </div>
+            `;
+          });
+
+          // セクションがcollapsed状態なら、アイテムを非表示に
+          if (screenshotSection.classList.contains('collapsed')) {
+            itemDiv.style.display = 'none';
+          }
+
+          screenshotSection.appendChild(itemDiv);
+        }
+      });
+    }
+
     function poll() {
       fetch(`/checks/${sessionId}/poll`)
         .then(response => response.json())
@@ -361,6 +427,11 @@
             updateRegisteredUsers(currentRegisteredUsers);
           }
 
+          // スクリーンショットを更新
+          if (data.screenshots && data.screenshots.length > 0) {
+            updateScreenshots(data.screenshots);
+          }
+
           // 完了したらポーリングを停止
           if (data.status === 'completed' || data.status === 'error') {
             console.log('Check completed');
@@ -379,3 +450,72 @@
   })();
 </script>
 <% end %>
+
+<script>
+  // サイドバーアイテムのクリックイベントを設定
+  document.addEventListener('DOMContentLoaded', function() {
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    const editorContent = document.querySelector('.editor-content');
+    const tabBar = document.querySelector('.tab-bar');
+
+    // サイドバーセクションの開閉機能
+    const sectionTitles = document.querySelectorAll('.sidebar-section-title');
+    sectionTitles.forEach(title => {
+      title.addEventListener('click', function() {
+        const section = this.parentElement;
+        const chevron = this.querySelector('.chevron');
+        const items = Array.from(section.children).filter(child => child.classList.contains('sidebar-item'));
+
+        // 開閉状態をトグル
+        const isCollapsed = section.classList.toggle('collapsed');
+
+        if (isCollapsed) {
+          chevron.textContent = '▶';
+          items.forEach(item => item.style.display = 'none');
+        } else {
+          chevron.textContent = '▼';
+          items.forEach(item => item.style.display = 'flex');
+        }
+      });
+
+      // カーソルをポインターに
+      title.style.cursor = 'pointer';
+    });
+
+    sidebarItems.forEach(item => {
+      item.addEventListener('click', function() {
+        // 選択状態を更新
+        sidebarItems.forEach(i => i.classList.remove('selected'));
+        this.classList.add('selected');
+
+        const viewType = this.getAttribute('data-view');
+
+        if (viewType === 'screenshot') {
+          const screenshotPath = this.getAttribute('data-screenshot-path');
+          const screenshotName = this.getAttribute('data-screenshot-name');
+
+          // タブを更新
+          tabBar.innerHTML = `
+            <div class="tab active">
+              <span>🖼️</span>
+              <span>${screenshotName}</span>
+            </div>
+          `;
+
+          // スクリーンショットを表示
+          editorContent.innerHTML = `
+            <div style="padding: 20px;">
+              <h2 style="margin-bottom: 20px; color: #cccccc;">${screenshotName}</h2>
+              <div style="background: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 10px; overflow: auto;">
+                <img src="${screenshotPath}" alt="${screenshotName}" style="max-width: 100%; height: auto; display: block; border-radius: 4px;">
+              </div>
+            </div>
+          `;
+        } else if (viewType === 'results') {
+          // 結果画面に戻る（ページをリロード）
+          location.reload();
+        }
+      });
+    });
+  });
+</script>

@@ -8,7 +8,7 @@
     </div>
     <div class="search-bar">
       <span class="search-icon">🔍</span>
-      <input type="text" placeholder="プロトスペース チェッカー" readonly>
+      <input type="text" placeholder="Protospace挙動確認チェッカー" readonly>
     </div>
   </div>
 
@@ -52,6 +52,12 @@
           <span>results.json</span>
         </div>
       </div>
+      <div class="sidebar-section" data-screenshot-section="true">
+        <div class="sidebar-section-title">
+          <span class="chevron">▼</span>
+          <span>SCREENSHOTS</span>
+        </div>
+      </div>
     </div>
 
     <!-- Editor Area -->
@@ -63,8 +69,24 @@
         </div>
       </div>
       <div class="editor-content">
-        <h1>プロトスペース模倣アプリ チェッカー</h1>
-        <div class="subtitle">チェック対象のアプリURLを下のターミナルに入力してください</div>
+        <h1>Protospace挙動確認チェッカー</h1>
+        <div class="subtitle">チェック対象のアプリURLを入力してください</div>
+
+        <%= form_with url: checks_path, method: :post, local: true, data: { turbo: false }, style: "margin-top: 30px;" do |f| %>
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; color: #cccccc; font-size: 14px;">アプリケーションURL:</label>
+            <%= text_field_tag :target_url, "",
+              style: "width: 100%; max-width: 600px; padding: 8px 12px; background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; color: #cccccc; font-size: 14px; outline: none;",
+              placeholder: "例: http://localhost:3000",
+              required: true,
+              onfocus: "this.style.borderColor='#007acc'",
+              onblur: "this.style.borderColor='#3c3c3c'" %>
+          </div>
+          <%= submit_tag "チェック開始",
+            style: "padding: 10px 24px; background-color: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold;",
+            onmouseover: "this.style.backgroundColor='#005a9e'",
+            onmouseout: "this.style.backgroundColor='#007acc'" %>
+        <% end %>
 
         <% if @all_registered_users && @all_registered_users.any? %>
           <div style="margin-top: 30px; padding: 20px; background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px;">
@@ -120,3 +142,31 @@
     </div>
   </div>
 </div>
+
+<script>
+  // サイドバーセクションの開閉機能
+  document.addEventListener('DOMContentLoaded', function() {
+    const sectionTitles = document.querySelectorAll('.sidebar-section-title');
+    sectionTitles.forEach(title => {
+      title.addEventListener('click', function() {
+        const section = this.parentElement;
+        const chevron = this.querySelector('.chevron');
+        const items = Array.from(section.children).filter(child => child.classList.contains('sidebar-item'));
+
+        // 開閉状態をトグル
+        const isCollapsed = section.classList.toggle('collapsed');
+
+        if (isCollapsed) {
+          chevron.textContent = '▶';
+          items.forEach(item => item.style.display = 'none');
+        } else {
+          chevron.textContent = '▼';
+          items.forEach(item => item.style.display = 'flex');
+        }
+      });
+
+      // カーソルをポインターに
+      title.style.cursor = 'pointer';
+    });
+  });
+</script>
