@@ -9,7 +9,6 @@
     <% if @is_running %>
       <%= form_with url: cancel_check_path, method: :post, local: true, data: { turbo: false, confirm: "実行中のテストを中止しますか？" }, class: "search-bar", style: "display: flex; align-items: center; gap: 8px;" do |f| %>
         <div style="flex: 1; position: relative;">
-          <span class="search-icon">🔍</span>
           <input type="text" value="チェック実行中..." readonly style="width: 100%;">
         </div>
         <%= button_tag type: 'submit', style: "background: none; border: none; color: #f48771; cursor: pointer; font-size: 18px; padding: 0; line-height: 1; transition: color 0.1s;", onmouseover: "this.style.color='#ff5555'", onmouseout: "this.style.color='#f48771'" do %>
@@ -17,10 +16,9 @@
         <% end %>
       <% end %>
     <% else %>
-      <%= form_with url: checks_path, method: :post, local: true, data: { turbo: false }, class: "search-bar", style: "display: flex; align-items: center; gap: 8px;" do |f| %>
-        <div style="flex: 1; position: relative;">
-          <span class="search-icon">🔍</span>
-          <%= text_field_tag :target_url, "", placeholder: "Protospace挙動確認チェッカー - URLを入力してください", required: true, style: "width: 100%;" %>
+      <%= form_with url: checks_path, method: :post, local: true, data: { turbo: false }, class: "search-bar search-form-index", style: "display: flex; align-items: center; gap: 8px;" do |f| %>
+        <div style="flex: 1; position: relative;" class="search-input-wrapper">
+          <%= text_field_tag :target_url, "", placeholder: "Protospace挙動確認チェッカー - URLを入力してください", class: "search-input-field", style: "width: 100%;" %>
         </div>
         <%= button_tag type: 'submit', style: "background: none; border: none; color: #89d185; cursor: pointer; font-size: 18px; padding: 0; line-height: 1; transition: color 0.1s;", onmouseover: "this.style.color='#55ff55'", onmouseout: "this.style.color='#89d185'" do %>
           ▶
@@ -189,9 +187,7 @@
           <div class="panel-tab active">ターミナル</div>
           <div class="panel-tab">ポート</div>
           <div class="panel-controls">
-            <span class="panel-control">+</span>
             <span class="panel-control">⌄</span>
-            <span class="panel-control">×</span>
           </div>
         </div>
         <div class="panel-content">
@@ -223,6 +219,48 @@
 <script>
   // サイドバーセクションの開閉機能
   document.addEventListener('DOMContentLoaded', function() {
+    // URL入力欄のバリデーション（震えるアニメーション）
+    const searchForm = document.querySelector('.search-form-index');
+    if (searchForm) {
+      searchForm.addEventListener('submit', function(e) {
+        const inputField = this.querySelector('.search-input-field');
+        const inputWrapper = this.querySelector('.search-input-wrapper');
+        const value = inputField ? inputField.value.trim() : '';
+
+        // 空欄チェック
+        if (!value) {
+          e.preventDefault();
+          shakeInput(inputWrapper, inputField);
+          return;
+        }
+
+        // URL形式チェック（http://またはhttps://で始まるか）
+        if (!value.match(/^https?:\/\/.+/i)) {
+          e.preventDefault();
+          shakeInput(inputWrapper, inputField);
+          return;
+        }
+      });
+    }
+
+    function shakeInput(wrapper, field) {
+      // 既存のshakeクラスを削除（アニメーションをリセット）
+      wrapper.classList.remove('shake');
+
+      // 少し待ってからshakeクラスを追加（アニメーションを再トリガー）
+      setTimeout(() => {
+        wrapper.classList.add('shake');
+      }, 10);
+
+      // アニメーション終了後にクラスを削除
+      setTimeout(() => {
+        wrapper.classList.remove('shake');
+      }, 510);
+
+      // 入力欄にフォーカス
+      field.focus();
+    }
+
     const sidebarItems = document.querySelectorAll('.sidebar-item');
     const editorContent = document.querySelector('.editor-content');
     const tabBar = document.querySelector('.tab-bar');

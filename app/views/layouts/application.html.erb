@@ -86,7 +86,7 @@
         background-color: #3c3c3c;
         border: 1px solid #3c3c3c;
         color: #cccccc;
-        padding: 4px 8px 4px 28px;
+        padding: 4px 8px;
         border-radius: 4px;
         font-size: 13px;
         outline: none;
@@ -100,13 +100,14 @@
         flex-shrink: 0;
       }
 
-      .search-icon {
-        position: absolute;
-        left: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #858585;
-        font-size: 14px;
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+      }
+
+      .shake {
+        animation: shake 0.5s;
       }
 
       /* Main Content Area */
@@ -357,6 +358,7 @@
         color: #858585;
         cursor: pointer;
         padding: 4px;
+        font-size: 18px;
       }
 
       .panel-control:hover {
