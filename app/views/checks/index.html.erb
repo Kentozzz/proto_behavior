@@ -50,6 +50,7 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
+      <div class="sidebar-resize-handle"></div>
       <div class="sidebar-header">
         エクスプローラー
       </div>
@@ -71,6 +72,12 @@
         <div class="sidebar-section-title">
           <span class="chevron">▼</span>
           <span>SCREENSHOTS</span>
+        </div>
+      </div>
+      <div class="sidebar-section" data-error-screenshot-section="true">
+        <div class="sidebar-section-title">
+          <span class="chevron">▼</span>
+          <span>FAILURE_SCREENSHOTS</span>
         </div>
       </div>
     </div>
@@ -370,21 +377,21 @@
     const panel = document.querySelector('.panel');
 
     if (panelToggle && panel) {
-      let isCollapsed = false;
       let originalHeight = panel.offsetHeight;
 
       panelToggle.addEventListener('click', function() {
-        if (isCollapsed) {
+        // ボタンの状態を見て判断
+        const isCurrentlyClosed = panelToggle.textContent === '^';
+
+        if (isCurrentlyClosed) {
           // 開く
           panel.style.height = originalHeight + 'px';
           panelToggle.textContent = '⌄';
-          isCollapsed = false;
         } else {
           // 畳む
           originalHeight = panel.offsetHeight;
           panel.style.height = '35px';
           panelToggle.textContent = '^';
-          isCollapsed = true;
         }
       });
     }

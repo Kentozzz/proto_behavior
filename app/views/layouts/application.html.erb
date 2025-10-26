@@ -55,6 +55,8 @@
         align-items: center;
         padding: 0 8px;
         border-bottom: 1px solid #2d2d30;
+        position: relative;
+        z-index: 200;
       }
 
       .window-controls {
@@ -197,11 +199,28 @@
 
       /* Sidebar */
       .sidebar {
-        width: 300px;
+        width: 220px;
         background-color: #252526;
         border-right: 1px solid #2d2d30;
         display: flex;
         flex-direction: column;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+      }
+
+      .sidebar-resize-handle {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 4px;
+        cursor: ew-resize;
+        z-index: 100;
+      }
+
+      .sidebar-resize-handle:hover {
+        background-color: #007acc;
       }
 
       .sidebar-header {
@@ -213,6 +232,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        white-space: nowrap;
       }
 
       .sidebar-section {
@@ -227,6 +247,7 @@
         display: flex;
         align-items: center;
         gap: 4px;
+        white-space: nowrap;
       }
 
       .sidebar-section-title:hover {
@@ -245,6 +266,7 @@
         align-items: center;
         gap: 6px;
         font-size: 13px;
+        white-space: nowrap;
       }
 
       .sidebar-item:hover {
@@ -620,6 +642,7 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
+        // パネル（ターミナル）のリサイズ機能
         const panel = document.querySelector('.panel');
         const resizeHandle = document.querySelector('.panel-resize-handle');
 
@@ -633,6 +656,8 @@
             startY = e.clientY;
             startHeight = panel.offsetHeight;
             document.body.style.cursor = 'ns-resize';
+            // ドラッグ中はトランジションを無効化
+            panel.style.transition = 'none';
             e.preventDefault();
           });
 
@@ -645,12 +670,57 @@
             // 最小高さ100px、最大高さ800px
             if (newHeight >= 100 && newHeight <= 800) {
               panel.style.height = newHeight + 'px';
+
+              // パネルが閉じた状態（35px）からリサイズされた場合、トグルボタンを⌄に戻す
+              const panelToggle = document.querySelector('.panel-toggle');
+              if (panelToggle && panelToggle.textContent === '^') {
+                panelToggle.textContent = '⌄';
+              }
             }
           });
 
           document.addEventListener('mouseup', function() {
             if (isResizing) {
               isResizing = false;
+              document.body.style.cursor = '';
+              // ドラッグ終了後、トランジションを再度有効化
+              panel.style.transition = 'height 0.3s ease';
+            }
+          });
+        }
+
+        // サイドバーのリサイズ機能
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarResizeHandle = document.querySelector('.sidebar-resize-handle');
+
+        if (sidebar && sidebarResizeHandle) {
+          let isSidebarResizing = false;
+          let startX = 0;
+          let startWidth = 0;
+
+          sidebarResizeHandle.addEventListener('mousedown', function(e) {
+            isSidebarResizing = true;
+            startX = e.clientX;
+            startWidth = sidebar.offsetWidth;
+            document.body.style.cursor = 'ew-resize';
+            e.preventDefault();
+          });
+
+          document.addEventListener('mousemove', function(e) {
+            if (!isSidebarResizing) return;
+
+            const delta = e.clientX - startX;
+            const newWidth = startWidth + delta;
+
+            // 最小幅48px、最大幅600px
+            if (newWidth >= 48 && newWidth <= 600) {
+              sidebar.style.width = newWidth + 'px';
+            }
+          });
+
+          document.addEventListener('mouseup', function() {
+            if (isSidebarResizing) {
+              isSidebarResizing = false;
               document.body.style.cursor = '';
             }
           });

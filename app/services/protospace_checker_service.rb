@@ -1,5 +1,5 @@
 class ProtospaceCheckerService
-  attr_reader :driver, :base_url, :results, :logs, :registered_users, :posted_prototype, :screenshots
+  attr_reader :driver, :base_url, :results, :logs, :registered_users, :posted_prototype, :screenshots, :failure_screenshots
 
   def initialize(target_url, session_id: nil, sessions_store: nil, &log_callback)
     @base_url = target_url.gsub(/\/+$/, '')
@@ -8,6 +8,7 @@ class ProtospaceCheckerService
     @registered_users = []
     @posted_prototype = {}
     @screenshots = []
+    @failure_screenshots = []
     @log_callback = log_callback
     @session_id = session_id
     @sessions_store = sessions_store
@@ -117,7 +118,7 @@ class ProtospaceCheckerService
     add_log("全チェック完了", :info)
     @logs.reject! { |log| log[:type] == :progress }
 
-    { results: results, logs: logs, registered_users: registered_users, screenshots: screenshots }
+    { results: results, logs: logs, registered_users: registered_users, screenshots: screenshots, failure_screenshots: failure_screenshots }
   end
 
   def run_validation_checks
@@ -2795,9 +2796,9 @@ class ProtospaceCheckerService
     screenshot_path = nil
     if (status == 'FAIL' || status == 'ERROR') && driver
       begin
-        # スクリーンショット保存用ディレクトリを作成
-        screenshot_dir = Rails.root.join('screenshots')
-        Dir.mkdir(screenshot_dir) unless Dir.exist?(screenshot_dir)
+        # スクリーンショット保存用ディレクトリを作成（公開ディレクトリ）
+        screenshot_dir = Rails.root.join('public', 'screenshots', 'failures')
+        FileUtils.mkdir_p(screenshot_dir)
 
         # ファイル名: チェック番号_タイムスタンプ.png
         timestamp = Time.now.strftime('%Y%m%d_%H%M%S')
@@ -2807,9 +2808,25 @@ class ProtospaceCheckerService
         # フルページスクリーンショットを保存
         take_full_page_screenshot(screenshot_path)
 
+        # 失敗スクリーンショット情報を保存
+        failure_screenshot_info = {
+          name: "#{check_number} - #{description}",
+          filename: screenshot_filename,
+          path: "/screenshots/failures/#{screenshot_filename}",
+          check_number: check_number
+        }
+
+        @failure_screenshots << failure_screenshot_info
+
+        # セッションに即座に失敗スクリーンショット情報を追加
+        if @sessions_store && @session_id && @sessions_store[@session_id]
+          @sessions_store[@session_id][:failure_screenshots] ||= []
+          @sessions_store[@session_id][:failure_screenshots] << failure_screenshot_info
+        end
+
         # noteにスクリーンショットのパスを追加
-        note = "#{note}\nスクリーンショット: #{screenshot_path}" if note.present?
-        note = "スクリーンショット: #{screenshot_path}" if note.blank?
+        note = "#{note}\nスクリーンショット: /screenshots/failures/#{screenshot_filename}" if note.present?
+        note = "スクリーンショット: /screenshots/failures/#{screenshot_filename}" if note.blank?
       rescue => e
         Rails.logger.warn "スクリーンショット撮影エラー: #{e.message}"
       end

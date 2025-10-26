@@ -79,6 +79,7 @@ class ChecksController < ApplicationController
           @@check_sessions[session_id][:logs] = data[:logs]
           @@check_sessions[session_id][:registered_users] = data[:registered_users]
           @@check_sessions[session_id][:screenshots] = data[:screenshots] || []
+          @@check_sessions[session_id][:failure_screenshots] = data[:failure_screenshots] || []
           @@check_sessions[session_id][:status] = 'completed'
         end
       rescue => e
@@ -110,6 +111,7 @@ class ChecksController < ApplicationController
     @status = @session_data[:status]
     @registered_users = @session_data[:registered_users] || []
     @screenshots = @session_data[:screenshots] || []
+    @failure_screenshots = @session_data[:failure_screenshots] || []
     @session_id = session_id
 
     # 実行中のセッションを検出
@@ -133,7 +135,8 @@ class ChecksController < ApplicationController
       logs: session_data[:logs],
       results: session_data[:results],
       registered_users: session_data[:registered_users] || [],
-      screenshots: session_data[:screenshots] || []
+      screenshots: session_data[:screenshots] || [],
+      failure_screenshots: session_data[:failure_screenshots] || []
     }
   end
 

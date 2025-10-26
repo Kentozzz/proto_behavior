@@ -50,6 +50,7 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
+      <div class="sidebar-resize-handle"></div>
       <div class="sidebar-header">
         エクスプローラー
       </div>
@@ -76,6 +77,20 @@
           <% @screenshots.each do |screenshot| %>
             <div class="sidebar-item" data-view="screenshot" data-screenshot-path="<%= screenshot[:path] %>" data-screenshot-name="<%= screenshot[:name] %>">
               <span class="file-icon">🖼️</span>
+              <span><%= screenshot[:name] %></span>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="sidebar-section" data-failure-screenshot-section="true">
+        <div class="sidebar-section-title">
+          <span class="chevron">▼</span>
+          <span>FAILURE_SCREENSHOTS</span>
+        </div>
+        <% if @failure_screenshots && @failure_screenshots.any? %>
+          <% @failure_screenshots.each do |screenshot| %>
+            <div class="sidebar-item" data-view="failure-screenshot" data-screenshot-path="<%= screenshot[:path] %>" data-screenshot-name="<%= screenshot[:name] %>">
+              <span class="file-icon">⚠️</span>
               <span><%= screenshot[:name] %></span>
             </div>
           <% end %>
@@ -391,6 +406,61 @@
       });
     }
 
+    function updateFailureScreenshots(failureScreenshots) {
+      if (!failureScreenshots || failureScreenshots.length === 0) return;
+
+      // 既存のエラースクリーンショットセクションを探す
+      const failureScreenshotSection = document.querySelector('[data-failure-screenshot-section]');
+      if (!failureScreenshotSection) return;
+
+      // エラースクリーンショットアイテムを追加
+      failureScreenshots.forEach(screenshot => {
+        // 既に存在するか確認
+        const existingItem = failureScreenshotSection.querySelector(`[data-screenshot-path="${screenshot.path}"]`);
+        if (!existingItem) {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'sidebar-item';
+          itemDiv.setAttribute('data-view', 'failure-screenshot');
+          itemDiv.setAttribute('data-screenshot-path', screenshot.path);
+          itemDiv.setAttribute('data-screenshot-name', screenshot.name);
+          itemDiv.innerHTML = `
+            <span class="file-icon">⚠️</span>
+            <span>${screenshot.name}</span>
+          `;
+
+          // クリックイベントを追加
+          itemDiv.addEventListener('click', function() {
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('selected'));
+            this.classList.add('selected');
+
+            const tabBar = document.querySelector('.tab-bar');
+            tabBar.innerHTML = `
+              <div class="tab active">
+                <span>⚠️</span>
+                <span>${screenshot.name}</span>
+              </div>
+            `;
+
+            editorContent.innerHTML = `
+              <div style="padding: 20px;">
+                <h2 style="margin-bottom: 20px; color: #f48771;">${screenshot.name}</h2>
+                <div style="background: #1e1e1e; border: 1px solid #d72828; border-radius: 4px; padding: 10px; overflow: auto;">
+                  <img src="${screenshot.path}" alt="${screenshot.name}" style="max-width: 100%; height: auto; display: block; border-radius: 4px;">
+                </div>
+              </div>
+            `;
+          });
+
+          // セクションがcollapsed状態なら、アイテムを非表示に
+          if (failureScreenshotSection.classList.contains('collapsed')) {
+            itemDiv.style.display = 'none';
+          }
+
+          failureScreenshotSection.appendChild(itemDiv);
+        }
+      });
+    }
+
     function poll() {
       fetch(`/checks/${sessionId}/poll`)
         .then(response => response.json())
@@ -428,6 +498,11 @@
             // スクリーンショットを更新
             if (data.screenshots && data.screenshots.length > 0) {
               updateScreenshots(data.screenshots);
+            }
+
+            // 失敗スクリーンショットを更新
+            if (data.failure_screenshots && data.failure_screenshots.length > 0) {
+              updateFailureScreenshots(data.failure_screenshots);
             }
 
             console.log('Check completed with status:', data.status);
@@ -646,6 +721,27 @@
               </div>
             </div>
           `;
+        } else if (viewType === 'failure-screenshot') {
+          const screenshotPath = this.getAttribute('data-screenshot-path');
+          const screenshotName = this.getAttribute('data-screenshot-name');
+
+          // タブを更新
+          tabBar.innerHTML = `
+            <div class="tab active">
+              <span>⚠️</span>
+              <span>${screenshotName}</span>
+            </div>
+          `;
+
+          // 失敗スクリーンショットを表示（赤いボーダー）
+          editorContent.innerHTML = `
+            <div style="padding: 20px;">
+              <h2 style="margin-bottom: 20px; color: #f48771;">${screenshotName}</h2>
+              <div style="background: #1e1e1e; border: 1px solid #d72828; border-radius: 4px; padding: 10px; overflow: auto;">
+                <img src="${screenshotPath}" alt="${screenshotName}" style="max-width: 100%; height: auto; display: block; border-radius: 4px;">
+              </div>
+            </div>
+          `;
         } else if (viewType === 'results') {
           // 元のコンテンツとタブに戻す
           tabBar.innerHTML = originalTab;
@@ -659,21 +755,21 @@
     const panel = document.querySelector('.panel');
 
     if (panelToggle && panel) {
-      let isCollapsed = false;
       let originalHeight = panel.offsetHeight;
 
       panelToggle.addEventListener('click', function() {
-        if (isCollapsed) {
+        // ボタンの状態を見て判断
+        const isCurrentlyClosed = panelToggle.textContent === '^';
+
+        if (isCurrentlyClosed) {
           // 開く
           panel.style.height = originalHeight + 'px';
           panelToggle.textContent = '⌄';
-          isCollapsed = false;
         } else {
           // 畳む
           originalHeight = panel.offsetHeight;
           panel.style.height = '35px';
           panelToggle.textContent = '^';
-          isCollapsed = true;
         }
       });
     }
