@@ -82,6 +82,10 @@ class ProtospaceCheckerService
     check_cancelled
     run_check_7_001_to_7_004(cleanup_logs: false)
 
+    # 8-001 + チェック番号5: ユーザー詳細機能（同じセッション）
+    check_cancelled
+    run_check_8_001_and_check_5(cleanup_logs: false)
+
     # 最後にクリーンアップとログ整理
     cleanup
     add_log("全チェック完了", :info)
@@ -182,7 +186,10 @@ class ProtospaceCheckerService
       @registered_users << {
         email: unique_email,
         password: test_data[:password],
-        name: test_data[:name]
+        name: test_data[:name],
+        profile: test_data[:profile],
+        occupation: test_data[:occupation],
+        position: test_data[:position]
       }
 
       # ログアウト
@@ -393,7 +400,10 @@ class ProtospaceCheckerService
         @registered_users << {
           email: test_email,
           password: test_password,
-          name: "テストユーザー"
+          name: "テストユーザー",
+          profile: "テストプロフィール",
+          occupation: "テスト会社",
+          position: "テスト役職"
         }
       else
         add_log("✗ 1-011: 必須項目に適切な値を入力すると、ユーザーの新規登録ができること (失敗)", :fail)
@@ -2209,6 +2219,253 @@ class ProtospaceCheckerService
     { results: results, logs: logs }
   end
 
+  def run_check_8_001_and_check_5(cleanup_logs: true)
+    begin
+      user_info = @registered_users.first
+      user_name = user_info[:name]
+
+      # ===== 8-001: ユーザー名クリックでの遷移確認 =====
+      add_log("　 8-001: ログイン・ログアウトの状態に関わらず、各ページのユーザー名をクリックすると、ユーザーの詳細ページへ遷移すること", :check_start)
+
+      failed_locations = []
+
+      # ▼ ログアウト状態での確認
+      add_log("ログアウト中...", :progress)
+      logout_if_needed
+
+      # 1. トップページのプロトタイプ一覧のユーザー名
+      add_log("ログアウト状態: トップページのユーザー名リンクを確認中...", :progress)
+      driver.get(base_url)
+      sleep 2
+      begin
+        driver.find_element(:partial_link_text, user_name).click
+        sleep 2
+        unless driver.current_url.match?(/\/users\/\d+/)
+          failed_locations << "ログアウト状態: トップページのユーザー名"
+        end
+      rescue => e
+        failed_locations << "ログアウト状態: トップページのユーザー名（リンクが見つかりません）"
+      end
+
+      # 2. プロトタイプ詳細ページの投稿者名
+      add_log("ログアウト状態: プロトタイプ詳細ページの投稿者名リンクを確認中...", :progress)
+      driver.get(@posted_prototype[:detail_url])
+      sleep 2
+      begin
+        driver.find_element(:partial_link_text, user_name).click
+        sleep 2
+        unless driver.current_url.match?(/\/users\/\d+/)
+          failed_locations << "ログアウト状態: プロトタイプ詳細ページの投稿者名"
+        end
+      rescue => e
+        failed_locations << "ログアウト状態: プロトタイプ詳細ページの投稿者名（リンクが見つかりません）"
+      end
+
+      # 3. コメント欄のユーザー名
+      add_log("ログアウト状態: コメント欄のユーザー名リンクを確認中...", :progress)
+      driver.get(@posted_prototype[:detail_url])
+      sleep 2
+      begin
+        # コメント欄にあるユーザー名を探す（複数ある可能性があるので、2つ目以降をコメント欄と判断）
+        comment_user_links = driver.find_elements(:partial_link_text, user_name)
+        if comment_user_links.size > 1
+          comment_user_links.last.click  # 2つ目以降をコメント欄のリンクと判断
+          sleep 2
+          unless driver.current_url.match?(/\/users\/\d+/)
+            failed_locations << "ログアウト状態: コメント欄のユーザー名"
+          end
+        else
+          failed_locations << "ログアウト状態: コメント欄のユーザー名（リンクが見つかりません）"
+        end
+      rescue => e
+        failed_locations << "ログアウト状態: コメント欄のユーザー名（エラー: #{e.message}）"
+      end
+
+      # ▼ ログイン状態での確認
+      add_log("ログイン中...", :progress)
+      login_with_registered_user
+
+      # 4. トップページの「こんにちは〇〇さん」のユーザー名
+      add_log("ログイン状態: こんにちは〇〇さんのユーザー名リンクを確認中...", :progress)
+      driver.get(base_url)
+      sleep 2
+      begin
+        # 「こんにちは」の近くにあるユーザー名リンクを探す
+        driver.find_element(:partial_link_text, user_name).click
+        sleep 2
+        unless driver.current_url.match?(/\/users\/\d+/)
+          failed_locations << "ログイン状態: こんにちは〇〇さんのユーザー名"
+        end
+      rescue => e
+        failed_locations << "ログイン状態: こんにちは〇〇さんのユーザー名（リンクが見つかりません）"
+      end
+
+      # 5. ログイン状態: トップページのプロトタイプ一覧のユーザー名
+      add_log("ログイン状態: トップページのユーザー名リンクを確認中...", :progress)
+      driver.get(base_url)
+      sleep 2
+      begin
+        # 複数のユーザー名リンクがある場合、プロトタイプ一覧のものを選択
+        user_links = driver.find_elements(:partial_link_text, user_name)
+        if user_links.size > 1
+          user_links.last.click  # 「こんにちは」以外のリンクを選択
+        else
+          user_links.first.click
+        end
+        sleep 2
+        unless driver.current_url.match?(/\/users\/\d+/)
+          failed_locations << "ログイン状態: トップページのユーザー名"
+        end
+      rescue => e
+        failed_locations << "ログイン状態: トップページのユーザー名（リンクが見つかりません）"
+      end
+
+      # 6. ログイン状態: プロトタイプ詳細ページの投稿者名
+      add_log("ログイン状態: プロトタイプ詳細ページの投稿者名リンクを確認中...", :progress)
+      driver.get(@posted_prototype[:detail_url])
+      sleep 2
+      begin
+        driver.find_element(:partial_link_text, user_name).click
+        sleep 2
+        unless driver.current_url.match?(/\/users\/\d+/)
+          failed_locations << "ログイン状態: プロトタイプ詳細ページの投稿者名"
+        end
+      rescue => e
+        failed_locations << "ログイン状態: プロトタイプ詳細ページの投稿者名（リンクが見つかりません）"
+      end
+
+      # 7. ログイン状態: コメント欄のユーザー名
+      add_log("ログイン状態: コメント欄のユーザー名リンクを確認中...", :progress)
+      driver.get(@posted_prototype[:detail_url])
+      sleep 2
+      begin
+        # コメント欄にあるユーザー名を探す
+        comment_user_links = driver.find_elements(:partial_link_text, user_name)
+        if comment_user_links.size > 1
+          comment_user_links.last.click  # 2つ目以降をコメント欄のリンクと判断
+          sleep 2
+          unless driver.current_url.match?(/\/users\/\d+/)
+            failed_locations << "ログイン状態: コメント欄のユーザー名"
+          end
+        else
+          failed_locations << "ログイン状態: コメント欄のユーザー名（リンクが見つかりません）"
+        end
+      rescue => e
+        failed_locations << "ログイン状態: コメント欄のユーザー名（エラー: #{e.message}）"
+      end
+
+      # 8-001の結果判定
+      if failed_locations.empty?
+        add_log("✓ 8-001: ログイン・ログアウトの状態に関わらず、各ページのユーザー名をクリックすると、ユーザーの詳細ページへ遷移すること", :success)
+        add_result("8-001", "ログイン・ログアウトの状態に関わらず、各ページのユーザー名をクリックすると、ユーザーの詳細ページへ遷移すること", "PASS", "")
+      else
+        add_log("✗ 8-001: ログイン・ログアウトの状態に関わらず、各ページのユーザー名をクリックすると、ユーザーの詳細ページへ遷移すること (失敗)", :fail)
+        add_result("8-001", "ログイン・ログアウトの状態に関わらず、各ページのユーザー名をクリックすると、ユーザーの詳細ページへ遷移すること", "FAIL", "遷移できなかった箇所: #{failed_locations.join('; ')}")
+      end
+
+      # ===== チェック番号5: ユーザー詳細ページの表示内容確認 =====
+      add_log("　 チェック番号: 5: ログイン・ログアウトの状態に関わらず、ユーザーの詳細ページには、そのユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること", :check_start)
+
+      failed_items = []
+
+      # ▼ ログアウト状態での確認
+      add_log("ログアウト中...", :progress)
+      logout_if_needed
+
+      add_log("ログアウト状態: ユーザー詳細ページへ遷移中...", :progress)
+      driver.get(base_url)
+      sleep 2
+      begin
+        driver.find_element(:partial_link_text, user_name).click
+        sleep 2
+      rescue => e
+        raise "ユーザー詳細ページへの遷移に失敗しました: #{e.message}"
+      end
+
+      add_log("ログアウト状態: ユーザー詳細情報を確認中...", :progress)
+      page_text = driver.page_source
+
+      # 各項目をチェック
+      unless page_text.include?(user_info[:name])
+        failed_items << "ログアウト状態: 名前が表示されていません"
+      end
+
+      unless page_text.include?(user_info[:profile])
+        failed_items << "ログアウト状態: プロフィールが表示されていません"
+      end
+
+      unless page_text.include?(user_info[:occupation])
+        failed_items << "ログアウト状態: 所属が表示されていません"
+      end
+
+      unless page_text.include?(user_info[:position])
+        failed_items << "ログアウト状態: 役職が表示されていません"
+      end
+
+      # 投稿したプロトタイプが表示されているか
+      unless page_text.include?(@posted_prototype[:title])
+        failed_items << "ログアウト状態: ユーザーが投稿したプロトタイプが表示されていません"
+      end
+
+      # ▼ ログイン状態での確認
+      add_log("ログイン中...", :progress)
+      login_with_registered_user
+
+      add_log("ログイン状態: ユーザー詳細ページへ遷移中...", :progress)
+      driver.get(base_url)
+      sleep 2
+      begin
+        driver.find_element(:partial_link_text, user_name).click
+        sleep 2
+      rescue => e
+        raise "ユーザー詳細ページへの遷移に失敗しました: #{e.message}"
+      end
+
+      add_log("ログイン状態: ユーザー詳細情報を確認中...", :progress)
+      page_text = driver.page_source
+
+      # 各項目をチェック
+      unless page_text.include?(user_info[:name])
+        failed_items << "ログイン状態: 名前が表示されていません"
+      end
+
+      unless page_text.include?(user_info[:profile])
+        failed_items << "ログイン状態: プロフィールが表示されていません"
+      end
+
+      unless page_text.include?(user_info[:occupation])
+        failed_items << "ログイン状態: 所属が表示されていません"
+      end
+
+      unless page_text.include?(user_info[:position])
+        failed_items << "ログイン状態: 役職が表示されていません"
+      end
+
+      # 投稿したプロトタイプが表示されているか
+      unless page_text.include?(@posted_prototype[:title])
+        failed_items << "ログイン状態: ユーザーが投稿したプロトタイプが表示されていません"
+      end
+
+      # チェック番号5の結果判定
+      if failed_items.empty?
+        add_log("✓ チェック番号: 5: ログイン・ログアウトの状態に関わらず、ユーザーの詳細ページには、そのユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること", :success)
+        add_result("チェック番号: 5", "ログイン・ログアウトの状態に関わらず、ユーザーの詳細ページには、そのユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること", "PASS", "")
+      else
+        add_log("✗ チェック番号: 5: ログイン・ログアウトの状態に関わらず、ユーザーの詳細ページには、そのユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること (失敗)", :fail)
+        add_result("チェック番号: 5", "ログイン・ログアウトの状態に関わらず、ユーザーの詳細ページには、そのユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること", "FAIL", failed_items.join('; '))
+      end
+
+    rescue => e
+      add_log("! エラー発生: #{e.message}", :error)
+      add_result("8-001~チェック番号5", "ユーザー詳細機能テスト", "ERROR", e.message)
+    ensure
+      cleanup if cleanup_logs
+      @logs.reject! { |log| log[:type] == :progress } if cleanup_logs
+    end
+
+    { results: results, logs: logs }
+  end
+
   def fill_prototype_form(data)
     # 要素が読み込まれるまで待機
     begin
@@ -2251,6 +2508,18 @@ class ProtospaceCheckerService
     driver.execute_script("document.getElementById('user_password').value = '#{test_user[:password]}';")
     driver.find_element(:name, 'commit').click
     sleep 2
+  end
+
+  def logout_if_needed
+    driver.get(base_url)
+    sleep 1
+    begin
+      logout_link = driver.find_element(:link_text, 'ログアウト')
+      logout_link.click
+      sleep 2
+    rescue
+      # 既にログアウト状態
+    end
   end
 
   def ensure_test_image
