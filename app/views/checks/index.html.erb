@@ -6,10 +6,27 @@
       <div class="window-dot yellow"></div>
       <div class="window-dot green"></div>
     </div>
-    <div class="search-bar">
-      <span class="search-icon">🔍</span>
-      <input type="text" placeholder="Protospace挙動確認チェッカー" readonly>
-    </div>
+    <% if @is_running %>
+      <%= form_with url: cancel_check_path, method: :post, local: true, data: { turbo: false, confirm: "実行中のテストを中止しますか？" }, class: "search-bar", style: "display: flex; align-items: center; gap: 8px;" do |f| %>
+        <div style="flex: 1; position: relative;">
+          <span class="search-icon">🔍</span>
+          <input type="text" value="チェック実行中..." readonly style="width: 100%;">
+        </div>
+        <%= button_tag type: 'submit', style: "background: none; border: none; color: #f48771; cursor: pointer; font-size: 18px; padding: 0; line-height: 1; transition: color 0.1s;", onmouseover: "this.style.color='#ff5555'", onmouseout: "this.style.color='#f48771'" do %>
+          ■
+        <% end %>
+      <% end %>
+    <% else %>
+      <%= form_with url: checks_path, method: :post, local: true, data: { turbo: false }, class: "search-bar", style: "display: flex; align-items: center; gap: 8px;" do |f| %>
+        <div style="flex: 1; position: relative;">
+          <span class="search-icon">🔍</span>
+          <%= text_field_tag :target_url, "", placeholder: "Protospace挙動確認チェッカー - URLを入力してください", required: true, style: "width: 100%;" %>
+        </div>
+        <%= button_tag type: 'submit', style: "background: none; border: none; color: #89d185; cursor: pointer; font-size: 18px; padding: 0; line-height: 1; transition: color 0.1s;", onmouseover: "this.style.color='#55ff55'", onmouseout: "this.style.color='#89d185'" do %>
+          ▶
+        <% end %>
+      <% end %>
+    <% end %>
   </div>
 
   <!-- Main Container -->
@@ -43,11 +60,11 @@
           <span class="chevron">▼</span>
           <span>CHECKER</span>
         </div>
-        <div class="sidebar-item">
+        <div class="sidebar-item selected" data-view="readme">
           <span class="file-icon">📄</span>
-          <span>check_config.rb</span>
+          <span>README</span>
         </div>
-        <div class="sidebar-item">
+        <div class="sidebar-item" data-view="results">
           <span class="file-icon">📄</span>
           <span>results.json</span>
         </div>
@@ -65,32 +82,86 @@
       <div class="tab-bar">
         <div class="tab active">
           <span>📄</span>
-          <span>checker.rb</span>
+          <span>README</span>
         </div>
       </div>
       <div class="editor-content">
-        <h1>Protospace挙動確認チェッカー</h1>
-        <div class="subtitle">チェック対象のアプリURLを入力してください</div>
+        <h1 style="color: #4ec9b0; font-size: 28px; margin-bottom: 20px;">🔍 Protospace Checker</h1>
 
-        <%= form_with url: checks_path, method: :post, local: true, data: { turbo: false }, style: "margin-top: 30px;" do |f| %>
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 8px; color: #cccccc; font-size: 14px;">アプリケーションURL:</label>
-            <%= text_field_tag :target_url, "",
-              style: "width: 100%; max-width: 600px; padding: 8px 12px; background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; color: #cccccc; font-size: 14px; outline: none;",
-              placeholder: "例: http://localhost:3000",
-              required: true,
-              onfocus: "this.style.borderColor='#007acc'",
-              onblur: "this.style.borderColor='#3c3c3c'" %>
+        <div style="margin-bottom: 30px;">
+          <h2 style="color: #569cd6; font-size: 20px; margin-bottom: 12px;">概要</h2>
+          <p style="color: #cccccc; line-height: 1.8; margin-bottom: 16px;">
+            Protospace CheckerはTECH CAMP課題「Protospace」の実装要件を自動的に検証するツールです。<br>
+            Seleniumを使用してブラウザ操作を自動化し、各機能が正しく実装されているかをチェックします。
+          </p>
+        </div>
+
+        <div style="margin-bottom: 30px;">
+          <h2 style="color: #569cd6; font-size: 20px; margin-bottom: 12px;">主な機能</h2>
+          <ul style="color: #cccccc; line-height: 2; margin-left: 20px;">
+            <li>✅ ユーザー新規登録・ログイン機能の検証</li>
+            <li>✅ プロトタイプ投稿・編集・削除機能の検証</li>
+            <li>✅ コメント投稿機能の検証</li>
+            <li>✅ ユーザー詳細ページの検証</li>
+            <li>📸 各ページのスクリーンショット自動取得</li>
+            <li>🔄 リアルタイムでの進捗表示</li>
+            <li>⏸️ チェック実行の途中停止機能</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom: 30px;">
+          <h2 style="color: #569cd6; font-size: 20px; margin-bottom: 12px;">使い方</h2>
+          <div style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 16px; margin-bottom: 16px;">
+            <div style="color: #858585; font-size: 12px; margin-bottom: 8px;">STEP 1</div>
+            <p style="color: #cccccc; line-height: 1.8;">
+              上部の検索バーに、チェック対象のProtospaceアプリケーションのURLを入力してください。<br>
+              <span style="color: #ce9178;">例: https://protospace2020.herokuapp.com/</span>
+            </p>
           </div>
-          <%= submit_tag "チェック開始",
-            style: "padding: 10px 24px; background-color: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold;",
-            onmouseover: "this.style.backgroundColor='#005a9e'",
-            onmouseout: "this.style.backgroundColor='#007acc'" %>
-        <% end %>
+
+          <div style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 16px; margin-bottom: 16px;">
+            <div style="color: #858585; font-size: 12px; margin-bottom: 8px;">STEP 2</div>
+            <p style="color: #cccccc; line-height: 1.8;">
+              緑色の再生ボタン <span style="color: #27c93f; font-weight: bold;">▶</span> をクリックしてチェックを開始します。
+            </p>
+          </div>
+
+          <div style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 16px; margin-bottom: 16px;">
+            <div style="color: #858585; font-size: 12px; margin-bottom: 8px;">STEP 3</div>
+            <p style="color: #cccccc; line-height: 1.8;">
+              下部のターミナルで進捗を確認しながら、結果を待ちます。<br>
+              途中で停止したい場合は、赤色の停止ボタン <span style="color: #c93333; font-weight: bold;">■</span> をクリックしてください。
+            </p>
+          </div>
+
+          <div style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 16px;">
+            <div style="color: #858585; font-size: 12px; margin-bottom: 8px;">STEP 4</div>
+            <p style="color: #cccccc; line-height: 1.8;">
+              チェック完了後、結果ページで各項目の合格/不合格を確認できます。<br>
+              サイドバーのSCREENSHOTSセクションから、各ページのスクリーンショットも確認可能です。
+            </p>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 30px;">
+          <h2 style="color: #569cd6; font-size: 20px; margin-bottom: 12px;">注意事項</h2>
+          <div style="background-color: #3c2a1e; border-left: 3px solid #c9a000; padding: 16px; border-radius: 4px;">
+            <p style="color: #dcdcaa; line-height: 1.8; margin-bottom: 8px;">
+              ⚠️ チェック対象のアプリケーションが起動していることを確認してください
+            </p>
+            <p style="color: #dcdcaa; line-height: 1.8; margin-bottom: 8px;">
+              ⚠️ データベースがリセット可能な状態であることを確認してください
+            </p>
+            <p style="color: #dcdcaa; line-height: 1.8;">
+              ⚠️ チェック実行中は対象アプリケーションを操作しないでください
+            </p>
+          </div>
+        </div>
 
         <% if @all_registered_users && @all_registered_users.any? %>
           <div style="margin-top: 30px; padding: 20px; background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px;">
-            <h2 style="color: #4ec9b0; font-size: 18px; margin-bottom: 15px;">登録済みユーザー情報</h2>
+            <h2 style="color: #4ec9b0; font-size: 18px; margin-bottom: 15px;">📋 登録済みユーザー情報</h2>
+            <p style="color: #858585; margin-bottom: 15px; font-size: 13px;">チェック実行時に自動登録されたユーザー情報です</p>
             <% @all_registered_users.each_with_index do |user, index| %>
               <div style="margin-bottom: 15px; padding: 12px; background-color: #252526; border-left: 3px solid #007acc; border-radius: 2px;">
                 <div style="color: #9cdcfe; font-weight: bold; margin-bottom: 5px;">ユーザー <%= index + 1 %></div>
@@ -100,6 +171,12 @@
             <% end %>
           </div>
         <% end %>
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #3c3c3c;">
+          <p style="color: #858585; font-size: 12px; text-align: center;">
+            Protospace Checker v1.0 | Built with Ruby on Rails & Selenium
+          </p>
+        </div>
       </div>
 
       <!-- Bottom Panel (Terminal) -->
@@ -146,6 +223,46 @@
 <script>
   // サイドバーセクションの開閉機能
   document.addEventListener('DOMContentLoaded', function() {
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    const editorContent = document.querySelector('.editor-content');
+    const tabBar = document.querySelector('.tab-bar');
+
+    // 元のREADMEコンテンツを保存
+    const readmeContent = editorContent.innerHTML;
+    const readmeTab = tabBar.innerHTML;
+
+    // results.jsonのコンテンツ
+    const resultsContent = `
+      <h1 style="color: #4ec9b0; font-size: 28px; margin-bottom: 20px;">📊 チェック結果</h1>
+
+      <div style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 20px; margin-bottom: 20px;">
+        <div style="color: #858585; font-size: 14px; margin-bottom: 12px;">Status</div>
+        <div style="color: #dcdcaa; font-size: 16px; margin-bottom: 20px;">
+          <span style="font-weight: bold;">待機中</span> - チェックが実行されていません
+        </div>
+
+        <div style="color: #858585; font-size: 14px; margin-bottom: 12px;">Results</div>
+        <div style="color: #cccccc; font-size: 14px;">
+          <code style="background-color: #252526; padding: 12px; display: block; border-radius: 4px; font-family: 'Courier New', monospace;">
+{<br>
+&nbsp;&nbsp;"status": "pending",<br>
+&nbsp;&nbsp;"results": [],<br>
+&nbsp;&nbsp;"total_checks": 0,<br>
+&nbsp;&nbsp;"passed": 0,<br>
+&nbsp;&nbsp;"failed": 0,<br>
+&nbsp;&nbsp;"errors": 0<br>
+}
+          </code>
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; padding: 16px; background-color: #3c2a1e; border-left: 3px solid #c9a000; border-radius: 4px;">
+        <p style="color: #dcdcaa; line-height: 1.8;">
+          💡 上部の検索バーにURLを入力して、緑色の再生ボタン <span style="color: #27c93f; font-weight: bold;">▶</span> をクリックするとチェックが開始されます。
+        </p>
+      </div>
+    `;
+
     const sectionTitles = document.querySelectorAll('.sidebar-section-title');
     sectionTitles.forEach(title => {
       title.addEventListener('click', function() {
@@ -168,5 +285,46 @@
       // カーソルをポインターに
       title.style.cursor = 'pointer';
     });
+
+    // サイドバー項目のクリックイベント
+    sidebarItems.forEach(item => {
+      item.addEventListener('click', function() {
+        // 選択状態を更新
+        sidebarItems.forEach(i => i.classList.remove('selected'));
+        this.classList.add('selected');
+
+        const viewType = this.getAttribute('data-view');
+
+        if (viewType === 'readme') {
+          // タブを更新
+          tabBar.innerHTML = readmeTab;
+          // READMEを表示
+          editorContent.innerHTML = readmeContent;
+        } else if (viewType === 'results') {
+          // タブを更新
+          tabBar.innerHTML = `
+            <div class="tab active">
+              <span>📄</span>
+              <span>results.json</span>
+            </div>
+          `;
+          // results.jsonを表示
+          editorContent.innerHTML = resultsContent;
+        }
+      });
+    });
+
+    // ターミナルエリアをクリックしたら入力欄にフォーカス
+    const panelContent = document.querySelector('.panel-content');
+    const terminalInput = document.querySelector('.terminal-input');
+
+    if (panelContent && terminalInput) {
+      panelContent.addEventListener('click', function(e) {
+        // 入力欄自体をクリックした場合は何もしない
+        if (e.target !== terminalInput) {
+          terminalInput.focus();
+        }
+      });
+    }
   });
 </script>

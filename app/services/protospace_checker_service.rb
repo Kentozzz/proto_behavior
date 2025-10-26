@@ -218,6 +218,11 @@ class ProtospaceCheckerService
         position: test_data[:position]
       }
 
+      # セッションストアに登録ユーザーを保存
+      if @sessions_store && @session_id && @sessions_store[@session_id]
+        @sessions_store[@session_id][:registered_users] = @registered_users
+      end
+
       # ログアウト
       add_log("ログアウト中...", :progress)
       driver.get(base_url)
@@ -364,9 +369,17 @@ class ProtospaceCheckerService
     ensure_chrome_environment
     cleanup if @driver
 
+    # 古いChromeプロセスをクリーンアップ（前回のテストが不完全に終了した場合に備えて）
+    system("pkill -f 'chrome.*--headless' > /dev/null 2>&1")
+    sleep 1
+
     # セッションごとに独立したuser-data-dirを使用（Cookieが引き継がれないように）
     timestamp = Time.now.to_i
-    user_data_dir = "/tmp/user-data-#{timestamp}-#{rand(10000)}"
+    random_id = rand(10000)
+    user_data_dir = "/tmp/user-data-#{timestamp}-#{random_id}"
+
+    # ランダムなリモートデバッギングポートを使用（競合を避ける）
+    debug_port = 9222 + rand(1000)
 
     options = Selenium::WebDriver::Chrome::Options.new
     options.add_argument('--headless=new')
@@ -377,17 +390,31 @@ class ProtospaceCheckerService
     options.add_argument('--disable-extensions')
     options.add_argument('--disable-web-security')
     options.add_argument('--disable-setuid-sandbox')
-    options.add_argument('--remote-debugging-port=9222')
+    options.add_argument("--remote-debugging-port=#{debug_port}")
     options.add_argument('--window-size=1280,720')
     options.add_argument("--user-data-dir=#{user_data_dir}")
     options.add_argument("--data-path=/tmp/data-path-#{timestamp}")
     options.add_argument("--disk-cache-dir=/tmp/cache-dir-#{timestamp}")
     options.add_argument('--remote-debugging-address=0.0.0.0')
+    options.add_argument('--single-process')
+    options.add_argument('--disable-renderer-backgrounding')
     options.binary = '/tmp/chrome-linux64/chrome'
 
     Selenium::WebDriver::Chrome::Service.driver_path = '/tmp/chromedriver-linux64/chromedriver'
-    @driver = Selenium::WebDriver.for :chrome, options: options
-    @driver.manage.window.resize_to(1280, 720)
+
+    begin
+      @driver = Selenium::WebDriver.for :chrome, options: options
+      @driver.manage.window.resize_to(1280, 720)
+      @driver.manage.timeouts.implicit_wait = 10
+    rescue => e
+      Rails.logger.error "ドライバー起動エラー: #{e.message}"
+      # 古いChromeプロセスをクリーンアップして再試行
+      system("pkill -f chrome")
+      sleep 2
+      @driver = Selenium::WebDriver.for :chrome, options: options
+      @driver.manage.window.resize_to(1280, 720)
+      @driver.manage.timeouts.implicit_wait = 10
+    end
   end
 
   def run_check_1_011(cleanup_logs: true)
@@ -435,6 +462,11 @@ class ProtospaceCheckerService
           occupation: "テスト会社",
           position: "テスト役職"
         }
+
+        # セッションストアに登録ユーザーを保存
+        if @sessions_store && @session_id && @sessions_store[@session_id]
+          @sessions_store[@session_id][:registered_users] = @registered_users
+        end
       else
         add_log("✗ 1-011: 必須項目に適切な値を入力すると、ユーザーの新規登録ができること (失敗)", :fail)
         add_result("1-011", "必須項目に適切な値を入力すると、ユーザーの新規登録ができること", "FAIL", "登録後に正しいページに遷移しません。現在のURL: #{current_url}")
@@ -2790,6 +2822,11 @@ class ProtospaceCheckerService
       note: note,
       screenshot: screenshot_path
     }
+
+    # セッションストアに結果を保存
+    if @sessions_store && @session_id && @sessions_store[@session_id]
+      @sessions_store[@session_id][:results] = results
+    end
   end
 
   def add_log(message, type = :info)

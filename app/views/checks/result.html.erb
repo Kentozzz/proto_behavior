@@ -6,10 +6,27 @@
       <div class="window-dot yellow"></div>
       <div class="window-dot green"></div>
     </div>
-    <div class="search-bar">
-      <span class="search-icon">🔍</span>
-      <input type="text" placeholder="チェック結果" readonly>
-    </div>
+    <% if @is_running %>
+      <%= form_with url: cancel_check_path, method: :post, local: true, data: { turbo: false, confirm: "実行中のテストを中止しますか？" }, class: "search-bar", style: "display: flex; align-items: center; gap: 8px;" do |f| %>
+        <div style="flex: 1; position: relative;">
+          <span class="search-icon">🔍</span>
+          <input type="text" value="チェック実行中..." readonly style="width: 100%;">
+        </div>
+        <%= button_tag type: 'submit', style: "background: none; border: none; color: #f48771; cursor: pointer; font-size: 18px; padding: 0; line-height: 1; transition: color 0.1s;", onmouseover: "this.style.color='#ff5555'", onmouseout: "this.style.color='#f48771'" do %>
+          ■
+        <% end %>
+      <% end %>
+    <% else %>
+      <%= form_with url: checks_path, method: :post, local: true, data: { turbo: false }, class: "search-bar", style: "display: flex; align-items: center; gap: 8px;" do |f| %>
+        <div style="flex: 1; position: relative;">
+          <span class="search-icon">🔍</span>
+          <%= text_field_tag :target_url, "", placeholder: "Protospace挙動確認チェッカー - チェック完了", required: true, style: "width: 100%;" %>
+        </div>
+        <%= button_tag type: 'submit', style: "background: none; border: none; color: #89d185; cursor: pointer; font-size: 18px; padding: 0; line-height: 1; transition: color 0.1s;", onmouseover: "this.style.color='#55ff55'", onmouseout: "this.style.color='#89d185'" do %>
+          ▶
+        <% end %>
+      <% end %>
+    <% end %>
   </div>
 
   <!-- Main Container -->
@@ -43,13 +60,13 @@
           <span class="chevron">▼</span>
           <span>RESULTS</span>
         </div>
+        <div class="sidebar-item" data-view="readme">
+          <span class="file-icon">📄</span>
+          <span>README</span>
+        </div>
         <div class="sidebar-item selected" data-view="results">
           <span class="file-icon">📄</span>
           <span>check_results.json</span>
-        </div>
-        <div class="sidebar-item" data-view="summary">
-          <span class="file-icon">📄</span>
-          <span>summary.md</span>
         </div>
       </div>
       <div class="sidebar-section" data-screenshot-section="true">
@@ -82,74 +99,62 @@
             <div class="spinner"></div>
             <h1 style="margin: 0;">チェック実行中...</h1>
           </div>
-          <div class="subtitle">下のターミナルで進捗を確認できます</div>
-          <div class="button-group" style="margin-top: 20px;">
-            <%= button_to "テストを中止", cancel_check_path, method: :post,
-                style: "background: #c93333; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;",
-                data: { confirm: "実行中のテストを中止しますか？" } %>
-          </div>
-        <% elsif @results && @results.any? %>
-          <h1>チェック結果</h1>
-
-          <% pass_count = @results.count { |r| r[:status] == 'PASS' } %>
-          <% fail_count = @results.count { |r| r[:status] == 'FAIL' } %>
-          <% error_count = @results.count { |r| r[:status] == 'ERROR' } %>
-
-          <div class="summary-box">
-            <strong>サマリー:</strong>
-            合格: <%= pass_count %> /
-            不合格: <%= fail_count %> /
-            エラー: <%= error_count %> /
-            合計: <%= @results.count %>
-          </div>
-
-          <% if @registered_users && @registered_users.any? %>
-            <div data-registered-users style="margin-top: 20px; margin-bottom: 30px; padding: 20px; background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px;">
-              <h2 style="color: #4ec9b0; font-size: 18px; margin-bottom: 15px;">登録済みユーザー情報</h2>
-              <% @registered_users.each_with_index do |user, index| %>
-                <div style="margin-bottom: 15px; padding: 12px; background-color: #252526; border-left: 3px solid #007acc; border-radius: 2px;">
-                  <div style="color: #9cdcfe; font-weight: bold; margin-bottom: 5px;">ユーザー <%= index + 1 %></div>
-                  <div style="color: #ce9178; margin-bottom: 3px;">Email: <%= user[:email] %></div>
-                  <div style="color: #ce9178;">Password: <%= user[:password] %></div>
-                </div>
-              <% end %>
-            </div>
-          <% end %>
-
-          <% @results.each do |result| %>
-            <% status_class = result[:status] == 'PASS' ? 'pass' : (result[:status] == 'FAIL' ? 'fail' : 'error') %>
-            <div class="result-item <%= status_class %>">
-              <div class="result-header">
-                <div class="result-title">
-                  <% if result[:status] == 'PASS' %>
-                    <span class="text-success">✓</span>
-                  <% elsif result[:status] == 'FAIL' %>
-                    <span class="text-danger">✗</span>
-                  <% else %>
-                    <span class="text-warning">!</span>
-                  <% end %>
-                  <span><%= result[:check_number] %>: <%= result[:description] %></span>
-                </div>
-                <span class="badge badge-<%= result[:status] == 'PASS' ? 'success' : (result[:status] == 'FAIL' ? 'danger' : 'warning') %>">
-                  <%= result[:status] %>
-                </span>
-              </div>
-              <% if result[:note].present? %>
-                <div class="text-muted"><strong>補足:</strong> <%= result[:note] %></div>
-              <% end %>
-            </div>
-          <% end %>
-
-          <div class="button-group">
-            <%= link_to "新しいチェックを実行", new_check_path, class: "btn-primary" %>
-          </div>
+          <div class="subtitle">下のターミナルで進捗を確認できます。停止する場合は上部の停止ボタンをご利用ください。</div>
         <% else %>
-          <h1>チェック結果</h1>
-          <div class="text-muted">チェック結果がありません</div>
+          <h1>チェック結果<% if @status == 'cancelled' %> <span style="color: #dcdcaa; font-size: 16px;">(中止されました)</span><% end %></h1>
 
-          <div class="button-group">
-            <%= link_to "新しいチェックを実行", new_check_path, class: "btn-primary" %>
-          </div>
+          <% if @results && @results.any? %>
+            <% pass_count = @results.count { |r| r[:status] == 'PASS' } %>
+            <% fail_count = @results.count { |r| r[:status] == 'FAIL' } %>
+            <% error_count = @results.count { |r| r[:status] == 'ERROR' } %>
+
+            <div class="summary-box">
+              <strong>サマリー:</strong>
+              合格: <%= pass_count %> /
+              不合格: <%= fail_count %> /
+              エラー: <%= error_count %> /
+              合計: <%= @results.count %>
+            </div>
+
+            <% if @registered_users && @registered_users.any? %>
+              <div data-registered-users style="margin-top: 20px; margin-bottom: 30px; padding: 20px; background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px;">
+                <h2 style="color: #4ec9b0; font-size: 18px; margin-bottom: 15px;">登録済みユーザー情報</h2>
+                <% @registered_users.each_with_index do |user, index| %>
+                  <div style="margin-bottom: 15px; padding: 12px; background-color: #252526; border-left: 3px solid #007acc; border-radius: 2px;">
+                    <div style="color: #9cdcfe; font-weight: bold; margin-bottom: 5px;">ユーザー <%= index + 1 %></div>
+                    <div style="color: #ce9178; margin-bottom: 3px;">Email: <%= user[:email] %></div>
+                    <div style="color: #ce9178;">Password: <%= user[:password] %></div>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+
+            <% @results.each do |result| %>
+              <% status_class = result[:status] == 'PASS' ? 'pass' : (result[:status] == 'FAIL' ? 'fail' : 'error') %>
+              <div class="result-item <%= status_class %>">
+                <div class="result-header">
+                  <div class="result-title">
+                    <% if result[:status] == 'PASS' %>
+                      <span class="text-success">✓</span>
+                    <% elsif result[:status] == 'FAIL' %>
+                      <span class="text-danger">✗</span>
+                    <% else %>
+                      <span class="text-warning">!</span>
+                    <% end %>
+                    <span><%= result[:check_number] %>: <%= result[:description] %></span>
+                  </div>
+                  <span class="badge badge-<%= result[:status] == 'PASS' ? 'success' : (result[:status] == 'FAIL' ? 'danger' : 'warning') %>">
+                    <%= result[:status] %>
+                  </span>
+                </div>
+                <% if result[:note].present? %>
+                  <div class="text-muted"><strong>補足:</strong> <%= result[:note] %></div>
+                <% end %>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="text-muted">チェック結果がありません</div>
+          <% end %>
         <% end %>
       </div>
 
@@ -248,7 +253,7 @@
       return `<div class="terminal-line" data-type="${type}">${spinner}<span style="color: ${color};">${message}</span></div>`;
     }
 
-    function updateResults(results) {
+    function updateResults(results, status) {
       if (!results || results.length === 0) return;
 
       const passCount = results.filter(r => r.status === 'PASS').length;
@@ -258,8 +263,9 @@
       document.getElementById('status-fail').textContent = '⚠ ' + failCount;
 
       // 結果をエディター部分に表示
+      const cancelledLabel = status === 'cancelled' ? ' <span style="color: #dcdcaa; font-size: 16px;">(中止されました)</span>' : '';
       let summaryHtml = `
-        <h1>チェック結果</h1>
+        <h1>チェック結果${cancelledLabel}</h1>
         <div class="summary-box">
           <strong>サマリー:</strong>
           合格: ${passCount} /
@@ -287,12 +293,6 @@
           </div>
         `;
       });
-
-      summaryHtml += `
-        <div class="button-group">
-          <a href="/checks/new" class="btn-primary">新しいチェックを実行</a>
-        </div>
-      `;
 
       editorContent.innerHTML = summaryHtml;
     }
@@ -417,25 +417,26 @@
             currentRegisteredUsers = data.registered_users;
           }
 
-          // 結果を更新
-          if (data.results && data.results.length > 0) {
-            updateResults(data.results);
-          }
+          // 完了・エラー・中断時のみ結果を更新して表示
+          if (data.status === 'completed' || data.status === 'error' || data.status === 'cancelled') {
+            // 結果を更新
+            if (data.results && data.results.length > 0) {
+              updateResults(data.results, data.status);
+            }
 
-          // 登録済みユーザーを表示（結果がある場合もない場合も）
-          if (currentRegisteredUsers.length > 0) {
-            updateRegisteredUsers(currentRegisteredUsers);
-          }
+            // 登録済みユーザーを表示
+            if (currentRegisteredUsers.length > 0) {
+              updateRegisteredUsers(currentRegisteredUsers);
+            }
 
-          // スクリーンショットを更新
-          if (data.screenshots && data.screenshots.length > 0) {
-            updateScreenshots(data.screenshots);
-          }
+            // スクリーンショットを更新
+            if (data.screenshots && data.screenshots.length > 0) {
+              updateScreenshots(data.screenshots);
+            }
 
-          // 完了したらポーリングを停止
-          if (data.status === 'completed' || data.status === 'error') {
-            console.log('Check completed');
+            console.log('Check completed with status:', data.status);
           } else {
+            // 実行中はポーリングを継続
             setTimeout(poll, 500); // 0.5秒ごとにポーリング
           }
         })
@@ -457,6 +458,91 @@
     const sidebarItems = document.querySelectorAll('.sidebar-item');
     const editorContent = document.querySelector('.editor-content');
     const tabBar = document.querySelector('.tab-bar');
+
+    // 元のコンテンツとタブを保存
+    const originalContent = editorContent.innerHTML;
+    const originalTab = tabBar.innerHTML;
+
+    // READMEコンテンツ
+    const readmeContent = `
+      <h1 style="color: #4ec9b0; font-size: 28px; margin-bottom: 20px;">🔍 Protospace Checker</h1>
+
+      <div style="margin-bottom: 30px;">
+        <h2 style="color: #569cd6; font-size: 20px; margin-bottom: 12px;">概要</h2>
+        <p style="color: #cccccc; line-height: 1.8; margin-bottom: 16px;">
+          Protospace CheckerはTECH CAMP課題「Protospace」の実装要件を自動的に検証するツールです。<br>
+          Seleniumを使用してブラウザ操作を自動化し、各機能が正しく実装されているかをチェックします。
+        </p>
+      </div>
+
+      <div style="margin-bottom: 30px;">
+        <h2 style="color: #569cd6; font-size: 20px; margin-bottom: 12px;">主な機能</h2>
+        <ul style="color: #cccccc; line-height: 2; margin-left: 20px;">
+          <li>✅ ユーザー新規登録・ログイン機能の検証</li>
+          <li>✅ プロトタイプ投稿・編集・削除機能の検証</li>
+          <li>✅ コメント投稿機能の検証</li>
+          <li>✅ ユーザー詳細ページの検証</li>
+          <li>📸 各ページのスクリーンショット自動取得</li>
+          <li>🔄 リアルタイムでの進捗表示</li>
+          <li>⏸️ チェック実行の途中停止機能</li>
+        </ul>
+      </div>
+
+      <div style="margin-bottom: 30px;">
+        <h2 style="color: #569cd6; font-size: 20px; margin-bottom: 12px;">使い方</h2>
+        <div style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 16px; margin-bottom: 16px;">
+          <div style="color: #858585; font-size: 12px; margin-bottom: 8px;">STEP 1</div>
+          <p style="color: #cccccc; line-height: 1.8;">
+            上部の検索バーに、チェック対象のProtospaceアプリケーションのURLを入力してください。<br>
+            <span style="color: #ce9178;">例: https://protospace2020.herokuapp.com/</span>
+          </p>
+        </div>
+
+        <div style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 16px; margin-bottom: 16px;">
+          <div style="color: #858585; font-size: 12px; margin-bottom: 8px;">STEP 2</div>
+          <p style="color: #cccccc; line-height: 1.8;">
+            緑色の再生ボタン <span style="color: #27c93f; font-weight: bold;">▶</span> をクリックしてチェックを開始します。
+          </p>
+        </div>
+
+        <div style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 16px; margin-bottom: 16px;">
+          <div style="color: #858585; font-size: 12px; margin-bottom: 8px;">STEP 3</div>
+          <p style="color: #cccccc; line-height: 1.8;">
+            下部のターミナルで進捗を確認しながら、結果を待ちます。<br>
+            途中で停止したい場合は、赤色の停止ボタン <span style="color: #c93333; font-weight: bold;">■</span> をクリックしてください。
+          </p>
+        </div>
+
+        <div style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 16px;">
+          <div style="color: #858585; font-size: 12px; margin-bottom: 8px;">STEP 4</div>
+          <p style="color: #cccccc; line-height: 1.8;">
+            チェック完了後、結果ページで各項目の合格/不合格を確認できます。<br>
+            サイドバーのSCREENSHOTSセクションから、各ページのスクリーンショットも確認可能です。
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 30px;">
+        <h2 style="color: #569cd6; font-size: 20px; margin-bottom: 12px;">注意事項</h2>
+        <div style="background-color: #3c2a1e; border-left: 3px solid #c9a000; padding: 16px; border-radius: 4px;">
+          <p style="color: #dcdcaa; line-height: 1.8; margin-bottom: 8px;">
+            ⚠️ チェック対象のアプリケーションが起動していることを確認してください
+          </p>
+          <p style="color: #dcdcaa; line-height: 1.8; margin-bottom: 8px;">
+            ⚠️ データベースがリセット可能な状態であることを確認してください
+          </p>
+          <p style="color: #dcdcaa; line-height: 1.8;">
+            ⚠️ チェック実行中は対象アプリケーションを操作しないでください
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #3c3c3c;">
+        <p style="color: #858585; font-size: 12px; text-align: center;">
+          Protospace Checker v1.0 | Built with Ruby on Rails & Selenium
+        </p>
+      </div>
+    `;
 
     // サイドバーセクションの開閉機能
     const sectionTitles = document.querySelectorAll('.sidebar-section-title');
@@ -490,7 +576,18 @@
 
         const viewType = this.getAttribute('data-view');
 
-        if (viewType === 'screenshot') {
+        if (viewType === 'readme') {
+          // タブを更新
+          tabBar.innerHTML = `
+            <div class="tab active">
+              <span>📄</span>
+              <span>README</span>
+            </div>
+          `;
+
+          // READMEを表示
+          editorContent.innerHTML = readmeContent;
+        } else if (viewType === 'screenshot') {
           const screenshotPath = this.getAttribute('data-screenshot-path');
           const screenshotName = this.getAttribute('data-screenshot-name');
 
@@ -512,8 +609,9 @@
             </div>
           `;
         } else if (viewType === 'results') {
-          // 結果画面に戻る（ページをリロード）
-          location.reload();
+          // 元のコンテンツとタブに戻す
+          tabBar.innerHTML = originalTab;
+          editorContent.innerHTML = originalContent;
         }
       });
     });

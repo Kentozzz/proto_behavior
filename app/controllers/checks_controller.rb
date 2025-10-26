@@ -10,6 +10,10 @@ class ChecksController < ApplicationController
         @all_registered_users += session_data[:registered_users]
       end
     end
+
+    # 実行中のセッションを検出
+    @running_session = @@check_sessions.find { |_id, data| data[:status] == 'running' }
+    @is_running = @running_session.present?
   end
 
   def new
@@ -107,6 +111,10 @@ class ChecksController < ApplicationController
     @registered_users = @session_data[:registered_users] || []
     @screenshots = @session_data[:screenshots] || []
     @session_id = session_id
+
+    # 実行中のセッションを検出
+    @running_session = @@check_sessions.find { |_id, data| data[:status] == 'running' }
+    @is_running = @running_session.present?
 
     render :result
   end

@@ -76,7 +76,9 @@
         flex: 1;
         max-width: 600px;
         margin: 0 auto;
-        position: relative;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
       }
 
       .search-bar input {
@@ -92,6 +94,10 @@
 
       .search-bar input:focus {
         border-color: #007acc;
+      }
+
+      .search-bar button {
+        flex-shrink: 0;
       }
 
       .search-icon {
