@@ -227,8 +227,18 @@
               // ページ読み込み時に入力欄にフォーカス
               document.addEventListener('DOMContentLoaded', function() {
                 const terminalInput = document.getElementById('terminal-input');
+                const terminalLogs = document.getElementById('terminal-logs');
+
                 if (terminalInput) {
+                  // 初期フォーカス
                   terminalInput.focus();
+
+                  // ターミナル全体をクリックしたときに入力欄にフォーカス
+                  if (terminalLogs) {
+                    terminalLogs.addEventListener('click', function() {
+                      terminalInput.focus();
+                    });
+                  }
                 }
               });
             </script>
