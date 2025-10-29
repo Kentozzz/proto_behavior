@@ -16,19 +16,10 @@
   <div class="main-container">
     <!-- Activity Bar -->
     <div class="activity-bar">
-      <div class="activity-icon active">
+      <div class="activity-icon active" id="files-icon">
         <span>📁</span>
       </div>
-      <div class="activity-icon">
-        <span>🔍</span>
-      </div>
-      <div class="activity-icon">
-        <span style="font-size: 18px;">⎇</span>
-      </div>
-      <div class="activity-icon">
-        <span>▶</span>
-      </div>
-      <div class="activity-icon">
+      <div class="activity-icon" id="settings-icon">
         <span>⚙</span>
       </div>
     </div>
@@ -156,5 +147,114 @@
       // カーソルをポインターに
       title.style.cursor = 'pointer';
     });
+
+    // 設定画面コンテンツ
+    const settingsContent = `
+      <h1 style="color: #4ec9b0; font-size: 28px; margin-bottom: 20px;">⚙ Settings</h1>
+
+      <div style="margin-bottom: 30px;">
+        <h2 style="color: #569cd6; font-size: 20px; margin-bottom: 12px;">Checker Settings</h2>
+        <div style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 20px;">
+          <div style="margin-bottom: 20px;">
+            <label style="color: #cccccc; display: block; margin-bottom: 8px;">Default Timeout (seconds)</label>
+            <input type="number" value="30" style="width: 100%; padding: 8px; background: #252526; border: 1px solid #3c3c3c; color: #cccccc; border-radius: 4px;" readonly>
+            <p style="color: #858585; font-size: 12px; margin-top: 4px;">Maximum time to wait for elements to load</p>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label style="color: #cccccc; display: block; margin-bottom: 8px;">Screenshot Quality</label>
+            <select style="width: 100%; padding: 8px; background: #252526; border: 1px solid #3c3c3c; color: #cccccc; border-radius: 4px;" disabled>
+              <option>High (Default)</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+            <p style="color: #858585; font-size: 12px; margin-top: 4px;">Quality of captured screenshots</p>
+          </div>
+
+          <div>
+            <label style="color: #cccccc; display: flex; align-items: center; cursor: not-allowed;">
+              <input type="checkbox" checked disabled style="margin-right: 8px;">
+              <span>Auto-scroll to latest log</span>
+            </label>
+            <p style="color: #858585; font-size: 12px; margin-top: 4px; margin-left: 24px;">Automatically scroll terminal to show latest output</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 30px;">
+        <h2 style="color: #569cd6; font-size: 20px; margin-bottom: 12px;">Display Settings</h2>
+        <div style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 4px; padding: 20px;">
+          <div style="margin-bottom: 20px;">
+            <label style="color: #cccccc; display: block; margin-bottom: 8px;">Theme</label>
+            <select style="width: 100%; padding: 8px; background: #252526; border: 1px solid #3c3c3c; color: #cccccc; border-radius: 4px;" disabled>
+              <option>Dark (Default)</option>
+              <option>Light</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="color: #cccccc; display: flex; align-items: center; cursor: not-allowed;">
+              <input type="checkbox" checked disabled style="margin-right: 8px;">
+              <span>Show terminal by default</span>
+            </label>
+            <p style="color: #858585; font-size: 12px; margin-top: 4px; margin-left: 24px;">Display terminal panel when page loads</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 40px; padding: 20px; background-color: #3c2a1e; border-left: 3px solid #c9a000; border-radius: 4px;">
+        <p style="color: #dcdcaa; line-height: 1.8;">
+          ⚠️ These settings are currently read-only and display default values. Configuration options may be added in future updates.
+        </p>
+      </div>
+    `;
+
+    // Activity Barのアイコンクリックイベント
+    const filesIcon = document.getElementById('files-icon');
+    const settingsIcon = document.getElementById('settings-icon');
+    const sidebar = document.querySelector('.sidebar');
+    const tabBar = document.querySelector('.tab-bar');
+    const editorContent = document.querySelector('.editor-content');
+
+    // 元のコンテンツを保存
+    const originalTabContent = tabBar.innerHTML;
+    const originalEditorContent = editorContent.innerHTML;
+
+    if (filesIcon) {
+      filesIcon.addEventListener('click', function() {
+        // フォルダアイコンがアクティブに
+        filesIcon.classList.add('active');
+        settingsIcon.classList.remove('active');
+
+        // サイドバーを表示
+        sidebar.style.display = 'flex';
+
+        // 元のコンテンツに戻す
+        tabBar.innerHTML = originalTabContent;
+        editorContent.innerHTML = originalEditorContent;
+      });
+    }
+
+    if (settingsIcon) {
+      settingsIcon.addEventListener('click', function() {
+        // 設定アイコンがアクティブに
+        settingsIcon.classList.add('active');
+        filesIcon.classList.remove('active');
+
+        // サイドバーを非表示
+        sidebar.style.display = 'none';
+
+        // タブを更新
+        tabBar.innerHTML = `
+          <div class="tab active">
+            <span>⚙</span>
+            <span>Settings</span>
+          </div>
+        `;
+
+        // 設定画面を表示
+        editorContent.innerHTML = settingsContent;
+      });
+    }
   });
 </script>

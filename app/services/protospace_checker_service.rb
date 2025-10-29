@@ -1997,13 +1997,16 @@ class ProtospaceCheckerService
         begin
           alert = driver.switch_to.alert
           alert.accept
-          sleep 3
+          sleep 5
         rescue
           # アラートが無い場合はスキップ
         end
       rescue => e
         raise "削除ボタンのクリックに失敗しました: #{e.message}"
       end
+
+      # リダイレクト完了を待つ
+      sleep 2
 
       # 削除後のURLを記録（6-002で使用）
       @redirect_url_after_delete = driver.current_url
@@ -2013,7 +2016,7 @@ class ProtospaceCheckerService
 
       # 一覧ページで削除したプロトタイプが無いことを確認
       driver.get(base_url)
-      sleep 2
+      sleep 3
       page_text = driver.find_element(:tag_name, 'body').text
 
       deleted_prototype_not_found = !page_text.include?(@delete_test_prototype[:title])
@@ -2132,7 +2135,7 @@ class ProtospaceCheckerService
         begin
           driver.execute_script("document.getElementById('#{field_id}').value = '#{@test_comment[:content]}';")
           driver.find_element(:name, 'commit').click
-          sleep 2
+          sleep 3
           comment_submitted = true
           redirect_url_after_comment = driver.current_url
           break
@@ -2148,6 +2151,8 @@ class ProtospaceCheckerService
       # 投稿したコメントが表示されているか確認
       add_log("ログイン状態: 投稿したコメントが表示されているか確認中...", :progress)
 
+      # コメント表示完了を待つ
+      sleep 2
       page_text = driver.find_element(:tag_name, 'body').text
       comment_displayed = page_text.include?(@test_comment[:content])
 
@@ -2183,7 +2188,7 @@ class ProtospaceCheckerService
 
       # 詳細ページでコメント内容と投稿者名を確認
       driver.get(detail_url)
-      sleep 1
+      sleep 3
       page_text = driver.find_element(:tag_name, 'body').text
 
       comment_displayed_on_target = page_text.include?(@test_comment[:content])
@@ -2337,7 +2342,7 @@ class ProtospaceCheckerService
       # 3. コメント欄のユーザー名
       add_log("ログアウト状態: コメント欄のユーザー名リンクを確認中...", :progress)
       driver.get(@posted_prototype[:detail_url])
-      sleep 2
+      sleep 3
       begin
         # コメント欄にあるユーザー名を探す（複数ある可能性があるので、2つ目以降をコメント欄と判断）
         comment_user_links = driver.find_elements(:partial_link_text, user_name)
@@ -2410,7 +2415,7 @@ class ProtospaceCheckerService
       # 7. ログイン状態: コメント欄のユーザー名
       add_log("ログイン状態: コメント欄のユーザー名リンクを確認中...", :progress)
       driver.get(@posted_prototype[:detail_url])
-      sleep 2
+      sleep 3
       begin
         # コメント欄にあるユーザー名を探す
         comment_user_links = driver.find_elements(:partial_link_text, user_name)
