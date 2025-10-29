@@ -17,7 +17,7 @@ class ProtospaceCheckerService
   end
 
   def run_all_checks
-    add_log("全チェックを開始します", :info)
+    add_log("#{@base_url} ", :info)
 
     # バリデーションチェック（1-001 ~ 1-010）
     check_cancelled
@@ -1215,11 +1215,8 @@ class ProtospaceCheckerService
   end
 
   def run_check_3_002_and_3_003(cleanup_logs: true)
-    # 変数の初期化
-    has_image = false
-
-    # チェック番号1: 4つの情報表示確認
     begin
+      # チェック番号1: 4つの情報表示確認
       add_log("　 チェック番号1: プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること", :check_start)
       add_log("ログイン状態: 4つの情報の表示を確認中...", :progress)
 
@@ -1229,6 +1226,7 @@ class ProtospaceCheckerService
       page_text = driver.find_element(:tag_name, 'body').text
 
       # 画像の存在確認
+      has_image = false
       begin
         # 投稿したタイトルを含む要素の近くの画像を探す
         images = driver.find_elements(:tag_name, 'img')
@@ -1263,13 +1261,8 @@ class ProtospaceCheckerService
         add_log("✗ チェック番号1: プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること (失敗)", :fail)
         add_result("チェック番号1", "プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること", "FAIL", "以下の情報が表示されていません: #{missing_items.join(', ')}")
       end
-    rescue => e
-      add_log("! エラー発生: #{e.message}", :error)
-      add_result("チェック番号1", "プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること", "ERROR", e.message)
-    end
 
-    # 3-002: 画像表示とリンク切れチェック
-    begin
+      # 3-002: 画像表示とリンク切れチェック
       add_log("　 3-002: 画像が表示されており、画像がリンク切れなどになっていないこと", :check_start)
       add_log("ログイン状態: 画像のリンク切れを確認中...", :progress)
 
@@ -1291,13 +1284,8 @@ class ProtospaceCheckerService
         add_log("✗ 3-002: 画像が表示されており、画像がリンク切れなどになっていないこと (失敗)", :fail)
         add_result("3-002", "画像が表示されており、画像がリンク切れなどになっていないこと", "FAIL", "有効な画像が見つかりません")
       end
-    rescue => e
-      add_log("! エラー発生: #{e.message}", :error)
-      add_result("3-002", "画像が表示されており、画像がリンク切れなどになっていないこと", "ERROR", e.message)
-    end
 
-    # 3-003: 詳細ページ遷移確認
-    begin
+      # 3-003: 詳細ページ遷移確認
       add_log("　 3-003: ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること", :check_start)
 
       # パート1: ログアウト状態で詳細ページ遷移確認
@@ -1308,7 +1296,6 @@ class ProtospaceCheckerService
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
         logout_link.click
-        sleep 2
       rescue
         # 既にログアウト状態
       end
@@ -1355,9 +1342,10 @@ class ProtospaceCheckerService
         add_log("✗ 3-003: ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること (失敗)", :fail)
         add_result("3-003", "ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること", "FAIL", "ログイン状態で詳細ページに遷移できません")
       end
+
     rescue => e
       add_log("! エラー発生: #{e.message}", :error)
-      add_result("3-003", "ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること", "ERROR", e.message)
+      add_result("3-002/3-003", "一覧表示機能テスト", "ERROR", e.message)
     ensure
       cleanup if cleanup_logs
       @logs.reject! { |log| log[:type] == :progress } if cleanup_logs
