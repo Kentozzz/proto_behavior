@@ -1173,6 +1173,7 @@ class ProtospaceCheckerService
       begin
         logout_link = driver.find_element(:link_text, 'ログアウト')
         logout_link.click
+        sleep 2
       rescue
         # 既にログアウト状態
       end
