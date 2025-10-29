@@ -17,6 +17,9 @@
       <% end %>
     <% else %>
       <%= form_with url: checks_path, method: :post, local: true, data: { turbo: false }, class: "search-bar search-form-result", style: "display: flex; align-items: center; gap: 8px;" do |f| %>
+        <% if @status == 'error' && @session_id.present? %>
+          <%= hidden_field_tag :previous_session_id, @session_id %>
+        <% end %>
         <div style="flex: 1; position: relative;" class="search-input-wrapper">
           <%= text_field_tag :target_url, "", placeholder: "Protospace Checker - チェック完了", class: "search-input-field", style: "width: 100%;" %>
         </div>
@@ -209,6 +212,26 @@
               <div class="spinner"></div>
               <span style="color: #858585;">チェック実行中...</span>
             </div>
+          <% end %>
+
+          <!-- エラー時はターミナルに入力フォームを表示 -->
+          <% if @status == 'error' %>
+            <div class="terminal-line" style="display: flex; align-items: center; margin-top: 10px;">
+              <%= form_with url: checks_path, method: :post, local: true, data: { turbo: false }, style: "display: flex; align-items: center; gap: 8px; width: 100%;" do |f| %>
+                <%= hidden_field_tag :previous_session_id, @session_id %>
+                <span style="color: #cccccc;">$</span>
+                <%= text_field_tag :target_url, "", id: "terminal-input", style: "flex: 1; background: transparent; border: none; color: #cccccc; outline: none; font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 14px;" %>
+              <% end %>
+            </div>
+            <script>
+              // ページ読み込み時に入力欄にフォーカス
+              document.addEventListener('DOMContentLoaded', function() {
+                const terminalInput = document.getElementById('terminal-input');
+                if (terminalInput) {
+                  terminalInput.focus();
+                }
+              });
+            </script>
           <% end %>
         </div>
       </div>

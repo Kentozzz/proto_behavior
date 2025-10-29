@@ -21,7 +21,38 @@ class ChecksController < ApplicationController
 
   def create
     target_url = params[:target_url]
+    previous_session_id = params[:previous_session_id]
     session_id = SecureRandom.uuid
+
+    # 前のセッションのログを引き継ぐ
+    previous_logs = []
+    if previous_session_id.present? && @@check_sessions[previous_session_id]
+      previous_logs = @@check_sessions[previous_session_id][:logs] || []
+    end
+
+    # URLバリデーション
+    if target_url.blank? || !target_url.match?(/\Ahttps?:\/\/.+/i)
+      # セッションデータをエラー状態で初期化（前のログを引き継ぐ）
+      new_logs = previous_logs + [
+        { message: "$ #{target_url.blank? ? '' : target_url}", type: :info },
+        { message: "Invalid URL format. Please enter a URL starting with http:// or https://", type: :error },
+        { message: "Please enter a valid URL in the search bar above.", type: :info }
+      ]
+
+      @@check_sessions[session_id] = {
+        status: 'error',
+        logs: new_logs,
+        results: [],
+        screenshots: [],
+        failure_screenshots: [],
+        target_url: target_url,
+        cancelled: false
+      }
+
+      # エラー状態のまま結果ページにリダイレクト
+      redirect_to check_status_path(session_id)
+      return
+    end
 
     # セッションデータを初期化
     @@check_sessions[session_id] = {
