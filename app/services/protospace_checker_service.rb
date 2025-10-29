@@ -1793,10 +1793,10 @@ class ProtospaceCheckerService
       edit_url = detail_url.gsub(/\/prototypes\/(\d+)$/, '/prototypes/\1/edit')
       driver.get(edit_url)
 
-      # 新しい値で編集（5-005確認用）
-      new_title_for_5005 = "5-005確認用タイトル#{Time.now.to_i}"
-      new_catch_copy_for_5005 = "5-005確認用キャッチコピー"
-      new_concept_for_5005 = "5-005確認用コンセプト"
+      # 新しい値で編集
+      new_title_for_5005 = "更新後のプロトタイプ#{Time.now.to_i}"
+      new_catch_copy_for_5005 = "更新したキャッチコピー"
+      new_concept_for_5005 = "編集機能で内容を更新しました"
 
       driver.execute_script("document.getElementById('prototype_title').value = '#{new_title_for_5005}';")
       driver.execute_script("document.getElementById('prototype_catch_copy').value = '#{new_catch_copy_for_5005}';")
@@ -1832,8 +1832,8 @@ class ProtospaceCheckerService
 
       # titleを空にして、他の項目に値を入れる
       driver.execute_script("document.getElementById('prototype_title').value = '';")
-      driver.execute_script("document.getElementById('prototype_catch_copy').value = 'チェック7用キャッチコピー';")
-      driver.execute_script("document.getElementById('prototype_concept').value = 'チェック7用コンセプト';")
+      driver.execute_script("document.getElementById('prototype_catch_copy').value = '入力済みキャッチコピー';")
+      driver.execute_script("document.getElementById('prototype_concept').value = '入力済みコンセプト';")
 
       # 更新ボタンをクリック（バリデーションエラーになるはず）
       driver.find_element(:name, 'commit').click
@@ -1844,8 +1844,8 @@ class ProtospaceCheckerService
       concept_after = driver.execute_script("return document.getElementById('prototype_concept').value;")
 
       # 入力した値が残っているか確認
-      catch_copy_kept = catch_copy_after == 'チェック7用キャッチコピー'
-      concept_kept = concept_after == 'チェック7用コンセプト'
+      catch_copy_kept = catch_copy_after == '入力済みキャッチコピー'
+      concept_kept = concept_after == '入力済みコンセプト'
 
       if catch_copy_kept && concept_kept
         add_log("✓ チェック番号7: バリデーションによって投稿ができず、そのページに留まった場合でも、入力済みの項目（画像以外）は消えないこと", :success)
